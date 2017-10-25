@@ -1,0 +1,5 @@
+Replace all throws...
+Create GUI
+Refactor code
+Fit with GUI
+Edit all class names to start with a capital letter... along with all the times class name is called in the program
