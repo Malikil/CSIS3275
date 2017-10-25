@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Font;
 
-public class Login extends JFrame{
+public class LoginGUI extends JFrame{
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
@@ -17,7 +17,7 @@ public class Login extends JFrame{
 	public static void main(String[] args) 
 	{
 		
-					Login window = new Login();
+					LoginGUI window = new LoginGUI();
 					window.setVisible(true);
 				
 	}
@@ -25,7 +25,7 @@ public class Login extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public Login() {
+	public LoginGUI() {
 		setTitle("Login Page");
 		initialize();
 	}
