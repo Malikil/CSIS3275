@@ -13,7 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 
-public class Server extends JFrame {
+public class ServerGUI extends JFrame {
 	private JTextField txtUserList;
 	private JTextField textField;
 	private JTable table;
@@ -23,7 +23,7 @@ public class Server extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Server window = new Server();
+					ServerGUI window = new ServerGUI();
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -35,7 +35,7 @@ public class Server extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public Server() {
+	public ServerGUI() {
 		initialize();
 	}
 
