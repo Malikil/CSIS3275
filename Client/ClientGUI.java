@@ -10,7 +10,7 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-public class Client extends JFrame{
+public class ClientGUI extends JFrame{
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTable table;
@@ -20,7 +20,7 @@ public class Client extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Client window = new Client();
+					ClientGUI window = new ClientGUI();
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -32,7 +32,7 @@ public class Client extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public Client() {
+	public ClientGUI() {
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
 	}
