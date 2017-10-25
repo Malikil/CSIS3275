@@ -11,6 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 public class ClientGUI extends JFrame{
+	private Client parent;
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTable table;
@@ -20,7 +21,7 @@ public class ClientGUI extends JFrame{
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					ClientGUI window = new ClientGUI();
+					ClientGUI window = new ClientGUI(new ClientMain());
 					window.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -32,7 +33,8 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI() {
+	public ClientGUI(Client owner) {
+		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
 	}
