@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,13 +14,13 @@ public class Table implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 4225828966516582087L;
-	private myLL<fields> fieldsList = new myLL<fields>();
-	private static myLL<tuple> tupleList = new myLL<tuple>();
+	private MyLL<Fields> fieldsList = new MyLL<Fields>();
+	private static MyLL<Tuple> tupleList = new MyLL<Tuple>();
 	private String tableName;
 	private int numberoffields = 0;
 	private String databaseName = "Default";
 	private int assignPKID = 1;
-	private myLL<Integer> unusedPKID = new myLL<Integer>();
+	private MyLL<Integer> unusedPKID = new MyLL<Integer>();
 
 	
 	
@@ -42,10 +44,10 @@ public class Table implements Serializable{
 	
 	public void addField(String s, int n) throws IOException
 	{
-		fieldsList.push(new fields(s,n,numberoffields));
+		fieldsList.push(new Fields(s,n,numberoffields));
 		for(int i = 0; i<tupleList.size(); i++)
 		{
-			((tuple) tupleList.get(i)).setNull(numberoffields);
+			((Tuple) tupleList.get(i)).setNull(numberoffields);
 		}
 		numberoffields++;
 		Update();
@@ -56,7 +58,7 @@ public class Table implements Serializable{
 	{
 		for(int i = 0; i<tupleList.size(); i++)
 		{
-			((tuple) tupleList.get(i)).removeFieldEntry(n);
+			((Tuple) tupleList.get(i)).removeFieldEntry(n);
 		}
 		fieldsList.remove(n);
 		numberoffields--;
@@ -83,26 +85,26 @@ public class Table implements Serializable{
 		 }
 		 else 
 		 {
-			 myLL<fieldData> tupleEntry = new myLL<fieldData>();
+			 MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
 			 
 			 if(unusedPKID.size() == 0)
 			 {
-				 tupleEntry.push(new fieldData(assignPKID));
+				 tupleEntry.push(new FieldData(assignPKID));
 				 assignPKID++;
 			 }
 			 
 			 else
 			 {
 				 int PK = (int) unusedPKID.pop();
-				 tupleEntry.push(new fieldData(PK));
+				 tupleEntry.push(new FieldData(PK));
 			 }
 			 
 			 
 			 for(String s: rawData)
 			 {
-				 tupleEntry.push(new fieldData(s));
+				 tupleEntry.push(new FieldData(s));
 			 }
-			 tupleList.push(new tuple(tupleEntry));
+			 tupleList.push(new Tuple(tupleEntry));
 
 			 
 			 
@@ -210,7 +212,7 @@ public class Table implements Serializable{
 			return null;
 		}
 		else {
-			tuple toGet =  (tuple) tupleList.get(i);
+			Tuple toGet =  (Tuple) tupleList.get(i);
 			
 			return toGet.toString();
 		}
@@ -226,15 +228,15 @@ public class Table implements Serializable{
 		}
 		else {
 			
-			myLL<fieldData> tupleEntry = new myLL<fieldData>();
+			MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
 
 			 for(String s: newtuple)
 			 {
-				 tupleEntry.push(new fieldData(s)); //Needs testing
+				 tupleEntry.push(new FieldData(s)); //Needs testing
 			 }
 			
 			
-			((tuple) tupleList.get(i)).settuple(tupleEntry);
+			((Tuple) tupleList.get(i)).settuple(tupleEntry);
 			Update();
 			return "Record changed";
 		}
@@ -248,7 +250,7 @@ public class Table implements Serializable{
 	
 		for(int i = fieldsList.size()-1; i >-1; i--) 		
 		{
-			fieldNames += ((fields) fieldsList.get(i)).getfieldName() + "\t";
+			fieldNames += ((Fields) fieldsList.get(i)).getfieldName() + "\t";
 		}
 		
 		return fieldNames;
@@ -296,11 +298,11 @@ public class Table implements Serializable{
 				System.out.println("No records found");
 			}
 			else {
-				tuple foundrecord =  (tuple) tupleList.get(stuff++);
+				Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
 				while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
 				{
 					System.out.println(foundrecord.toString());
-					foundrecord =  (tuple) tupleList.get(stuff++);
+					foundrecord =  (Tuple) tupleList.get(stuff++);
 				}
 			}
 			
@@ -309,13 +311,13 @@ public class Table implements Serializable{
 	
 	public static <T extends Comparable<T>> int BinarySearch(T searchItem, int first, int last, int searchfield)
 	{
-		myLL<T> array = (myLL<T>) tupleList;
-		fieldData searchThis = new fieldData(searchItem);
-		((tuple) array.get(first)).setsearchField(searchfield);
-		((tuple) array.get(last)).setsearchField(searchfield);	
+		MyLL<T> array = (MyLL<T>) tupleList;
+		FieldData searchThis = new FieldData(searchItem);
+		((Tuple) array.get(first)).setsearchField(searchfield);
+		((Tuple) array.get(last)).setsearchField(searchfield);	
 		if(last - first <2)
 		{
-			if(searchThis.compareTo((tuple) array.get(first)) == 0)
+			if(searchThis.compareTo((Tuple) array.get(first)) == 0)
 			return first;
 			else
 			{
@@ -325,8 +327,8 @@ public class Table implements Serializable{
 		
 		int pos = -1;
 		int mid = (first + last)/2;
-		((tuple) array.get(mid)).setsearchField(searchfield);	
-		int diff = searchThis.compareTo((tuple) array.get(mid));
+		((Tuple) array.get(mid)).setsearchField(searchfield);	
+		int diff = searchThis.compareTo((Tuple) array.get(mid));
 		if(diff == 0)
 		{
 			pos = mid;
@@ -346,7 +348,7 @@ public class Table implements Serializable{
 	
 	public static <T extends Comparable<T>> void quickSorter(int left, int right, int sortfield )
 	{
-		myLL<T> list = (myLL<T>) tupleList;
+		MyLL<T> list = (MyLL<T>) tupleList;
 	
 		if (list == null || left >= right-1 || left == right ) 
 		{
@@ -359,15 +361,15 @@ public class Table implements Serializable{
 	     boolean needsWork = true;
 	     while (needsWork)
 	     {
-	    	 ((tuple) list.get(++front)).setsearchField(sortfield);
-	    	 ((tuple) list.get(--last)).setsearchField(sortfield);	         
+	    	 ((Tuple) list.get(++front)).setsearchField(sortfield);
+	    	 ((Tuple) list.get(--last)).setsearchField(sortfield);	         
 	    	 while (((Comparable<T>) list.get(front)).compareTo(pivot) < 0)
 	    	 {
-	    		 ((tuple) list.get(++front)).setsearchField(sortfield);
+	    		 ((Tuple) list.get(++front)).setsearchField(sortfield);
 	    	 }
 	         while (((Comparable<T>) list.get(last)).compareTo(pivot) > 0  && last > left)
 	         {
-	        	 ((tuple) list.get(--last)).setsearchField(sortfield);	
+	        	 ((Tuple) list.get(--last)).setsearchField(sortfield);	
 	         }
 	         if (front < last)
 	         {
@@ -392,7 +394,7 @@ public class Table implements Serializable{
 	}
 	
 	 
-	 public static <T extends Comparable<T>> void swap(int a, int b, myLL<T> list)
+	 public static <T extends Comparable<T>> void swap(int a, int b, MyLL<T> list)
 	 {
 			 T temp = (T) list.get(a);
 			 list.set(a, list.get(b));
