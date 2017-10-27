@@ -12,6 +12,11 @@ public class tuple implements Serializable, Comparable{
 		dataList = record;
 	}
 	
+	public void settuple(myLL<fieldData> record)
+	{
+		dataList = record;
+	}
+	
 	public String toString()
 	{
 		String tupleRecord ="";

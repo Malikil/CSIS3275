@@ -14,15 +14,18 @@ public class Table implements Serializable{
 	private static final long serialVersionUID = 4225828966516582087L;
 	private myLL<fields> fieldsList = new myLL<fields>();
 	private static myLL<tuple> tupleList = new myLL<tuple>();
-	String tableName;
-	int numberoffields = 0;
-	String databaseName = "Default";
+	private String tableName;
+	private int numberoffields = 0;
+	private String databaseName = "Default";
+	private int assignPKID = 1;
+	private myLL<Integer> unusedPKID = new myLL<Integer>();
 
 	
 	
 	Table(String name) throws IOException
 	{
 		tableName = name;
+		addField("Primary Key ID", 1);
 		Update();
 		
 	}
@@ -31,6 +34,7 @@ public class Table implements Serializable{
 	{
 		tableName = name;
 		databaseName = dbName;
+		addField("Primary Key ID", 1);
 		Update();
 		
 	}
@@ -69,25 +73,38 @@ public class Table implements Serializable{
 	public String addTuple(String[] rawData) 
 	{
 		String result ="";
-		 if(rawData.length > numberoffields)
+		 if(rawData.length > numberoffields-1)
 		 {
 			 result = "Unforseen error, please contact admin";
 		 }
-		 else if(rawData.length < numberoffields)
+		 else if(rawData.length < numberoffields-1)
 		 {
 			 result = "Please do not leave empty fields";
 		 }
 		 else 
 		 {
 			 myLL<fieldData> tupleEntry = new myLL<fieldData>();
-
+			 
+			 if(unusedPKID.size() == 0)
+			 {
+				 tupleEntry.push(new fieldData(assignPKID));
+				 assignPKID++;
+			 }
+			 
+			 else
+			 {
+				 int PK = (int) unusedPKID.pop();
+				 tupleEntry.push(new fieldData(PK));
+			 }
+			 
+			 
 			 for(String s: rawData)
 			 {
 				 tupleEntry.push(new fieldData(s));
 			 }
 			 tupleList.push(new tuple(tupleEntry));
 
-			 System.out.println("Tupple added, new size is " + tupleList.size());
+			 
 			 
 		 }
 		 Update();
@@ -201,14 +218,23 @@ public class Table implements Serializable{
 	}
 	
 	
-	public String setTuple(int i, int fieldnum, Comparable editedData) {
+	public String setTuple(int i, String[] newtuple) {
 		
 		if(tupleList.element() == null)
 		{
 			return "Record does not exist"; //Should technically never happen once GUI is made
 		}
 		else {
-			((tuple) tupleList.get(i)).setFData(fieldnum, editedData);
+			
+			myLL<fieldData> tupleEntry = new myLL<fieldData>();
+
+			 for(String s: newtuple)
+			 {
+				 tupleEntry.push(new fieldData(s)); //Needs testing
+			 }
+			
+			
+			((tuple) tupleList.get(i)).settuple(tupleEntry);
 			Update();
 			return "Record changed";
 		}
