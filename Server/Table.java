@@ -23,7 +23,10 @@ public class Table implements Serializable{
 	private MyLL<Integer> unusedPKID = new MyLL<Integer>();
 
 	
-	
+	/**
+	 * Create a table with "Default" as the Database
+	 * @param Table Name
+	 */
 	Table(String name)
 	{
 		tableName = name;
@@ -31,6 +34,10 @@ public class Table implements Serializable{
 		Update();
 	}
 	
+	/**
+	 * Create a Table with first parameter as Table Name and second parameter as the Database
+	 * @param Table Name, Database Name
+	 */
 	Table(String name, String dbName)
 	{
 		tableName = name;
@@ -40,7 +47,15 @@ public class Table implements Serializable{
 		
 	}
 	
-	
+	/**
+	 * Create a Field with first parameter as Field Name and second parameter as the Field type.
+	 * Field type legend is as follows: 
+	 * 	0 for String 
+	 * 	1 for Int 
+	 * 	2 for Double 
+	 * 	3 for Date 
+	 * @param Field Name, Field Type
+	 */
 	public void addField(String s, int n)
 	{
 		fieldsList.push(new Fields(s,n,numberoffields));
@@ -53,6 +68,10 @@ public class Table implements Serializable{
 		
 	}
 	
+	/**
+	 * Removes a Field with position "n" from the Table
+	 * @param Field position
+	 */
 	public void removeField(int n)
 	{
 		for(int i = 0; i<tupleList.size(); i++)
@@ -64,12 +83,19 @@ public class Table implements Serializable{
 		Update();
 	}
 	
-	
+	/**
+	 * @return  Returns the number of Fields the Table
+	 */
 	public int getFieldNum()
 	{
 		return numberoffields;
 	}
 	
+	/**
+	 * Adds a Tuple to the Table
+	 * @param String array of the field data 
+	 * @return  Result
+	 */
 	public String addTuple(String[] rawData) 
 	{
 		String result ="";
@@ -112,7 +138,10 @@ public class Table implements Serializable{
 		 return result;
 	}
 	
-	
+	/**
+	 * Removes a Tuple from the Table at the position passed
+	 * @param Position of the Tuple
+	 */
 	public void removeTuple(int n)
 	{
 		tupleList.remove(n);
@@ -120,6 +149,9 @@ public class Table implements Serializable{
 
 	}
 	
+	/**
+	 * Writes current Table to a file. Overwrites current file.
+	 */
 	public void Update()
 	{
 		File folder = new File(databaseName);
@@ -160,6 +192,9 @@ public class Table implements Serializable{
 		}
 	}
 	
+	/**
+	 * Writes sorted version of a Table to a file. Overwrites current file.
+	 */
 	public void sortUpdate()
 	{
 		File folder = new File(databaseName);
@@ -200,9 +235,11 @@ public class Table implements Serializable{
 		}
 	}
 
-
-
-
+	/**
+	 * Gets current Tuple, mainly used to print Tuple results for user.
+	 * @param Tuple position
+	 * @return Tuple in a String format
+	 */
 	public String getTuple(int i) {
 		
 		if(tupleList.element() == null)
@@ -217,7 +254,11 @@ public class Table implements Serializable{
 		
 	}
 	
-	
+	/**
+	 * Changes the contents of specified Tuple
+	 * @param Tuple position, new Tuple values
+	 * @return Result
+	 */
 	public String setTuple(int i, String[] newtuple) {
 		
 		if(tupleList.element() == null)
@@ -241,7 +282,9 @@ public class Table implements Serializable{
 		
 	}
 	
-	
+	/**
+	 * @return Displays all fields in the Table
+	 */
 	public String getFields() 
 	{
 		String fieldNames = ""; 
@@ -254,12 +297,17 @@ public class Table implements Serializable{
 		return fieldNames;
 	}
 	
-	
+	/**
+	 * @return Number of entries in the Table
+	 */
 	public int numberofentries()
 	{
 		return tupleList.size();
 	}
 	
+	/**
+	 * @return Displays all entries in the Table
+	 */
 	public void printEntries() 
 	{
 		System.out.println(getFields().toString());
@@ -270,6 +318,9 @@ public class Table implements Serializable{
 		
 	}
 	
+	/**
+	 * Imports test file, will be updated to import chosen file to Table as Tuple entries
+	 */
 	public void importdata()
 	{
 		File file;
@@ -309,6 +360,10 @@ public class Table implements Serializable{
 		}
 	}
 	
+	/**
+	 * Prints all Tuples with searched item in search field
+	 * @param Search item, Field to search
+	 */
 	 public <T> void genBin(String search, int searchfield)
 	 {
 		
@@ -331,6 +386,10 @@ public class Table implements Serializable{
 			
 	 }
 	
+	/**
+	 * @param Search item, first index of search, last index of search, search field
+	 * @return Tuple position with search item in search field
+	 */	 
 	public static <T extends Comparable<T>> int BinarySearch(T searchItem, int first, int last, int searchfield)
 	{
 		MyLL<T> array = (MyLL<T>) tupleList;
@@ -367,7 +426,10 @@ public class Table implements Serializable{
 			return pos;
 	}
 	
-	
+	/**
+	 * Sorts current Table Tuples by chosen sort field
+	 * @param Tuple starting position to sort, ending position to sort, field to sort by
+	 */	
 	public static <T extends Comparable<T>> void quickSorter(int left, int right, int sortfield )
 	{
 		MyLL<T> list = (MyLL<T>) tupleList;
@@ -415,6 +477,9 @@ public class Table implements Serializable{
 	     
 	}
 	
+	/**
+	 * Sends Client an error message
+	 */
 	public void sendError(String err)
 	{
 		System.out.println(err);
@@ -422,6 +487,11 @@ public class Table implements Serializable{
 		//insert 'send message to client' command
 	}
 	
+	
+	/**
+	 * Swaps two elements in Linked List
+	 * @param First element, Second element, Linked List
+	 */	
 	public static <T extends Comparable<T>> void swap(int a, int b, MyLL<T> list)
 	{
 		 T temp = (T) list.get(a);
