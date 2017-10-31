@@ -24,15 +24,14 @@ public class Table implements Serializable{
 
 	
 	
-	Table(String name) throws IOException
+	Table(String name)
 	{
 		tableName = name;
 		addField("Primary Key ID", 1);
 		Update();
-		
 	}
 	
-	Table(String name, String dbName) throws IOException
+	Table(String name, String dbName)
 	{
 		tableName = name;
 		databaseName = dbName;
@@ -42,7 +41,7 @@ public class Table implements Serializable{
 	}
 	
 	
-	public void addField(String s, int n) throws IOException
+	public void addField(String s, int n)
 	{
 		fieldsList.push(new Fields(s,n,numberoffields));
 		for(int i = 0; i<tupleList.size(); i++)
@@ -54,7 +53,7 @@ public class Table implements Serializable{
 		
 	}
 	
-	public void removeField(int n) throws IOException
+	public void removeField(int n)
 	{
 		for(int i = 0; i<tupleList.size(); i++)
 		{
@@ -63,7 +62,6 @@ public class Table implements Serializable{
 		fieldsList.remove(n);
 		numberoffields--;
 		Update();
-		
 	}
 	
 	
@@ -115,7 +113,7 @@ public class Table implements Serializable{
 	}
 	
 	
-	public void removeTuple(int n) throws IOException
+	public void removeTuple(int n)
 	{
 		tupleList.remove(n);
 		 Update();
@@ -272,10 +270,15 @@ public class Table implements Serializable{
 		
 	}
 	
-	public void importdata() throws IOException
+	public void importdata()
 	{
-		File file = new File("MockData.txt");
-		BufferedReader bR = new BufferedReader(new FileReader(file));
+		File file;
+		BufferedReader bR = null;
+		String str;
+		try
+		{
+		file = new File("MockData.txt");
+		bR = new BufferedReader(new FileReader(file));
 		String entry = bR.readLine();
 		while(entry != null)
 		{
@@ -283,8 +286,27 @@ public class Table implements Serializable{
 			addTuple(enterThis);
 			entry = bR.readLine();
 		}
-		bR.close();
-		
+		}
+		catch(IOException e)
+		{
+			str = "Can not find file";
+			sendError(str);
+		}
+		finally
+		{
+			if(bR != null)
+			{
+				try 
+				{
+					bR.close();
+				} 
+				catch (IOException e) 
+				{
+					str = "Error on file close";
+					sendError(str);
+				}
+			}
+		}
 	}
 	
 	 public <T> void genBin(String search, int searchfield)
@@ -393,14 +415,20 @@ public class Table implements Serializable{
 	     
 	}
 	
-	 
-	 public static <T extends Comparable<T>> void swap(int a, int b, MyLL<T> list)
-	 {
-			 T temp = (T) list.get(a);
-			 list.set(a, list.get(b));
-			 list.set(b, temp);
+	public void sendError(String err)
+	{
+		System.out.println(err);
+		
+		//insert 'send message to client' command
+	}
+	
+	public static <T extends Comparable<T>> void swap(int a, int b, MyLL<T> list)
+	{
+		 T temp = (T) list.get(a);
+		 list.set(a, list.get(b));
+		 list.set(b, temp);
 
-	 }
+	}
 
 	
 }
