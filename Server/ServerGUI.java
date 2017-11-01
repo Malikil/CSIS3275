@@ -1,6 +1,5 @@
 package Server;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -12,32 +11,23 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
-import javax.swing.JScrollPane;
 
-public class ServerGUI extends JFrame {
+public class ServerGUI extends JFrame
+{
 	private JTextField txtUserList;
 	private JTextField textField;
 	private JTable table;
 	private DefaultTableModel tableModel;
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ServerGUI window = new ServerGUI();
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private Server parent;
 
 	/**
 	 * Create the application.
+	 * @param server The server to be notified of events
 	 */
-	public ServerGUI() {
+	public ServerGUI(Server server)
+	{
 		initialize();
+		parent = server;
 	}
 
 	/**
