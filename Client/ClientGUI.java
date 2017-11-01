@@ -10,13 +10,18 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 
 public class ClientGUI extends JFrame{
 	private Client parent;
-	private JTextField textField;
-	private JTextField textField_1;
 	private JTable table;
 	private DefaultTableModel tableModel;
+	private JTextField searchField;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -45,7 +50,7 @@ public class ClientGUI extends JFrame{
 	 */
 	private void initialize() {
 		new JFrame();
-		setBounds(100, 100, 455, 373);
+		setBounds(100, 100, 638, 553);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
@@ -54,71 +59,93 @@ public class ClientGUI extends JFrame{
 		appLabel.setBounds(10, 11, 95, 19);
 		getContentPane().add(appLabel);
 		
-		JLabel lblSelectTable = new JLabel("Select Table");
-		lblSelectTable.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblSelectTable.setBounds(10, 64, 80, 14);
-		getContentPane().add(lblSelectTable);
-		
-		textField = new JTextField();
-		textField.setEditable(false);
-		textField.setBounds(99, 61, 188, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
-		
-		JButton btnGo = new JButton("Go!");
-		btnGo.setBounds(297, 60, 89, 23);
-		getContentPane().add(btnGo);
-		
 		JLabel tablesLbl = new JLabel("Tables");
 		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		tablesLbl.setBounds(10, 93, 80, 14);
+		tablesLbl.setBounds(10, 87, 80, 14);
 		getContentPane().add(tablesLbl);
 		
 		JButton tablesGoBttn = new JButton("Go!");
-		tablesGoBttn.setBounds(297, 89, 89, 23);
+		tablesGoBttn.setBounds(297, 83, 89, 23);
 		getContentPane().add(tablesGoBttn);
 		
-		JLabel entriesLbl = new JLabel("Entries");
-		entriesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		entriesLbl.setBounds(10, 122, 80, 14);
-		getContentPane().add(entriesLbl);
-		
-		JButton entriesGoBttn = new JButton("Go!");
-		entriesGoBttn.setBounds(297, 118, 89, 23);
-		getContentPane().add(entriesGoBttn);
+		JLabel create_tableLbl = new JLabel("Create Table");
+		create_tableLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+		create_tableLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		create_tableLbl.setBounds(178, 136, 109, 19);
+		getContentPane().add(create_tableLbl);
 		
 		JComboBox<String> tablesCB = new JComboBox<String>();
-		tablesCB.setBounds(99, 92, 188, 20);
+		tablesCB.setBounds(99, 86, 188, 20);
 		getContentPane().add(tablesCB);
-		
-		JComboBox<String> entriesCB = new JComboBox<String>();
-		entriesCB.setBounds(99, 119, 188, 20);
-		getContentPane().add(entriesCB);
-		
-		textField_1 = new JTextField();
-		textField_1.setEditable(false);
-		textField_1.setBounds(192, 12, 120, 20);
-		getContentPane().add(textField_1);
-		textField_1.setColumns(10);
-		
-		JLabel usnmeLbl= new JLabel("Username");
-		usnmeLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		usnmeLbl.setBounds(99, 15, 80, 14);
-		getContentPane().add(usnmeLbl);
 		
 		tableModel = new DefaultTableModel();
 		table = new JTable();
+		table.setBorder(new LineBorder(new Color(0, 0, 0)));
 		table.setModel(tableModel);
-		table.setBounds(60, 170, 326, 124);
+		table.setBounds(52, 277, 334, 172);
 		getContentPane().add(table);
-		
-		JButton btnLogout = new JButton("Logout");
-		btnLogout.setBounds(322, 11, 89, 23);
-		getContentPane().add(btnLogout);
 		
 		JButton button = new JButton("?");
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
-		button.setBounds(399, 295, 40, 40);
+		button.setBounds(582, 475, 40, 40);
 		getContentPane().add(button);
+		
+		JLabel databseLbl = new JLabel("Database");
+		databseLbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		databseLbl.setBounds(10, 58, 80, 14);
+		getContentPane().add(databseLbl);
+		
+		JButton dbButton = new JButton("Go!");
+		dbButton.setBounds(297, 54, 89, 23);
+		getContentPane().add(dbButton);
+		
+		JComboBox<String> databaseCB = new JComboBox<String>();
+		databaseCB.setToolTipText("Sasdasda\r\n");
+		databaseCB.setBounds(99, 54, 188, 20);
+		
+		getContentPane().add(databaseCB);
+		
+		JLabel lblErrorLog = new JLabel("Error Log");
+		lblErrorLog.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblErrorLog.setBounds(473, 24, 80, 19);
+		getContentPane().add(lblErrorLog);
+		
+		JButton addButton = new JButton("Add");
+		addButton.setBounds(99, 166, 89, 23);
+		getContentPane().add(addButton);
+		
+		JButton editButton = new JButton("Edit");
+		editButton.setBounds(198, 166, 89, 23);
+		getContentPane().add(editButton);
+		
+		JButton deleteButton = new JButton("Delete");
+		deleteButton.setBounds(297, 166, 89, 23);
+		getContentPane().add(deleteButton);
+		
+		JComboBox<String> sortCB = new JComboBox<String>();
+		sortCB.setBounds(99, 202, 188, 20);
+		getContentPane().add(sortCB);
+		
+		JButton btnSort = new JButton("Sort");
+		btnSort.setBounds(297, 201, 89, 23);
+		getContentPane().add(btnSort);
+		
+		searchField = new JTextField();
+		searchField.setBounds(99, 234, 188, 20);
+		getContentPane().add(searchField);
+		searchField.setColumns(10);
+		
+		JButton searchButton = new JButton("Search");
+		searchButton.setBounds(297, 233, 89, 23);
+		getContentPane().add(searchButton);
+		
+		JTextArea errorTextArea = new JTextArea();
+		errorTextArea.setEditable(false);
+		errorTextArea.setBounds(434, 53, 89, 396);
+		getContentPane().add(errorTextArea);
+		
+		JScrollPane sp = new JScrollPane(errorTextArea);
+		sp.setBounds(434, 53, 150, 396);
+		getContentPane().add(sp);
 	}
 }
