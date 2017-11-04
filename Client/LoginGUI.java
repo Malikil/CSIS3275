@@ -9,23 +9,24 @@ import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Font;
 
-public class LoginGUI extends JFrame{
+public class LoginGUI extends JFrame
+{
 	private JTextField textField;
 	private JTextField textField_1;
 	private JTextField textField_2;
 
 	public static void main(String[] args) 
 	{
-		
-					LoginGUI window = new LoginGUI();
-					window.setVisible(true);
+		LoginGUI window = new LoginGUI();
+		window.setVisible(true);
 				
 	}
 
 	/**
 	 * Create the application.
 	 */
-	public LoginGUI() {
+	public LoginGUI() 
+	{
 		setTitle("Login Page");
 		initialize();
 	}
@@ -33,7 +34,8 @@ public class LoginGUI extends JFrame{
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() 
+	{
 		new JFrame();
 		this.setBounds(100, 100, 323, 228);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,7 +80,6 @@ public class LoginGUI extends JFrame{
 		JButton cancelBttn = new JButton("Cancel");
 		cancelBttn.setBounds(139, 142, 89, 23);
 		getContentPane().add(cancelBttn);
-		
-		
+	
 	}
 }

@@ -14,19 +14,25 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 
-public class ServerGUI extends JFrame {
+public class ServerGUI extends JFrame 
+{
 	private JTextField txtUserList;
 	private JTextField textField;
 	private JTable table;
 	private DefaultTableModel tableModel;
 	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void main(String[] args) 
+	{
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
 					ServerGUI window = new ServerGUI();
 					window.setVisible(true);
-				} catch (Exception e) {
+				} catch (Exception e) 
+				{
 					e.printStackTrace();
 				}
 			}
@@ -36,14 +42,16 @@ public class ServerGUI extends JFrame {
 	/**
 	 * Create the application.
 	 */
-	public ServerGUI() {
+	public ServerGUI() 
+	{
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() 
+	{
 		new JFrame();
 		setBounds(100, 100, 622, 485);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,72 +62,96 @@ public class ServerGUI extends JFrame {
 		lblServerApp.setFont(new Font("Tahoma", Font.BOLD, 16));
 		getContentPane().add(lblServerApp);
 		
-		JLabel selectLbl = new JLabel("Select Table");
-		selectLbl.setBounds(31, 120, 80, 14);
-		selectLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(selectLbl);
-		
-		JLabel entriesLbl = new JLabel("Entries");
-		entriesLbl.setBounds(31, 178, 80, 14);
-		entriesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(entriesLbl);
-		
-		JButton usrListGoBttn = new JButton("Go!");
-		usrListGoBttn.setBounds(318, 116, 89, 23);
-		getContentPane().add(usrListGoBttn);
-		
-		JButton dtbseGoBttn = new JButton("Go!");
-		dtbseGoBttn.setBounds(318, 174, 89, 23);
-		getContentPane().add(dtbseGoBttn);
+		JLabel usrListLbl = new JLabel("Userlist");
+		usrListLbl.setBounds(31, 61, 80, 14);
+		usrListLbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(usrListLbl);
 		
 		JComboBox<String> usrListCB = new JComboBox<String>();
 		usrListCB.setBounds(120, 175, 188, 20);
 		getContentPane().add(usrListCB);
 		
+		JButton usrListGoBttn = new JButton("Select User");
+		usrListGoBttn.setBounds(318, 57, 89, 23);
+		getContentPane().add(usrListGoBttn);
+		
+		JLabel lblDatabase = new JLabel("Database");
+		lblDatabase.setBounds(31, 90, 80, 14);
+		lblDatabase.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(lblDatabase);
+		
 		JComboBox<String> dtbseCB = new JComboBox<String>();
 		dtbseCB.setBounds(120, 148, 188, 20);
 		getContentPane().add(dtbseCB);
 		
-		JButton selectGobttn = new JButton("Go!");
-		selectGobttn.setBounds(318, 145, 89, 23);
-		getContentPane().add(selectGobttn);
+		JButton dtbseGoBttn = new JButton("Select");
+		dtbseGoBttn.setBounds(318, 86, 89, 23);
+		getContentPane().add(dtbseGoBttn);
 		
-		textField = new JTextField();
-		textField.setBounds(120, 117, 188, 20);
-		textField.setEditable(false);
-		textField.setColumns(10);
-		getContentPane().add(textField);
+		JLabel selectLbl = new JLabel("Select Table");
+		selectLbl.setBounds(31, 120, 80, 14);
+		selectLbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(selectLbl);
+		
+		//Why TextField?
+				/*
+				textField = new JTextField();
+				textField.setBounds(120, 117, 188, 20);
+				textField.setEditable(false);
+				textField.setColumns(10);
+				getContentPane().add(textField);
+				*/
+		
+		JButton selectGobttn = new JButton("Enter");
+		selectGobttn.setBounds(318, 116, 89, 23);
+		getContentPane().add(selectGobttn);
 		
 		JLabel tablesLbl = new JLabel("Tables");
 		tablesLbl.setBounds(31, 149, 80, 14);
 		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(tablesLbl);
 		
-		JLabel usrListLbl = new JLabel("Userlist");
-		usrListLbl.setBounds(31, 61, 80, 14);
-		usrListLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(usrListLbl);
-		
-		JButton tablesGoBttn = new JButton("Go!");
-		tablesGoBttn.setBounds(318, 57, 89, 23);
-		getContentPane().add(tablesGoBttn);
-		
 		JComboBox<String> tablesCB = new JComboBox<String>();
 		tablesCB.setBounds(120, 60, 188, 20);
 		getContentPane().add(tablesCB);
 		
-		JButton entriesGoBttn = new JButton("Go!");
-		entriesGoBttn.setBounds(318, 86, 89, 23);
-		getContentPane().add(entriesGoBttn);
+		JButton tablesGoBttn = new JButton("Go!");
+		tablesGoBttn.setBounds(318, 145, 89, 23);
+		getContentPane().add(tablesGoBttn);
+		
+		JLabel entriesLbl = new JLabel("Entries");
+		entriesLbl.setBounds(31, 178, 80, 14);
+		entriesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(entriesLbl);
 		
 		JComboBox<String> entriesCB = new JComboBox<String>();
 		entriesCB.setBounds(120, 87, 188, 20);
 		getContentPane().add(entriesCB);
 		
-		JLabel lblDatabase = new JLabel("Database");
-		lblDatabase.setBounds(31, 90, 80, 14);
-		lblDatabase.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(lblDatabase);
+		JButton entriesGoBttn = new JButton("Change");
+		entriesGoBttn.setBounds(318, 174, 89, 23);
+		getContentPane().add(entriesGoBttn);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		tableModel = new DefaultTableModel();
 		table = new JTable();
