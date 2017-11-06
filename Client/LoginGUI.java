@@ -1,42 +1,50 @@
 package Client;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import java.awt.Color;
+import javax.swing.JDialog;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class LoginGUI extends JFrame{
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-
-	public static void main(String[] args) 
+public class LoginGUI extends JDialog
+{
+	public static void main(String[] arg)
 	{
-		
-					LoginGUI window = new LoginGUI();
-					window.setVisible(true);
-				
+		LoginGUI gui = new LoginGUI();
+		gui.setVisible(true);
+		gui.dispose();
 	}
+	
+	private JTextField usernameField;
+	private JTextField passwordField;
+	private JTextField ipField;
+	
+	private String enteredUser;
+	private String enteredPass;
 
 	/**
 	 * Create the application.
 	 */
-	public LoginGUI() {
+	public LoginGUI()
+	{
 		setTitle("Login Page");
+		enteredUser = "";
+		enteredPass = "";
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-		new JFrame();
-		this.setBounds(100, 100, 323, 228);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private void initialize()
+	{
+		JDialog thisDialog = this;
+		setModalityType(ModalityType.APPLICATION_MODAL);
+		setBounds(100, 100, 323, 228);
+		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
 		JLabel lblUsername = new JLabel("Username: ");
@@ -47,28 +55,46 @@ public class LoginGUI extends JFrame{
 		lblPassword.setBounds(22, 96, 63, 14);
 		getContentPane().add(lblPassword);
 		
-		textField = new JTextField();
-		textField.setBounds(95, 62, 133, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		usernameField = new JTextField();
+		usernameField.setBounds(95, 62, 133, 20);
+		getContentPane().add(usernameField);
+		usernameField.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(95, 93, 133, 20);
-		getContentPane().add(textField_1);
-		textField_1.setColumns(10);
+		passwordField = new JTextField();
+		passwordField.setBounds(95, 93, 133, 20);
+		getContentPane().add(passwordField);
+		passwordField.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBounds(22, 142, 89, 23);
 		getContentPane().add(btnLogin);
+		btnLogin.addActionListener(new ActionListener() {
+			@Override
+			@SuppressWarnings(value = { "unused" })
+			public void actionPerformed(ActionEvent e)
+			{
+				// Make sure login info is valid
+				if (true)
+				{
+					enteredUser = usernameField.getText();
+					enteredPass = passwordField.getText();
+					thisDialog.setVisible(false);
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
+				}
+			}
+		});
 		
 		JLabel lblIp = new JLabel("IP: ");
 		lblIp.setBounds(59, 26, 29, 14);
 		getContentPane().add(lblIp);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(95, 23, 133, 20);
-		getContentPane().add(textField_2);
-		textField_2.setColumns(10);
+		ipField = new JTextField();
+		ipField.setBounds(95, 23, 133, 20);
+		getContentPane().add(ipField);
+		ipField.setColumns(10);
 		
 		JButton button = new JButton("?");
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
@@ -78,7 +104,5 @@ public class LoginGUI extends JFrame{
 		JButton cancelBttn = new JButton("Cancel");
 		cancelBttn.setBounds(139, 142, 89, 23);
 		getContentPane().add(cancelBttn);
-		
-		
 	}
 }

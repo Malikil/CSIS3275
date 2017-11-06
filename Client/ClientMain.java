@@ -4,8 +4,8 @@ public class ClientMain implements Client
 {
 	public static void main(String[] args)
 	{
-		new LoginGUI().setVisible(true);
-		
+		LoginGUI login = new LoginGUI();
+		while (true)break;
 		
 		ClientGUI gui = new ClientGUI(new ClientMain());
 		gui.setVisible(true);
