@@ -11,13 +11,13 @@ import java.io.Serializable;
 
 public class Table implements Serializable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 4225828966516582087L;
-	private MyLL<Fields> fieldsList = new MyLL<Fields>();
-	private static MyLL<Tuple> tupleList = new MyLL<Tuple>();
+	// Table organization
 	private String tableName;
+	
+	// Data storage
+	private MyLL<Fields> fieldsList = new MyLL<Fields>();
+	private MyLL<Tuple> tupleList = new MyLL<Tuple>();
 	private int numberoffields = 0;
 	private String databaseName = "Default";
 	private int assignPKID = 1;
@@ -26,7 +26,7 @@ public class Table implements Serializable
 	
 	/**
 	 * Create a table with "Default" as the Database
-	 * @param Table Name
+	 * @param name Table Name
 	 */
 	Table(String name)
 	{
@@ -37,7 +37,8 @@ public class Table implements Serializable
 	
 	/**
 	 * Create a Table with first parameter as Table Name and second parameter as the Database
-	 * @param Table Name, Database Name
+	 * @param name Table Name
+	 * @param dbName Database Name
 	 */
 	Table(String name, String dbName)
 	{
@@ -49,13 +50,16 @@ public class Table implements Serializable
 	}
 	
 	/**
+	 * <pre>
 	 * Create a Field with first parameter as Field Name and second parameter as the Field type.
-	 * Field type legend is as follows: 
-	 * 	0 for String 
+	 * Field type legend is as follows:
+	 * 	0 for String
 	 * 	1 for Int 
 	 * 	2 for Double 
-	 * 	3 for Date 
-	 * @param Field Name, Field Type
+	 * 	3 for Date
+	 * </pre>
+	 * @param s Field Name
+	 * @param n Field Type
 	 */
 	public void addField(String s, int n)
 	{
@@ -71,7 +75,7 @@ public class Table implements Serializable
 	
 	/**
 	 * Removes a Field with position "n" from the Table
-	 * @param Field position
+	 * @param n Field position
 	 */
 	public void removeField(int n)
 	{
@@ -85,7 +89,7 @@ public class Table implements Serializable
 	}
 	
 	/**
-	 * @return  Returns the number of Fields the Table
+	 * @return Returns the number of Fields the Table
 	 */
 	public int getFieldNum()
 	{
@@ -94,8 +98,8 @@ public class Table implements Serializable
 	
 	/**
 	 * Adds a Tuple to the Table
-	 * @param String array of the field data 
-	 * @return  Result
+	 * @param rawData String array of the field data 
+	 * @return Result
 	 */
 	public String addTuple(String[] rawData) 
 	{
@@ -130,20 +134,24 @@ public class Table implements Serializable
 				 tupleEntry.push(new FieldData(s));
 			 }
 			 tupleList.push(new Tuple(tupleEntry));
- 
+
+			 
+			 
 		 }
 		 Update();
+
 		 return result;
 	}
 	
 	/**
 	 * Removes a Tuple from the Table at the position passed
-	 * @param Position of the Tuple
+	 * @param n Position of the Tuple
 	 */
 	public void removeTuple(int n)
 	{
 		tupleList.remove(n);
 		 Update();
+
 	}
 	
 	/**
@@ -151,55 +159,41 @@ public class Table implements Serializable
 	 */
 	public void Update()
 	{
-		String str;
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) 
-		{
-		    folder.mkdir();        
+		if (!folder.exists()) {
+		    try{
+		        folder.mkdir();
+		    } 
+		    catch(SecurityException se){
+		    	//Do nothing
+		    }        
 		}
+		
 		 File file = new File(folder + "\\" + tableName + ".txt");
 		 FileOutputStream fileOut = null;
 		 ObjectOutputStream objWriter = null;
-		 
-		try 
-		{
+		try {
 			fileOut = new FileOutputStream(file);
-		} 
-		catch (IOException e) 
-		{
-			str = "Can not output file";
-			sendError(str, e);
+		} catch (FileNotFoundException e) {
+			return;
 		}
-		try 
-		{
+		try {
 			objWriter = new ObjectOutputStream(fileOut);
-		} 
-		catch (IOException e) 
-		{
-			str = "Can not create object writer";
-			sendError(str, e);
-			try 
-			{
+		} catch (IOException e) {
+			try {
 				fileOut.close();
-			} 
-			catch (IOException e1) 
-			{
-				str = "Could not close outputfile";
-				sendError(str, e1);
+			} catch (IOException e1) {
+
 			}
 			return;
 		}
-		try
-		{
+		 try {
 			objWriter.writeObject(this);
-			objWriter.close();
-		}
-		
-		catch (IOException e) 
-		{
-			str = "Could not run writeObject()";
-			sendError(str, e);
+			 objWriter.close();
+
+		} catch (IOException e) {
+			return;
 		}
 	}
 	
@@ -208,71 +202,56 @@ public class Table implements Serializable
 	 */
 	public void sortUpdate()
 	{
-		String str;
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) 
-		{
-			folder.mkdir();        
+		if (!folder.exists()) {
+		    try{
+		        folder.mkdir();
+		    } 
+		    catch(SecurityException se){
+		    	//Should never happen really...
+		    }        
 		}
-				
-		File file = new File(folder + "\\" + tableName + "sorted.txt");
-		FileOutputStream fileOut = null;
-		ObjectOutputStream objWriter = null;
-		try 
-		{
+		
+		 File file = new File(folder + "\\" + tableName + "sorted.txt");
+		 FileOutputStream fileOut = null;
+		 ObjectOutputStream objWriter = null;
+		try {
 			fileOut = new FileOutputStream(file);
-		} 
-		catch (FileNotFoundException e) 
-		{
-			str = "Can not create output file";
-			sendError(str, e);
+		} catch (FileNotFoundException e) {
+			return;
 		}
-		try 
-		{
+		try {
 			objWriter = new ObjectOutputStream(fileOut);
-		} 
-		catch (IOException e) 
-		{
-			str = "Can not create object writer";
-			sendError(str, e);
-			try 
-			{
+		} catch (IOException e) {
+			try {
 				fileOut.close();
-			} 
-			catch (IOException e1) 
-			{
-				str = "Could not close outputfile";
-				sendError(str, e1);
+			} catch (IOException e1) {
+
 			}
 			return;
 		}
-		try
-		{
-			
+		 try {
 			objWriter.writeObject(this);
-			objWriter.close();
-		}
-		catch (IOException e) 
-		{
+			 objWriter.close();
+
+		} catch (IOException e) {
 			return;
 		}
 	}
 
 	/**
 	 * Gets current Tuple, mainly used to print Tuple results for user.
-	 * @param Tuple position
-	 * @return Tuple in a String format
+	 * @param i Tuple position
+	 * @return Returns the Tuple in a String format
 	 */
-	public String getTuple(int i) 
-	{
+	public String getTuple(int i) {
 		
 		if(tupleList.element() == null)
 		{
 			return null;
 		}
-		else 
-		{
+		else {
 			Tuple toGet =  (Tuple) tupleList.get(i);
 			
 			return toGet.toString();
@@ -282,22 +261,26 @@ public class Table implements Serializable
 	
 	/**
 	 * Changes the contents of specified Tuple
-	 * @param Tuple position, new Tuple values
+	 * @param i Tuple position
+	 * @param newtuple New Tuple values
 	 * @return Result
 	 */
-	public String setTuple(int i, String[] newtuple) 
-	{
+	public String setTuple(int i, String[] newtuple) {
+		
 		if(tupleList.element() == null)
 		{
 			return "Record does not exist"; //Should technically never happen once GUI is made
 		}
-		else 
-		{
+		else {
+			
 			MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
-			for(String s: newtuple)
-			{
-				tupleEntry.push(new FieldData(s)); //Needs testing
-			}
+
+			 for(String s: newtuple)
+			 {
+				 tupleEntry.push(new FieldData(s)); //Needs testing
+			 }
+			
+			
 			((Tuple) tupleList.get(i)).settuple(tupleEntry);
 			Update();
 			return "Record changed";
@@ -306,11 +289,10 @@ public class Table implements Serializable
 	}
 	
 	/**
-	 * @return Displays all fields in the Table
+	 * @return Returns a '\t' separated string of all fields in the Table
 	 */
 	public String getFields() 
 	{
-		
 		String fieldNames = ""; 
 	
 		for(int i = fieldsList.size()-1; i >-1; i--) 		
@@ -322,7 +304,7 @@ public class Table implements Serializable
 	}
 	
 	/**
-	 * @return Number of entries in the Table
+	 * @return Returns the number of entries in the Table
 	 */
 	public int numberofentries()
 	{
@@ -330,7 +312,7 @@ public class Table implements Serializable
 	}
 	
 	/**
-	 * @return Displays all entries in the Table
+	 * Prints all entries in the Table to console
 	 */
 	public void printEntries() 
 	{
@@ -352,20 +334,20 @@ public class Table implements Serializable
 		String str;
 		try
 		{
-			file = new File("MockData.txt");
-			bR = new BufferedReader(new FileReader(file));
-			String entry = bR.readLine();
-			while(entry != null)
-			{
-				String[] enterThis = entry.split(",");
-				addTuple(enterThis);
-				entry = bR.readLine();
-			}
+		file = new File("MockData.txt");
+		bR = new BufferedReader(new FileReader(file));
+		String entry = bR.readLine();
+		while(entry != null)
+		{
+			String[] enterThis = entry.split(",");
+			addTuple(enterThis);
+			entry = bR.readLine();
+		}
 		}
 		catch(IOException e)
 		{
 			str = "Can not find file";
-			sendError(str, e);
+			sendError(str);
 		}
 		finally
 		{
@@ -378,45 +360,44 @@ public class Table implements Serializable
 				catch (IOException e) 
 				{
 					str = "Error on file close";
-					sendError(str, e);
+					sendError(str);
 				}
 			}
 		}
 	}
 	
-	
 	/**
 	 * Prints all Tuples with searched item in search field
-	 * @param Search item, Field to search
+	 * @param search Search item
+	 * @param searchfield Field to search
 	 */
-	public <T> void genBin(String search, int searchfield)
-	{
+	 public <T> void genBin(String search, int searchfield)
+	 {
 		
-		quickSorter(0,tupleList.size(),searchfield);
-		printEntries();
-		int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
-		if (stuff == -1)
-		{
-			 System.out.println("No records found");
-		}
-		else 
-		{
+			quickSorter(0,tupleList.size(),searchfield);
+			printEntries();
+			int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
+			if (stuff == -1)
+			{
+				System.out.println("No records found");
+			}
+			else {
+				Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
+				while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
+				{
+					System.out.println(foundrecord.toString());
+					foundrecord =  (Tuple) tupleList.get(stuff++);
+				}
+			}
 			
-			Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
-		 	while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
-		 	{
-		 		
-		 		System.out.println(foundrecord.toString());
-		 	 	foundrecord =  (Tuple) tupleList.get(stuff++);
-		 	}
-		}
-	}
+			
+	 }
 	
 	/**
 	 * @param Search item, first index of search, last index of search, search field
 	 * @return Tuple position with search item in search field
 	 */	 
-	public static <T extends Comparable<T>> int BinarySearch(T searchItem, int first, int last, int searchfield)
+	public <T extends Comparable<T>> int BinarySearch(T searchItem, int first, int last, int searchfield)
 	{
 		MyLL<T> array = (MyLL<T>) tupleList;
 		FieldData searchThis = new FieldData(searchItem);
@@ -456,7 +437,7 @@ public class Table implements Serializable
 	 * Sorts current Table Tuples by chosen sort field
 	 * @param Tuple starting position to sort, ending position to sort, field to sort by
 	 */	
-	public static <T extends Comparable<T>> void quickSorter(int left, int right, int sortfield )
+	public <T extends Comparable<T>> void quickSorter(int left, int right, int sortfield )
 	{
 		MyLL<T> list = (MyLL<T>) tupleList;
 	
@@ -506,7 +487,7 @@ public class Table implements Serializable
 	/**
 	 * Sends Client an error message
 	 */
-	public void sendError(String err, IOException e)
+	public void sendError(String err)
 	{
 		System.out.println(err);
 		
@@ -520,9 +501,11 @@ public class Table implements Serializable
 	 */	
 	public static <T extends Comparable<T>> void swap(int a, int b, MyLL<T> list)
 	{
-		 T temp = (T) list.get(a);
+		 T temp = list.get(a);
 		 list.set(a, list.get(b));
 		 list.set(b, temp);
 
-	}	
+	}
+
+	
 }
