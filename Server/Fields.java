@@ -3,7 +3,8 @@ package Server;
 import java.io.Serializable;
 import java.util.Date;
 
-public class Fields implements Serializable, Comparable<Fields>{
+public class Fields implements Serializable, Comparable<Fields>
+{
 	private String fieldName;
 	int fieldType;
 	String fieldTypeName;
@@ -17,12 +18,6 @@ public class Fields implements Serializable, Comparable<Fields>{
 		fieldnumber = n2;
 		setField(type);
 	}
-	
-
-
-
-
-
 	
 	public void setField(int n)
 	{
@@ -45,22 +40,15 @@ public class Fields implements Serializable, Comparable<Fields>{
 		}
 	}
 
-
-
-
-
-
-
-	public String getfieldName() {
+	public String getfieldName() 
+	{
 		
 		return fieldName;
 	}
 
 	@Override
-	public int compareTo(Fields o) {
+	public int compareTo(Fields o) 
+	{
 		return fieldName.compareTo(o.getfieldName());
 	}
-
-
-
 }
