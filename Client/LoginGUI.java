@@ -10,20 +10,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginGUI extends JDialog
-{
-	public static void main(String[] arg)
-	{
-		LoginGUI gui = new LoginGUI();
-		gui.setVisible(true);
-		gui.dispose();
-	}
-	
+{	
 	private JTextField usernameField;
 	private JTextField passwordField;
 	private JTextField ipField;
 	
 	private String enteredUser;
 	private String enteredPass;
+	private String enteredIP;
+	private boolean cancelled;
 
 	/**
 	 * Create the application.
@@ -33,6 +28,8 @@ public class LoginGUI extends JDialog
 		setTitle("Login Page");
 		enteredUser = "";
 		enteredPass = "";
+		enteredIP = "";
+		cancelled = false;
 		initialize();
 	}
 
@@ -44,7 +41,7 @@ public class LoginGUI extends JDialog
 		JDialog thisDialog = this;
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 323, 228);
-		setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
 		JLabel lblUsername = new JLabel("Username: ");
@@ -67,25 +64,28 @@ public class LoginGUI extends JDialog
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBounds(22, 142, 89, 23);
-		getContentPane().add(btnLogin);
 		btnLogin.addActionListener(new ActionListener() {
 			@Override
-			@SuppressWarnings(value = { "unused" })
 			public void actionPerformed(ActionEvent e)
 			{
 				// Make sure login info is valid
-				if (true)
-				{
-					enteredUser = usernameField.getText();
-					enteredPass = passwordField.getText();
-					thisDialog.setVisible(false);
-				}
+				if (!ipField.getText().equals(""))
+					if (!usernameField.getText().equals("") &&
+						!passwordField.getText().equals(""))
+					{
+						enteredUser = usernameField.getText();
+						enteredPass = passwordField.getText();
+						enteredIP = ipField.getText();
+						cancelled = false;
+						thisDialog.setVisible(false);
+					}
+					else
+						JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
 				else
-				{
-					JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
-				}
+					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to.");
 			}
 		});
+		getContentPane().add(btnLogin);
 		
 		JLabel lblIp = new JLabel("IP: ");
 		lblIp.setBounds(59, 26, 29, 14);
@@ -99,10 +99,42 @@ public class LoginGUI extends JDialog
 		JButton button = new JButton("?");
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
 		button.setBounds(257, 133, 40, 40);
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(thisDialog, "Help message goes here");
+			}
+		});
 		getContentPane().add(button);
 		
 		JButton cancelBttn = new JButton("Cancel");
 		cancelBttn.setBounds(139, 142, 89, 23);
+		cancelBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				cancelled = true;
+				thisDialog.dispose();
+			}
+		});
 		getContentPane().add(cancelBttn);
 	}
+	
+	@Override
+	public void setVisible(boolean b)
+	{
+		if (b)
+		{
+			if (!enteredUser.equals("") || !enteredPass.equals(""))
+				JOptionPane.showMessageDialog(this, "Username or Password was incorrect.");
+			cancelled = true;
+		}
+		super.setVisible(b);
+	}
+	
+	public String getEnteredIP() { return enteredIP; }
+	public String getEnteredUser() { return enteredUser; }
+	public String getEnteredPass() { return enteredPass; }
+	public boolean isCancelled() { return cancelled; }
 }
