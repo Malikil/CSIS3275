@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class Table implements Serializable{
+public class Table implements Serializable
+{
 	/**
 	 * 
 	 */
@@ -129,12 +130,9 @@ public class Table implements Serializable{
 				 tupleEntry.push(new FieldData(s));
 			 }
 			 tupleList.push(new Tuple(tupleEntry));
-
-			 
-			 
+ 
 		 }
 		 Update();
-
 		 return result;
 	}
 	
@@ -146,7 +144,6 @@ public class Table implements Serializable{
 	{
 		tupleList.remove(n);
 		 Update();
-
 	}
 	
 	/**
@@ -154,41 +151,55 @@ public class Table implements Serializable{
 	 */
 	public void Update()
 	{
+		String str;
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) {
-		    try{
-		        folder.mkdir();
-		    } 
-		    catch(SecurityException se){
-		    	//Do nothing
-		    }        
+		if (!folder.exists()) 
+		{
+		    folder.mkdir();        
 		}
-		
 		 File file = new File(folder + "\\" + tableName + ".txt");
 		 FileOutputStream fileOut = null;
 		 ObjectOutputStream objWriter = null;
-		try {
+		 
+		try 
+		{
 			fileOut = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			return;
+		} 
+		catch (IOException e) 
+		{
+			str = "Can not output file";
+			sendError(str, e);
 		}
-		try {
+		try 
+		{
 			objWriter = new ObjectOutputStream(fileOut);
-		} catch (IOException e) {
-			try {
+		} 
+		catch (IOException e) 
+		{
+			str = "Can not create object writer";
+			sendError(str, e);
+			try 
+			{
 				fileOut.close();
-			} catch (IOException e1) {
-
+			} 
+			catch (IOException e1) 
+			{
+				str = "Could not close outputfile";
+				sendError(str, e1);
 			}
 			return;
 		}
-		 try {
+		try
+		{
 			objWriter.writeObject(this);
-			 objWriter.close();
-
-		} catch (IOException e) {
-			return;
+			objWriter.close();
+		}
+		
+		catch (IOException e) 
+		{
+			str = "Could not run writeObject()";
+			sendError(str, e);
 		}
 	}
 	
@@ -197,40 +208,53 @@ public class Table implements Serializable{
 	 */
 	public void sortUpdate()
 	{
+		String str;
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) {
-		    try{
-		        folder.mkdir();
-		    } 
-		    catch(SecurityException se){
-		    	//Should never happen really...
-		    }        
+		if (!folder.exists()) 
+		{
+			folder.mkdir();        
 		}
-		
-		 File file = new File(folder + "\\" + tableName + "sorted.txt");
-		 FileOutputStream fileOut = null;
-		 ObjectOutputStream objWriter = null;
-		try {
+				
+		File file = new File(folder + "\\" + tableName + "sorted.txt");
+		FileOutputStream fileOut = null;
+		ObjectOutputStream objWriter = null;
+		try 
+		{
 			fileOut = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			return;
+		} 
+		catch (FileNotFoundException e) 
+		{
+			str = "Can not create output file";
+			sendError(str, e);
 		}
-		try {
+		try 
+		{
 			objWriter = new ObjectOutputStream(fileOut);
-		} catch (IOException e) {
-			try {
+		} 
+		catch (IOException e) 
+		{
+			str = "Can not create object writer";
+			sendError(str, e);
+			try 
+			{
 				fileOut.close();
-			} catch (IOException e1) {
-
+			} 
+			catch (IOException e1) 
+			{
+				str = "Could not close outputfile";
+				sendError(str, e1);
 			}
 			return;
 		}
-		 try {
+		try
+		{
+			
 			objWriter.writeObject(this);
-			 objWriter.close();
-
-		} catch (IOException e) {
+			objWriter.close();
+		}
+		catch (IOException e) 
+		{
 			return;
 		}
 	}
@@ -240,13 +264,15 @@ public class Table implements Serializable{
 	 * @param Tuple position
 	 * @return Tuple in a String format
 	 */
-	public String getTuple(int i) {
+	public String getTuple(int i) 
+	{
 		
 		if(tupleList.element() == null)
 		{
 			return null;
 		}
-		else {
+		else 
+		{
 			Tuple toGet =  (Tuple) tupleList.get(i);
 			
 			return toGet.toString();
@@ -259,22 +285,19 @@ public class Table implements Serializable{
 	 * @param Tuple position, new Tuple values
 	 * @return Result
 	 */
-	public String setTuple(int i, String[] newtuple) {
-		
+	public String setTuple(int i, String[] newtuple) 
+	{
 		if(tupleList.element() == null)
 		{
 			return "Record does not exist"; //Should technically never happen once GUI is made
 		}
-		else {
-			
+		else 
+		{
 			MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
-
-			 for(String s: newtuple)
-			 {
-				 tupleEntry.push(new FieldData(s)); //Needs testing
-			 }
-			
-			
+			for(String s: newtuple)
+			{
+				tupleEntry.push(new FieldData(s)); //Needs testing
+			}
 			((Tuple) tupleList.get(i)).settuple(tupleEntry);
 			Update();
 			return "Record changed";
@@ -287,6 +310,7 @@ public class Table implements Serializable{
 	 */
 	public String getFields() 
 	{
+		
 		String fieldNames = ""; 
 	
 		for(int i = fieldsList.size()-1; i >-1; i--) 		
@@ -328,20 +352,20 @@ public class Table implements Serializable{
 		String str;
 		try
 		{
-		file = new File("MockData.txt");
-		bR = new BufferedReader(new FileReader(file));
-		String entry = bR.readLine();
-		while(entry != null)
-		{
-			String[] enterThis = entry.split(",");
-			addTuple(enterThis);
-			entry = bR.readLine();
-		}
+			file = new File("MockData.txt");
+			bR = new BufferedReader(new FileReader(file));
+			String entry = bR.readLine();
+			while(entry != null)
+			{
+				String[] enterThis = entry.split(",");
+				addTuple(enterThis);
+				entry = bR.readLine();
+			}
 		}
 		catch(IOException e)
 		{
 			str = "Can not find file";
-			sendError(str);
+			sendError(str, e);
 		}
 		finally
 		{
@@ -354,37 +378,39 @@ public class Table implements Serializable{
 				catch (IOException e) 
 				{
 					str = "Error on file close";
-					sendError(str);
+					sendError(str, e);
 				}
 			}
 		}
 	}
 	
+	
 	/**
 	 * Prints all Tuples with searched item in search field
 	 * @param Search item, Field to search
 	 */
-	 public <T> void genBin(String search, int searchfield)
-	 {
+	public <T> void genBin(String search, int searchfield)
+	{
 		
-			quickSorter(0,tupleList.size(),searchfield);
-			printEntries();
-			int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
-			if (stuff == -1)
-			{
-				System.out.println("No records found");
-			}
-			else {
-				Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
-				while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
-				{
-					System.out.println(foundrecord.toString());
-					foundrecord =  (Tuple) tupleList.get(stuff++);
-				}
-			}
+		quickSorter(0,tupleList.size(),searchfield);
+		printEntries();
+		int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
+		if (stuff == -1)
+		{
+			 System.out.println("No records found");
+		}
+		else 
+		{
 			
-			
-	 }
+			Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
+		 	while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
+		 	{
+		 		
+		 		System.out.println(foundrecord.toString());
+		 	 	foundrecord =  (Tuple) tupleList.get(stuff++);
+		 	}
+		}
+	}
 	
 	/**
 	 * @param Search item, first index of search, last index of search, search field
@@ -480,7 +506,7 @@ public class Table implements Serializable{
 	/**
 	 * Sends Client an error message
 	 */
-	public void sendError(String err)
+	public void sendError(String err, IOException e)
 	{
 		System.out.println(err);
 		
@@ -498,7 +524,5 @@ public class Table implements Serializable{
 		 list.set(a, list.get(b));
 		 list.set(b, temp);
 
-	}
-
-	
+	}	
 }

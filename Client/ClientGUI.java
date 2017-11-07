@@ -64,7 +64,7 @@ public class ClientGUI extends JFrame{
 		tablesLbl.setBounds(10, 87, 80, 14);
 		getContentPane().add(tablesLbl);
 		
-		JButton tablesGoBttn = new JButton("Go!");
+		JButton tablesGoBttn = new JButton("Select");
 		tablesGoBttn.setBounds(297, 83, 89, 23);
 		getContentPane().add(tablesGoBttn);
 		
