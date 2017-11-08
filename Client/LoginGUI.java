@@ -2,6 +2,8 @@ package Client;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -12,7 +14,7 @@ import java.awt.event.ActionListener;
 public class LoginGUI extends JDialog
 {	
 	private JTextField usernameField;
-	private JTextField passwordField;
+	private JPasswordField passwordField;
 	private JTextField ipField;
 	
 	private String enteredUser;
@@ -57,9 +59,10 @@ public class LoginGUI extends JDialog
 		getContentPane().add(usernameField);
 		usernameField.setColumns(10);
 		
-		passwordField = new JTextField();
+		passwordField = new JPasswordField();
 		passwordField.setBounds(95, 93, 133, 20);
 		getContentPane().add(passwordField);
+		passwordField.setEchoChar('*');
 		passwordField.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
@@ -71,10 +74,10 @@ public class LoginGUI extends JDialog
 				// Make sure login info is valid
 				if (!ipField.getText().equals(""))
 					if (!usernameField.getText().equals("") &&
-						!passwordField.getText().equals(""))
+						!(new String(passwordField.getPassword()).equals("")))
 					{
 						enteredUser = usernameField.getText();
-						enteredPass = passwordField.getText();
+						enteredPass = new String(passwordField.getPassword());
 						enteredIP = ipField.getText();
 						cancelled = false;
 						thisDialog.setVisible(false);
@@ -103,7 +106,10 @@ public class LoginGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				JOptionPane.showMessageDialog(thisDialog, "Help message goes here");
+				JOptionPane.showMessageDialog(thisDialog,
+					"IP Address Field: \nEnter Server IP Address\n" + 
+					"UserName TextField: \nEnter Username with corresponding Password \n" +
+					"Press 'Login' to continue");
 			}
 		});
 		getContentPane().add(button);
