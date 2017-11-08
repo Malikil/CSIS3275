@@ -1,6 +1,5 @@
 package Server;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -12,14 +11,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
-import javax.swing.JScrollPane;
 
-public class ServerGUI extends JFrame 
+public class ServerGUI extends JFrame
 {
 	private JTextField txtUserList;
 	private JTextField textField;
 	private JTable table;
 	private DefaultTableModel tableModel;
+  private Server parent;
 	
 	public static void main(String[] args) 
 	{
@@ -31,7 +30,8 @@ public class ServerGUI extends JFrame
 				{
 					ServerGUI window = new ServerGUI();
 					window.setVisible(true);
-				} catch (Exception e) 
+				}
+        catch (Exception e) 
 				{
 					e.printStackTrace();
 				}
@@ -41,10 +41,12 @@ public class ServerGUI extends JFrame
 
 	/**
 	 * Create the application.
+	 * @param server The server to be notified of events
 	 */
-	public ServerGUI() 
+	public ServerGUI(Server server)
 	{
 		initialize();
+		parent = server;
 	}
 
 	/**
@@ -132,27 +134,6 @@ public class ServerGUI extends JFrame
 		entriesGoBttn.setBounds(318, 174, 89, 23);
 		getContentPane().add(entriesGoBttn);
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		tableModel = new DefaultTableModel();
 		table = new JTable();
 		table.setBounds(81, 228, 326, 124);
@@ -173,7 +154,6 @@ public class ServerGUI extends JFrame
 		txtUserList.setBackground(Color.LIGHT_GRAY);
 		txtUserList.setEditable(false);
 		txtUserList.setColumns(10);
-		
 		
 		JTextArea textArea_1 = new JTextArea();
 		textArea_1.setBounds(465, 42, 129, 342);
