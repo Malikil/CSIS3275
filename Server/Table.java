@@ -161,39 +161,47 @@ public class Table implements Serializable
 	{
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) {
-		    try{
-		        folder.mkdir();
-		    } 
-		    catch(SecurityException se){
-		    	//Do nothing
-		    }        
+		if (!folder.exists())
+		{
+	        folder.mkdir();
 		}
 		
-		 File file = new File(folder + "\\" + tableName + ".txt");
-		 FileOutputStream fileOut = null;
-		 ObjectOutputStream objWriter = null;
-		try {
+		File file = new File(folder + "\\" + tableName + ".txt");
+		FileOutputStream fileOut = null;
+		ObjectOutputStream objWriter = null;
+		try
+		{
 			fileOut = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			return;
 		}
-		try {
+		catch (IOException e)
+		{
+			sendError("Cannot output file.", e);
+		}
+		try
+		{
 			objWriter = new ObjectOutputStream(fileOut);
-		} catch (IOException e) {
-			try {
+		}
+		catch (IOException e)
+		{
+			sendError("Cannot create Object Writer", e);
+			try
+			{
 				fileOut.close();
-			} catch (IOException e1) {
-
+			}
+			catch (IOException e1)
+			{
+				sendError("Could not close output file", e1);
 			}
 			return;
 		}
-		 try {
+		try
+		{
 			objWriter.writeObject(this);
-			 objWriter.close();
-
-		} catch (IOException e) {
-			return;
+			objWriter.close();
+		}
+		catch (IOException e)
+		{
+			sendError("Could not run write object", e);
 		}
 	}
 	
@@ -204,38 +212,47 @@ public class Table implements Serializable
 	{
 		File folder = new File(databaseName);
 
-		if (!folder.exists()) {
-		    try{
-		        folder.mkdir();
-		    } 
-		    catch(SecurityException se){
-		    	//Should never happen really...
-		    }        
+		if (!folder.exists())
+		{
+	        folder.mkdir();        
 		}
 		
 		 File file = new File(folder + "\\" + tableName + "sorted.txt");
 		 FileOutputStream fileOut = null;
 		 ObjectOutputStream objWriter = null;
-		try {
+		try
+		{
 			fileOut = new FileOutputStream(file);
-		} catch (FileNotFoundException e) {
-			return;
 		}
-		try {
+		catch (FileNotFoundException e)
+		{
+			sendError("Cannot create output file.", e);
+		}
+		try
+		{
 			objWriter = new ObjectOutputStream(fileOut);
-		} catch (IOException e) {
-			try {
+		}
+		catch (IOException e)
+		{
+			sendError("Cannot create object writer", e);
+			try
+			{
 				fileOut.close();
-			} catch (IOException e1) {
-
+			}
+			catch (IOException e1)
+			{
+				sendError("Cannot close output file", e1);
 			}
 			return;
 		}
-		 try {
+		try
+		{
 			objWriter.writeObject(this);
-			 objWriter.close();
-
-		} catch (IOException e) {
+			objWriter.close();
+		}
+		catch (IOException e)
+		{
+			sendError("Cannot write object", e);
 			return;
 		}
 	}
@@ -347,7 +364,7 @@ public class Table implements Serializable
 		catch(IOException e)
 		{
 			str = "Can not find file";
-			sendError(str);
+			sendError(str, e);
 		}
 		finally
 		{
@@ -360,7 +377,7 @@ public class Table implements Serializable
 				catch (IOException e) 
 				{
 					str = "Error on file close";
-					sendError(str);
+					sendError(str, e);
 				}
 			}
 		}
@@ -487,7 +504,7 @@ public class Table implements Serializable
 	/**
 	 * Sends Client an error message
 	 */
-	public void sendError(String err)
+	public void sendError(String err, Exception e)
 	{
 		System.out.println(err);
 		
