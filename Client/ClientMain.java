@@ -4,9 +4,6 @@ public class ClientMain implements Client
 {
 	public static void main(String[] args)
 	{
-	private static ClientGUI gui = null;
-	private Table currentTable = null;
-	
 		LoginGUI login = new LoginGUI();
 		while (true)
 		{
@@ -41,22 +38,5 @@ public class ClientMain implements Client
 	public void doSomethingElse()
 	{
 		
-	}
-	
-	@Override
-	public void search(String search, int field)
-	{
-		currentTable.genBin(search, field);
-	}
-
-	@Override
-	public void sort(int sortfield)
-	{
-		currentTable.quickSorter(0, currentTable.numberofentries(), sortfield);
-	}
-	
-	public void displayMessage(String message)
-	{
-		gui.errorTextArea.append("\n" + message);
 	}
 }
