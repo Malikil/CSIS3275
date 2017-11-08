@@ -1,0 +1,6 @@
+package Client;
+
+public enum Command {
+	MESSAGE, ADD_ENTRY, DELETE_ENTRY, EDIT_ENTRY, ADD_TABLE, DELETE_TABLE, ADD_COLUMN, 
+	DELETE_COLUMN 
+}
