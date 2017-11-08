@@ -3,13 +3,11 @@ package Server;
 import java.io.Serializable;
 import java.util.Date;
 
-public class FieldData implements Serializable, Comparable{
-	
+public class FieldData implements Serializable, Comparable
+{
 	private Comparable data;
-	
-	
+
 	int fieldType;
-	
 
 	public <T extends Comparable<T>> FieldData(T rawData)
 	{
@@ -29,7 +27,8 @@ public class FieldData implements Serializable, Comparable{
 		data = editedData;
 	}
 	
-	public int compareTo(FieldData b) {
+	public int compareTo(FieldData b) 
+	{
 		if(b==null)
 		{
 			return 1;
@@ -38,7 +37,8 @@ public class FieldData implements Serializable, Comparable{
 		return (data).compareTo(b.data);
 	}
 
-	public int compareTo(Tuple tuple) {
+	public int compareTo(Tuple tuple) 
+	{
 		FieldData b = tuple.getFData();
 		if((FieldData)b==null)
 		{
@@ -49,7 +49,8 @@ public class FieldData implements Serializable, Comparable{
 	}
 
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(Object o) 
+	{
 		if((FieldData)o==null)
 		{
 			return 1;
@@ -60,5 +61,4 @@ public class FieldData implements Serializable, Comparable{
 			return (data).compareTo(b.data);
 		}
 	}
-
 }

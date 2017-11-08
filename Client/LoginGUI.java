@@ -1,42 +1,47 @@
 package Client;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import java.awt.Color;
+import javax.swing.JDialog;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class LoginGUI extends JFrame{
-	private JTextField textField;
-	private JTextField textField_1;
-	private JTextField textField_2;
-
-	public static void main(String[] args) 
-	{
-		
-					LoginGUI window = new LoginGUI();
-					window.setVisible(true);
-				
-	}
+public class LoginGUI extends JDialog
+{	
+	private JTextField usernameField;
+	private JTextField passwordField;
+	private JTextField ipField;
+	
+	private String enteredUser;
+	private String enteredPass;
+	private String enteredIP;
+	private boolean cancelled;
 
 	/**
 	 * Create the application.
 	 */
-	public LoginGUI() {
+	public LoginGUI()
+	{
 		setTitle("Login Page");
+		enteredUser = "";
+		enteredPass = "";
+		enteredIP = "";
+		cancelled = false;
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
-		new JFrame();
-		this.setBounds(100, 100, 323, 228);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	private void initialize()
+	{
+		JDialog thisDialog = this;
+		setModalityType(ModalityType.APPLICATION_MODAL);
+		setBounds(100, 100, 323, 228);
+		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
 		JLabel lblUsername = new JLabel("Username: ");
@@ -47,38 +52,89 @@ public class LoginGUI extends JFrame{
 		lblPassword.setBounds(22, 96, 63, 14);
 		getContentPane().add(lblPassword);
 		
-		textField = new JTextField();
-		textField.setBounds(95, 62, 133, 20);
-		getContentPane().add(textField);
-		textField.setColumns(10);
+		usernameField = new JTextField();
+		usernameField.setBounds(95, 62, 133, 20);
+		getContentPane().add(usernameField);
+		usernameField.setColumns(10);
 		
-		textField_1 = new JTextField();
-		textField_1.setBounds(95, 93, 133, 20);
-		getContentPane().add(textField_1);
-		textField_1.setColumns(10);
+		passwordField = new JTextField();
+		passwordField.setBounds(95, 93, 133, 20);
+		getContentPane().add(passwordField);
+		passwordField.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBounds(22, 142, 89, 23);
+		btnLogin.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// Make sure login info is valid
+				if (!ipField.getText().equals(""))
+					if (!usernameField.getText().equals("") &&
+						!passwordField.getText().equals(""))
+					{
+						enteredUser = usernameField.getText();
+						enteredPass = passwordField.getText();
+						enteredIP = ipField.getText();
+						cancelled = false;
+						thisDialog.setVisible(false);
+					}
+					else
+						JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
+				else
+					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to.");
+			}
+		});
 		getContentPane().add(btnLogin);
 		
 		JLabel lblIp = new JLabel("IP: ");
 		lblIp.setBounds(59, 26, 29, 14);
 		getContentPane().add(lblIp);
 		
-		textField_2 = new JTextField();
-		textField_2.setBounds(95, 23, 133, 20);
-		getContentPane().add(textField_2);
-		textField_2.setColumns(10);
+		ipField = new JTextField();
+		ipField.setBounds(95, 23, 133, 20);
+		getContentPane().add(ipField);
+		ipField.setColumns(10);
 		
 		JButton button = new JButton("?");
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
 		button.setBounds(257, 133, 40, 40);
+		button.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(thisDialog, "Help message goes here");
+			}
+		});
 		getContentPane().add(button);
 		
 		JButton cancelBttn = new JButton("Cancel");
 		cancelBttn.setBounds(139, 142, 89, 23);
+		cancelBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				cancelled = true;
+				thisDialog.dispose();
+			}
+		});
 		getContentPane().add(cancelBttn);
-		
-		
 	}
+	
+	@Override
+	public void setVisible(boolean b)
+	{
+		if (b)
+		{
+			if (!enteredUser.equals("") || !enteredPass.equals(""))
+				JOptionPane.showMessageDialog(this, "Username or Password was incorrect.");
+			cancelled = true;
+		}
+		super.setVisible(b);
+	}
+	
+	public String getEnteredIP() { return enteredIP; }
+	public String getEnteredUser() { return enteredUser; }
+	public String getEnteredPass() { return enteredPass; }
+	public boolean isCancelled() { return cancelled; }
 }
