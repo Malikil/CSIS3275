@@ -22,7 +22,6 @@ public class Table implements Serializable
 	private String databaseName = "Default";
 	private int assignPKID = 1;
 	private MyLL<Integer> unusedPKID = new MyLL<Integer>();
-
 	
 	/**
 	 * Create a table with "Default" as the Database
@@ -46,7 +45,6 @@ public class Table implements Serializable
 		databaseName = dbName;
 		addField("Primary Key ID", 1);
 		Update();
-		
 	}
 	
 	/**
@@ -70,7 +68,6 @@ public class Table implements Serializable
 		}
 		numberoffields++;
 		Update();
-		
 	}
 	
 	/**
@@ -114,32 +111,24 @@ public class Table implements Serializable
 		 }
 		 else 
 		 {
-			 MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
-			 
+			 MyLL<FieldData> tupleEntry = new MyLL<FieldData>(); 
 			 if(unusedPKID.size() == 0)
 			 {
 				 tupleEntry.push(new FieldData(assignPKID));
 				 assignPKID++;
 			 }
-			 
 			 else
 			 {
 				 int PK = (int) unusedPKID.pop();
 				 tupleEntry.push(new FieldData(PK));
 			 }
-			 
-			 
 			 for(String s: rawData)
 			 {
 				 tupleEntry.push(new FieldData(s));
 			 }
 			 tupleList.push(new Tuple(tupleEntry));
-
-			 
-			 
 		 }
 		 Update();
-
 		 return result;
 	}
 	
@@ -151,7 +140,6 @@ public class Table implements Serializable
 	{
 		tupleList.remove(n);
 		 Update();
-
 	}
 	
 	/**
@@ -160,12 +148,10 @@ public class Table implements Serializable
 	public void Update()
 	{
 		File folder = new File(databaseName);
-
 		if (!folder.exists())
 		{
 	        folder.mkdir();
 		}
-		
 		File file = new File(folder + "\\" + tableName + ".txt");
 		FileOutputStream fileOut = null;
 		ObjectOutputStream objWriter = null;
@@ -262,18 +248,17 @@ public class Table implements Serializable
 	 * @param i Tuple position
 	 * @return Returns the Tuple in a String format
 	 */
-	public String getTuple(int i) {
-		
+	public String getTuple(int i) 
+	{
 		if(tupleList.element() == null)
 		{
 			return null;
 		}
-		else {
+		else 
+		{
 			Tuple toGet =  (Tuple) tupleList.get(i);
-			
 			return toGet.toString();
 		}
-		
 	}
 	
 	/**
@@ -282,27 +267,25 @@ public class Table implements Serializable
 	 * @param newtuple New Tuple values
 	 * @return Result
 	 */
-	public String setTuple(int i, String[] newtuple) {
-		
+	public String setTuple(int i, String[] newtuple) 
+	{
 		if(tupleList.element() == null)
 		{
 			return "Record does not exist"; //Should technically never happen once GUI is made
 		}
-		else {
-			
+		else 
+		{
 			MyLL<FieldData> tupleEntry = new MyLL<FieldData>();
-
-			 for(String s: newtuple)
-			 {
-				 tupleEntry.push(new FieldData(s)); //Needs testing
-			 }
+			for(String s: newtuple)
+			{
+				tupleEntry.push(new FieldData(s)); //Needs testing
+			}
 			
 			
 			((Tuple) tupleList.get(i)).settuple(tupleEntry);
 			Update();
 			return "Record changed";
 		}
-		
 	}
 	
 	/**
@@ -311,12 +294,10 @@ public class Table implements Serializable
 	public String getFields() 
 	{
 		String fieldNames = ""; 
-	
 		for(int i = fieldsList.size()-1; i >-1; i--) 		
 		{
 			fieldNames += ((Fields) fieldsList.get(i)).getfieldName() + "\t";
 		}
-		
 		return fieldNames;
 	}
 	
@@ -338,7 +319,6 @@ public class Table implements Serializable
 		{
 			System.out.println(getTuple(i).toString());
 		}
-		
 	}
 	
 	/**
@@ -390,24 +370,22 @@ public class Table implements Serializable
 	 */
 	 public <T> void genBin(String search, int searchfield)
 	 {
-		
-			quickSorter(0,tupleList.size(),searchfield);
-			printEntries();
-			int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
-			if (stuff == -1)
+		quickSorter(0,tupleList.size(),searchfield);
+		printEntries();
+		int stuff = BinarySearch(search, 0, tupleList.size()-1, searchfield);
+		if (stuff == -1)
+		{
+			System.out.println("No records found");
+		}
+		else 
+		{
+			Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
+			while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
 			{
-				System.out.println("No records found");
+				System.out.println(foundrecord.toString());
+				foundrecord =  (Tuple) tupleList.get(stuff++);
 			}
-			else {
-				Tuple foundrecord =  (Tuple) tupleList.get(stuff++);
-				while(search.compareTo(foundrecord.getFData(searchfield).toString()) == 0)
-				{
-					System.out.println(foundrecord.toString());
-					foundrecord =  (Tuple) tupleList.get(stuff++);
-				}
-			}
-			
-			
+		}
 	 }
 	
 	/**
@@ -446,7 +424,6 @@ public class Table implements Serializable
 		{
 			pos = BinarySearch(searchItem,first,mid-1,searchfield);
 		}
-
 			return pos;
 	}
 	
@@ -457,12 +434,10 @@ public class Table implements Serializable
 	public <T extends Comparable<T>> void quickSorter(int left, int right, int sortfield )
 	{
 		MyLL<T> list = (MyLL<T>) tupleList;
-	
 		if (list == null || left >= right-1 || left == right ) 
 		{
 			return; 
 		}
-
 	     int front = left - 1;
 	     int last = right - 1;
 	     T pivot = (T) list.get(last);
@@ -493,12 +468,8 @@ public class Table implements Serializable
 	        	 needsWork = false;
 	         }
 	     }
-	     
 	     quickSorter(left, front,sortfield);
 	     quickSorter(front + 1, right,sortfield);
-	    
-	     
-	     
 	}
 	
 	/**
@@ -507,11 +478,8 @@ public class Table implements Serializable
 	public void sendError(String err, Exception e)
 	{
 		System.out.println(err);
-		
 		//insert 'send message to client' command
 	}
-	
-	
 	/**
 	 * Swaps two elements in Linked List
 	 * @param First element, Second element, Linked List
@@ -523,6 +491,4 @@ public class Table implements Serializable
 		 list.set(b, temp);
 
 	}
-
-	
 }
