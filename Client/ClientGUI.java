@@ -28,6 +28,7 @@ public class ClientGUI extends JFrame{
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JTextField searchField;
+	JTextArea errorTextArea;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -167,7 +168,7 @@ public class ClientGUI extends JFrame{
 		searchButton.setBounds(297, 233, 89, 23);
 		getContentPane().add(searchButton);
 		
-		JTextArea errorTextArea = new JTextArea();
+		errorTextArea = new JTextArea();
 		errorTextArea.setEditable(false);
 		errorTextArea.setBounds(434, 53, 89, 396);
 		getContentPane().add(errorTextArea);
