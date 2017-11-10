@@ -46,33 +46,44 @@ public class LoginGUI extends JDialog
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
+		JLabel lblIp = new JLabel("IP: ");
+		lblIp.setBounds(70, 26, 30, 14);
+		getContentPane().add(lblIp);
+		
 		JLabel lblUsername = new JLabel("Username: ");
-		lblUsername.setBounds(22, 65, 63, 14);
+		lblUsername.setBounds(22, 65, 75, 14);
 		getContentPane().add(lblUsername);
 		
 		JLabel lblPassword = new JLabel("Password: ");
-		lblPassword.setBounds(22, 96, 63, 14);
+		lblPassword.setBounds(22, 96, 75, 14);
 		getContentPane().add(lblPassword);
 		
+		ipField = new JTextField();
+		ipField.setBounds(100, 23, 133, 20);
+		getContentPane().add(ipField);
+		ipField.setColumns(10);
+		
 		usernameField = new JTextField();
-		usernameField.setBounds(95, 62, 133, 20);
+		usernameField.setBounds(100, 62, 133, 20);
 		getContentPane().add(usernameField);
 		usernameField.setColumns(10);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(95, 93, 133, 20);
+		passwordField.setBounds(100, 93, 133, 20);
 		getContentPane().add(passwordField);
 		passwordField.setEchoChar('*');
 		passwordField.setColumns(10);
 		
 		JButton btnLogin = new JButton("Login");
 		btnLogin.setBounds(22, 142, 89, 23);
-		btnLogin.addActionListener(new ActionListener() {
+		btnLogin.addActionListener(new ActionListener() 
+		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				String ip = ipField.getText();
 				// Make sure login info is valid
-				if (!ipField.getText().equals(""))
+				if (!ip.equals(""))
 					if (!usernameField.getText().equals("") &&
 						!(new String(passwordField.getPassword()).equals("")))
 					{
@@ -83,26 +94,25 @@ public class LoginGUI extends JDialog
 						thisDialog.setVisible(false);
 					}
 					else
+					{
 						JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
+						usernameField.requestFocusInWindow();
+						passwordField.requestFocusInWindow();
+					}
 				else
-					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to.");
+				{
+					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to: \nxxx.xxx.x.xxx");
+					ipField.requestFocusInWindow();
+				}
 			}
 		});
 		getContentPane().add(btnLogin);
 		
-		JLabel lblIp = new JLabel("IP: ");
-		lblIp.setBounds(59, 26, 29, 14);
-		getContentPane().add(lblIp);
-		
-		ipField = new JTextField();
-		ipField.setBounds(95, 23, 133, 20);
-		getContentPane().add(ipField);
-		ipField.setColumns(10);
-		
 		JButton button = new JButton("?");
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
 		button.setBounds(257, 133, 40, 40);
-		button.addActionListener(new ActionListener() {
+		button.addActionListener(new ActionListener() 
+		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -116,7 +126,8 @@ public class LoginGUI extends JDialog
 		
 		JButton cancelBttn = new JButton("Cancel");
 		cancelBttn.setBounds(139, 142, 89, 23);
-		cancelBttn.addActionListener(new ActionListener() {
+		cancelBttn.addActionListener(new ActionListener() 
+		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
@@ -139,8 +150,8 @@ public class LoginGUI extends JDialog
 		super.setVisible(b);
 	}
 	
-	public String getEnteredIP() { return enteredIP; }
-	public String getEnteredUser() { return enteredUser; }
-	public String getEnteredPass() { return enteredPass; }
-	public boolean isCancelled() { return cancelled; }
+	public String getEnteredIP() 	{ return enteredIP; }
+	public String getEnteredUser() 	{return enteredUser;}
+	public String getEnteredPass() 	{return enteredPass;}
+	public boolean isCancelled() 	{ return cancelled; }
 }

@@ -23,16 +23,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 
-public class ClientGUI extends JFrame{
+public class ClientGUI extends JFrame
+{
 	private Client parent;
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JTextField searchField;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void main(String[] args) 
+	{
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
 					ClientGUI window = new ClientGUI(new ClientMain());
 					window.setVisible(true);
 				} catch (Exception e) {
@@ -45,7 +50,8 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI(Client owner) {
+	public ClientGUI(Client owner) 
+	{
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
@@ -54,7 +60,8 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() 
+	{
 		JFrame thisFrame = this;
 		new JFrame();
 		setBounds(100, 100, 638, 553);
@@ -96,7 +103,8 @@ public class ClientGUI extends JFrame{
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
 		button.setBounds(582, 475, 40, 40);
 		getContentPane().add(button);
-		button.addActionListener(new ActionListener() {
+		button.addActionListener(new ActionListener() 
+		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
