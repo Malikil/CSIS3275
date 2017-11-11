@@ -1,3 +1,5 @@
+package Server;
+
 import java.io.Serializable;
 
 public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>, Serializable
