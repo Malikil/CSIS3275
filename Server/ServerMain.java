@@ -1,5 +1,8 @@
 package Server;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -21,6 +24,7 @@ public class ServerMain implements Server
 			while (true)
 			{
 				server.addClient(new ClientHandler(socket.accept(), server));
+				
 			}
 		}
 		catch (IOException ex)
@@ -56,15 +60,48 @@ public class ServerMain implements Server
 	}
 
 	@Override
-	public void messageReceived(String message) {
-		// TODO Auto-generated method stub
-		
+	public void messageReceived(String message)
+	{
+		for (ClientHandler client : clientList)
+			client.sendMessage(message);
 	}
 
 	@Override
-	public String[] getUserDatabases(String user) {
-		// TODO Auto-generated method stub
-		return null;
+	public String[] getUserDatabases(String user)
+	{
+		BufferedReader usersFile = null;
+		String[] databases = null;
+		try
+		{
+			usersFile = new BufferedReader(new FileReader(new File("Users.txt")));
+			String nextLine;
+			String[] userInfo = null;
+			while ((nextLine = usersFile.readLine()) != null)
+			{
+				userInfo = nextLine.split(",");
+				if (userInfo[0].equals(user))
+					break;
+			}
+			
+			if (nextLine != null)
+			{
+				databases = new String[userInfo.length - 2]; 
+				for (int i = 2; i < userInfo.length; i++)
+					databases[i - 2] = userInfo[i];
+			}
+		}
+		catch (IOException ex)
+		{
+			databases = new String[] { "Could not read databases file" };
+		}
+		finally
+		{
+			if (usersFile != null)
+				try { usersFile.close(); }
+				catch (IOException ex) { /* Fail Silently */ }
+		}
+		
+		return databases;
 	}
 
 	@Override

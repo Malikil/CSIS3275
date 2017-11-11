@@ -75,7 +75,7 @@ public class ClientHandler implements Runnable
 								// Send success to client
 								objOut.writeObject(Command.CONNECTION_SUCCESS);
 								// Send available databases to client
-								objOut.writeObject(parent.getUserDatabases(user));
+								objOut.writeObject(parent.getUserDatabases(userInfo[0]));
 								loggedIn = true;
 								break;
 							}
