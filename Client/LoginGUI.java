@@ -19,6 +19,7 @@ public class LoginGUI extends JDialog
 	private String enteredPass;
 	private String enteredIP;
 	private boolean cancelled;
+	private Command message = null;
 
 	/**
 	 * Create the application.
@@ -70,6 +71,34 @@ public class LoginGUI extends JDialog
 			{
 				// Make sure login info is valid
 				if (!ipField.getText().equals(""))
+				{
+					String[] numbers = ipField.getText().split(".");
+					if (numbers.length == 4)
+					{
+						try
+						{
+							for (String n : numbers)
+							{
+								int c = Integer.valueOf(n);
+								if (c < 0 || c > 255)
+								{
+									JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+									return;
+								}
+							}
+						}
+						catch (NumberFormatException ex)
+						{
+							JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+							return;
+						}
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+						return;
+					}
+					
 					if (!usernameField.getText().equals("") &&
 						!passwordField.getText().equals(""))
 					{
@@ -81,6 +110,7 @@ public class LoginGUI extends JDialog
 					}
 					else
 						JOptionPane.showMessageDialog(thisDialog, "Username or Password are invalid");
+				}
 				else
 					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to.");
 			}
@@ -126,12 +156,25 @@ public class LoginGUI extends JDialog
 	{
 		if (b)
 		{
-			if (!enteredUser.equals("") || !enteredPass.equals(""))
-				JOptionPane.showMessageDialog(this, "Username or Password was incorrect.");
+			switch (message)
+			{
+			case CONNECTION_SUCCESS: return;
+			case INCORRECT_USER:
+				JOptionPane.showMessageDialog(this, "Username could not be found");
+				usernameField.requestFocusInWindow();
+				break;
+			case INCORRECT_PASSWORD:
+				JOptionPane.showMessageDialog(this, "Password is incorrect");
+				passwordField.requestFocusInWindow();
+				break;
+			default: break;
+			}
 			cancelled = true;
 		}
 		super.setVisible(b);
 	}
+	
+	public void setMessage(Command message) { this.message = message; }
 	
 	public String getEnteredIP() { return enteredIP; }
 	public String getEnteredUser() { return enteredUser; }
