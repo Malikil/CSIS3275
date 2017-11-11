@@ -59,28 +59,109 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 					}
 				}
 			}
-			
-			// Balance the tree here
-			while (current.getParent() != null)
-			{
-				current = current.getParent();
-				current.updateLayers();
-				if (current.getOffset() < -1)
-				{
-					if (current.getRight().getOffset() > 0)
-						current.getRight().rotateRight();
-					current.rotateLeft();
-				}
-				else if (current.getOffset() > 1)
-				{
-					if (current.getLeft().getOffset() < 0)
-						current.getLeft().rotateLeft();
-					current.rotateRight();
-				}
-			}
-			base = current;
+			rebalance(current);
 		}
 		count++;
+	}
+	
+	/**
+	 * Deletes the first node found which matches the passed value
+	 * @param value The value to delete
+	 * @return Returns true if the value was found, false if the value wasn't on the tree
+	 */
+	public boolean delete(T value)
+	{
+		AVLNode<T> current = base;
+		while (current != null)
+		{
+			if (current.compareTo(value) < 0)
+				current = current.getRight();
+			else if (current.compareTo(value) > 0)
+				current = current.getLeft();
+			else
+			{
+				// delete current value
+				if (current.getLayers() == 1)
+				{
+					if (current.getParent() == null)
+					{
+						base = null;
+						count = 0;
+						return true;
+					}
+					else if (current.getParent().getLeft() == current)
+						current.getParent().setLeft(null);
+					else
+						current.getParent().setRight(null);
+					rebalance(current.getParent());
+				}
+				else
+				{
+					AVLNode<T> deleter = current;
+					
+					if (current.getRight() != null)
+					{
+						current = current.getRight();
+						while (current.getLeft() != null)
+							current = current.getLeft();
+					}
+					else
+						current = current.getLeft();
+					// replace deleter with current
+					if (current.getParent().getLeft() == current)
+						current.getParent().setLeft(null);
+					else
+						current.getParent().setRight(null);
+					
+					AVLNode<T> rebalancer = current.getParent();
+					current.setLeft(deleter.getLeft());
+					current.setRight(deleter.getRight());
+					current.setParent(deleter.getParent());
+					// set parent child
+					if (deleter.getLeft() != null)
+						deleter.getLeft().setParent(current);
+					if (deleter.getRight() != null)
+						deleter.getRight().setParent(current);
+					if (deleter.getParent() != null)
+						if (deleter.getParent().getRight() == deleter)
+							deleter.getParent().setRight(current);
+						else
+							deleter.getParent().setLeft(current);
+					rebalance(rebalancer);
+				}
+				
+				count--;
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void rebalance(AVLNode<T> current)
+	{
+		if (current.getLeft() != null)
+			current = current.getLeft();
+		else if (current.getRight() != null)
+			current = current.getRight();
+		
+		while (current.getParent() != null)
+		{
+			current = current.getParent();
+			current.updateLayers();
+			if (current.getOffset() < -1)
+			{
+				if (current.getRight().getOffset() > 0)
+					current.getRight().rotateRight();
+				current.rotateLeft();
+			}
+			else if (current.getOffset() > 1)
+			{
+				if (current.getLeft().getOffset() < 0)
+					current.getLeft().rotateLeft();
+				current.rotateRight();
+			}
+		}
+		base = current;
 	}
 	
 	/**
@@ -108,6 +189,21 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 						current = current.getRight();
 			return true;
 		}
+	}
+	
+	private AVLNode<T> find(T value)
+	{
+		AVLNode<T> current = base;
+		while (current != null)
+		{
+			if (current.compareTo(value) > 0)
+				current = current.getRight();
+			else if (current.compareTo(value) < 0)
+				current = current.getLeft();
+			else
+				return current;
+		}
+		return current;
 	}
 	
 	/**
@@ -163,9 +259,10 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	
 	private void printCommas(AVLNode<T> node)
 	{
-		System.out.print(node.toString() + ", ");
+		
 		if (node.getLeft() != null)
 			printCommas(node.getLeft());
+		System.out.print(node.toString() + ", ");
 		if (node.getRight() != null)
 			printCommas(node.getRight());
 	}
