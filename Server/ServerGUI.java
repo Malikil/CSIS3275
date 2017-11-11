@@ -6,17 +6,21 @@ import java.awt.Font;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Color;
+import java.awt.EventQueue;
+
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.border.LineBorder;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
 
 public class ServerGUI extends JFrame
 {
-	private JTextField txtUserList;
 	private JTextField textField;
-	private JTable table;
+	private JTable tableArea;
 	private DefaultTableModel tableModel;
 	private Server parent;
 
@@ -26,8 +30,9 @@ public class ServerGUI extends JFrame
 	 */
 	public ServerGUI(Server server)
 	{
-		initialize();
+		setTitle("Server Application");
 		parent = server;
+		initialize();
 	}
 
 	/**
@@ -36,108 +41,92 @@ public class ServerGUI extends JFrame
 	private void initialize() 
 	{
 		new JFrame();
-		setBounds(100, 100, 622, 485);
+		setBounds(100, 100, 636, 749);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
-		
-		JLabel lblServerApp = new JLabel("Server App.");
-		lblServerApp.setBounds(10, 11, 95, 35);
-		lblServerApp.setFont(new Font("Tahoma", Font.BOLD, 16));
-		getContentPane().add(lblServerApp);
 		
 		JLabel usrListLbl = new JLabel("Userlist");
 		usrListLbl.setBounds(31, 61, 80, 14);
 		usrListLbl.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(usrListLbl);
 		
-		JComboBox<String> usrListCB = new JComboBox<String>();
-		usrListCB.setBounds(120, 175, 188, 20);
-		getContentPane().add(usrListCB);
+		JComboBox<String> entriesCB = new JComboBox<String>();
+		entriesCB.setBounds(120, 345, 188, 20);
+		getContentPane().add(entriesCB);
 		
 		JButton usrListGoBttn = new JButton("Select User");
 		usrListGoBttn.setBounds(318, 57, 89, 23);
 		getContentPane().add(usrListGoBttn);
 		
 		JLabel lblDatabase = new JLabel("Database");
-		lblDatabase.setBounds(31, 90, 80, 14);
+		lblDatabase.setBounds(31, 290, 80, 14);
 		lblDatabase.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(lblDatabase);
 		
-		JComboBox<String> dtbseCB = new JComboBox<String>();
-		dtbseCB.setBounds(120, 148, 188, 20);
-		getContentPane().add(dtbseCB);
+		JComboBox<String> tablesCB = new JComboBox<String>();
+		tablesCB.setBounds(120, 318, 188, 20);
+		getContentPane().add(tablesCB);
 		
-		JButton dtbseGoBttn = new JButton("Select");
-		dtbseGoBttn.setBounds(318, 86, 89, 23);
-		getContentPane().add(dtbseGoBttn);
-		
-		JLabel selectLbl = new JLabel("Select Table");
-		selectLbl.setBounds(31, 120, 80, 14);
-		selectLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(selectLbl);
-		
-		//Why TextField?
-				/*
-				textField = new JTextField();
-				textField.setBounds(120, 117, 188, 20);
-				textField.setEditable(false);
-				textField.setColumns(10);
-				getContentPane().add(textField);
-				*/
-		
-		JButton selectGobttn = new JButton("Enter");
-		selectGobttn.setBounds(318, 116, 89, 23);
-		getContentPane().add(selectGobttn);
+		JButton dtbseSelectBttn = new JButton("Select");
+		dtbseSelectBttn.setBounds(318, 286, 89, 23);
+		getContentPane().add(dtbseSelectBttn);
 		
 		JLabel tablesLbl = new JLabel("Tables");
-		tablesLbl.setBounds(31, 149, 80, 14);
+		tablesLbl.setBounds(31, 319, 80, 14);
 		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(tablesLbl);
 		
-		JComboBox<String> tablesCB = new JComboBox<String>();
-		tablesCB.setBounds(120, 60, 188, 20);
-		getContentPane().add(tablesCB);
+		JComboBox<String> userlistCB = new JComboBox<String>();
+		userlistCB.setBounds(120, 60, 188, 20);
+		getContentPane().add(userlistCB);
 		
 		JButton tablesGoBttn = new JButton("Go!");
-		tablesGoBttn.setBounds(318, 145, 89, 23);
+		tablesGoBttn.setBounds(318, 315, 89, 23);
 		getContentPane().add(tablesGoBttn);
 		
 		JLabel entriesLbl = new JLabel("Entries");
-		entriesLbl.setBounds(31, 178, 80, 14);
+		entriesLbl.setBounds(31, 348, 80, 14);
 		entriesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
 		getContentPane().add(entriesLbl);
 		
-		JComboBox<String> entriesCB = new JComboBox<String>();
-		entriesCB.setBounds(120, 87, 188, 20);
-		getContentPane().add(entriesCB);
+		JComboBox<String> dbCB = new JComboBox<String>();
+		dbCB.setBounds(120, 287, 188, 20);
+		getContentPane().add(dbCB);
 		
-		JButton entriesGoBttn = new JButton("Change");
-		entriesGoBttn.setBounds(318, 174, 89, 23);
-		getContentPane().add(entriesGoBttn);
+		JButton entriesChangeBttn = new JButton("Change");
+		entriesChangeBttn.setBounds(318, 344, 89, 23);
+		getContentPane().add(entriesChangeBttn);
 		
 		tableModel = new DefaultTableModel();
-		table = new JTable();
-		table.setBounds(81, 228, 326, 124);
-		table.setModel(tableModel);
-		getContentPane().add(table);
+		tableArea = new JTable();
+		tableArea.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tableArea.setBounds(69, 396, 338, 264);
+		tableArea.setModel(tableModel);
+		getContentPane().add(tableArea);
 		
 		JButton helpBttn = new JButton("?");
-		helpBttn.setBounds(566, 407, 40, 40);
+		helpBttn.setBounds(580, 671, 40, 40);
 		helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
 		getContentPane().add(helpBttn);
 		
-		txtUserList = new JTextField();
-		txtUserList.setBounds(465, 17, 131, 23);
-		getContentPane().add(txtUserList);
-		txtUserList.setFont(new Font("Tahoma", Font.BOLD, 14));
-		txtUserList.setHorizontalAlignment(SwingConstants.CENTER);
-		txtUserList.setText("User List");
-		txtUserList.setBackground(Color.LIGHT_GRAY);
-		txtUserList.setEditable(false);
-		txtUserList.setColumns(10);
+		JList<String> userlistList = new JList<String>();
+		userlistList.setEnabled(false);
+		userlistList.setBorder(new LineBorder(new Color(0, 0, 0)));
+		userlistList.setBounds(69, 97, 338, 153);
+		getContentPane().add(userlistList);
 		
-		JTextArea textArea_1 = new JTextArea();
-		textArea_1.setBounds(465, 42, 129, 342);
-		getContentPane().add(textArea_1);
+		JLabel errorLabel = new JLabel("Error Log");
+		errorLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
+		errorLabel.setBounds(437, 28, 80, 19);
+		getContentPane().add(errorLabel);
+		
+		JTextArea serverErrorTextArea = new JTextArea();
+		serverErrorTextArea.setEditable(false);
+		serverErrorTextArea.setBounds(432, 61, 161, 599);
+		getContentPane().add(serverErrorTextArea);
+		
+		JScrollPane sp = new JScrollPane(serverErrorTextArea);
+		sp.setBounds(434, 53, 150, 605);
+		getContentPane().add(sp);
 	}
 }
