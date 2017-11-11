@@ -3,11 +3,17 @@ package Client;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.LineBorder;
@@ -17,16 +23,21 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 
-public class ClientGUI extends JFrame{
+public class ClientGUI extends JFrame
+{
 	private Client parent;
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JTextField searchField;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
+	public static void main(String[] args) 
+	{
+		EventQueue.invokeLater(new Runnable() 
+		{
+			public void run() 
+			{
+				try 
+				{
 					ClientGUI window = new ClientGUI(new ClientMain());
 					window.setVisible(true);
 				} catch (Exception e) {
@@ -39,7 +50,8 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI(Client owner) {
+	public ClientGUI(Client owner) 
+	{
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
@@ -48,7 +60,9 @@ public class ClientGUI extends JFrame{
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() {
+	private void initialize() 
+	{
+		JFrame thisFrame = this;
 		new JFrame();
 		setBounds(100, 100, 638, 553);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,6 +103,29 @@ public class ClientGUI extends JFrame{
 		button.setFont(new Font("Tahoma", Font.BOLD, 9));
 		button.setBounds(582, 475, 40, 40);
 		getContentPane().add(button);
+		button.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(thisFrame,
+						 "DataBase Dropdown Menu: \n" +
+							    "Choose A DataBase to modify and press go to recieve data \n" +
+							  "Table DropDown Menu: \n" +
+							    "Choose a Table to Modify and press select to recieve data \n" +
+							  "Add: \n" +
+							    "Shows GUI for adding new Entry \n" +
+							  "Edit: \n" +
+							    "Shows GUI for editing selected Entry \n" +
+							  "Delete: \n" +
+							    "Popup box will confirm the deletion of entry \n" +
+							  "Sort DropDown Menu: \n" +
+							    "Choose which column to Sort By \n" +
+							  "Search Field: \n" +
+							    "Enter Query to search by, Hit Search to Proceed");
+			}
+		});
+		getContentPane().add(button);
 		
 		JLabel databseLbl = new JLabel("Database");
 		databseLbl.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -100,7 +137,6 @@ public class ClientGUI extends JFrame{
 		getContentPane().add(dbButton);
 		
 		JComboBox<String> databaseCB = new JComboBox<String>();
-		databaseCB.setToolTipText("Sasdasda\r\n");
 		databaseCB.setBounds(99, 54, 188, 20);
 		
 		getContentPane().add(databaseCB);
