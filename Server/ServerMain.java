@@ -11,6 +11,11 @@ public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
 	
+	public ServerMain()
+	{
+		clientList = new ArrayList<>();
+	}
+	
 	public static void main(String[] args)
 	{
 		// Create a new server window, and assign it a new server handler
@@ -24,7 +29,6 @@ public class ServerMain implements Server
 			while (true)
 			{
 				server.addClient(new ClientHandler(socket.accept(), server));
-				
 			}
 		}
 		catch (IOException ex)
@@ -49,8 +53,8 @@ public class ServerMain implements Server
 	
 	public void addClient(ClientHandler client)
 	{
-		clientList.add(client);
 		new Thread(client).start();
+		clientList.add(client);
 	}
 	
 	public void sendToAll(String message)
