@@ -129,6 +129,7 @@ public class LoginGUI extends JDialog
 						usernameField.requestFocusInWindow();
 						passwordField.requestFocusInWindow();
 					}
+				}
 				else
 				{
 					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to: \nxxx.xxx.x.xxx");
