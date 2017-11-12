@@ -22,26 +22,7 @@ public class ServerGUI extends JFrame
 	private JTextField textField;
 	private JTable tableArea;
 	private DefaultTableModel tableModel;
-  private Server parent;
-	
-	public static void main(String[] args) 
-	{
-		EventQueue.invokeLater(new Runnable() 
-		{
-			public void run() 
-			{
-				try 
-				{
-					ServerGUI window = new ServerGUI(null);
-					window.setVisible(true);
-				}
-        catch (Exception e) 
-				{
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private Server parent;
 
 	/**
 	 * Create the application.
@@ -50,8 +31,8 @@ public class ServerGUI extends JFrame
 	public ServerGUI(Server server)
 	{
 		setTitle("Server Application");
-		initialize();
 		parent = server;
+		initialize();
 	}
 
 	/**

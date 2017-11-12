@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Command;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -21,6 +22,7 @@ public class LoginGUI extends JDialog
 	private String enteredPass;
 	private String enteredIP;
 	private boolean cancelled;
+	private Command message = Command.MESSAGE;
 
 	/**
 	 * Create the application.
@@ -83,7 +85,35 @@ public class LoginGUI extends JDialog
 			{
 				String ip = ipField.getText();
 				// Make sure login info is valid
-				if (!ip.equals(""))
+				if (!ipField.getText().equals(""))
+				{
+					String[] numbers = ipField.getText().split("\\.");
+					if (numbers.length == 4)
+					{
+						try
+						{
+							for (String n : numbers)
+							{
+								int c = Integer.valueOf(n);
+								if (c < 0 || c > 255)
+								{
+									JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+									return;
+								}
+							}
+						}
+						catch (NumberFormatException ex)
+						{
+							JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+							return;
+						}
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+						return;
+					}
+					
 					if (!usernameField.getText().equals("") &&
 						!(new String(passwordField.getPassword()).equals("")))
 					{
@@ -143,15 +173,28 @@ public class LoginGUI extends JDialog
 	{
 		if (b)
 		{
-			if (!enteredUser.equals("") || !enteredPass.equals(""))
-				JOptionPane.showMessageDialog(this, "Username or Password was incorrect.");
+			switch (message)
+			{
+			case CONNECTION_SUCCESS: return;
+			case INCORRECT_USER:
+				JOptionPane.showMessageDialog(this, "Username could not be found");
+				usernameField.requestFocusInWindow();
+				break;
+			case INCORRECT_PASSWORD:
+				JOptionPane.showMessageDialog(this, "Password is incorrect");
+				passwordField.requestFocusInWindow();
+				break;
+			default: break;
+			}
 			cancelled = true;
 		}
 		super.setVisible(b);
 	}
 	
-	public String getEnteredIP() 	{ return enteredIP; }
-	public String getEnteredUser() 	{return enteredUser;}
-	public String getEnteredPass() 	{return enteredPass;}
-	public boolean isCancelled() 	{ return cancelled; }
+	public void setMessage(Command message) { this.message = message; }
+	
+	public String getEnteredIP() { return enteredIP; }
+	public String getEnteredUser() { return enteredUser; }
+	public String getEnteredPass() { return enteredPass; }
+	public boolean isCancelled() { return cancelled; }
 }
