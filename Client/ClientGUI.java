@@ -1,26 +1,20 @@
 package Client;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
-import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
 import javax.swing.JTextArea;
 
 public class ClientGUI extends JFrame
@@ -29,23 +23,7 @@ public class ClientGUI extends JFrame
 	private JTable table;
 	private DefaultTableModel tableModel;
 	private JTextField searchField;
-
-	public static void main(String[] args) 
-	{
-		EventQueue.invokeLater(new Runnable() 
-		{
-			public void run() 
-			{
-				try 
-				{
-					ClientGUI window = new ClientGUI(new ClientMain());
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	JComboBox<String> databaseCB;
 
 	/**
 	 * Create the application.
@@ -136,7 +114,7 @@ public class ClientGUI extends JFrame
 		dbButton.setBounds(297, 54, 89, 23);
 		getContentPane().add(dbButton);
 		
-		JComboBox<String> databaseCB = new JComboBox<String>();
+		databaseCB = new JComboBox<String>();
 		databaseCB.setBounds(99, 54, 188, 20);
 		
 		getContentPane().add(databaseCB);
@@ -183,5 +161,12 @@ public class ClientGUI extends JFrame
 		JScrollPane sp = new JScrollPane(errorTextArea);
 		sp.setBounds(434, 53, 150, 396);
 		getContentPane().add(sp);
+	}
+	
+	public void setDatabases(String[] list)
+	{
+		databaseCB.removeAllItems();
+		for (String database : list)
+			databaseCB.addItem(database);
 	}
 }
