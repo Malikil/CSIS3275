@@ -19,9 +19,24 @@ Program:
   matches username and password with serverside user list
   informs client as to the role of the client (User/Admin)
   
+  
 Client(User):
 Help:
-
+  DataBase Dropdown Menu:
+    Choose A DataBase to modify and press go to recieve data
+  Table DropDown Menu:
+    Choose a Table to Modify and press select to recieve data
+  Add:
+    Shows GUI for adding new Entry
+  Edit:
+    Shows GUI for editing selected Entry
+  Delete:
+    Popup box will confirm the deletion of entry
+  Sort DropDown Menu:
+    Choose which column to Sort By
+  Search Field:
+    Enter Query to search by, Hit Search to Proceed
+    
 Program:
   Allows Users with Client status to modify tables and entries
   shows users the active table graphically
