@@ -115,7 +115,7 @@ public class ServerMain implements Server
 	}
 
 	@Override
-	public Table getTable(String tableName) {
+	public AVLTree<Entry> getTable(String tableName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
