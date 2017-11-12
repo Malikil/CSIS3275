@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Command;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -19,7 +20,7 @@ public class LoginGUI extends JDialog
 	private String enteredPass;
 	private String enteredIP;
 	private boolean cancelled;
-	private Command message = null;
+	private Command message = Command.MESSAGE;
 
 	/**
 	 * Create the application.
@@ -72,7 +73,7 @@ public class LoginGUI extends JDialog
 				// Make sure login info is valid
 				if (!ipField.getText().equals(""))
 				{
-					String[] numbers = ipField.getText().split(".");
+					String[] numbers = ipField.getText().split("\\.");
 					if (numbers.length == 4)
 					{
 						try

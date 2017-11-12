@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Command;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -32,10 +33,12 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
+			ex.printStackTrace();
 			return Command.INCORRECT_USER;
 		}
 		catch (ClassNotFoundException ex)
 		{
+			ex.printStackTrace();
 			return null;
 		}
 	}
@@ -50,7 +53,7 @@ public class ClientMain implements Client
 			try
 			{
 				client.setConnections(new Socket(login.getEnteredIP(), 8001));
-				Command conf =client.checkLogin( new String[]
+				Command conf = client.checkLogin(new String[]
 						{ login.getEnteredUser(), login.getEnteredPass() }); 
 				if (conf == Command.CONNECTION_SUCCESS)
 					break;
