@@ -20,7 +20,7 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
-		ServerGUI gui = new ServerGUI(server);
+		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
 		try
 		{

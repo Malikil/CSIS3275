@@ -4,7 +4,6 @@ import Server.Command;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -22,7 +21,7 @@ public class LoginGUI extends JDialog
 	private String enteredPass;
 	private String enteredIP;
 	private boolean cancelled;
-	private Command message = Command.MESSAGE;
+	private Command message = Command.ADD_COLUMN;
 
 	/**
 	 * Create the application.
@@ -83,7 +82,6 @@ public class LoginGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				String ip = ipField.getText();
 				// Make sure login info is valid
 				if (!ipField.getText().equals(""))
 				{
@@ -97,20 +95,20 @@ public class LoginGUI extends JDialog
 								int c = Integer.valueOf(n);
 								if (c < 0 || c > 255)
 								{
-									JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+									JOptionPane.showMessageDialog(thisDialog, "Bad IP:\n IP number out of range (Should be 0-255)");
 									return;
 								}
 							}
 						}
 						catch (NumberFormatException ex)
 						{
-							JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+							JOptionPane.showMessageDialog(thisDialog, "Bad IP\n IP must contain only numbers");
 							return;
 						}
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(thisDialog, "Bad IP");
+						JOptionPane.showMessageDialog(thisDialog, "Bad IP\n Wrong number of numbers in IP (Should be 4, #.#.#.#)");
 						return;
 					}
 					
@@ -132,7 +130,7 @@ public class LoginGUI extends JDialog
 				}
 				else
 				{
-					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to: \nxxx.xxx.x.xxx");
+					JOptionPane.showMessageDialog(thisDialog, "Enter an IP to connect to: \n###.###.###.###");
 					ipField.requestFocusInWindow();
 				}
 			}
@@ -184,6 +182,9 @@ public class LoginGUI extends JDialog
 			case INCORRECT_PASSWORD:
 				JOptionPane.showMessageDialog(this, "Password is incorrect");
 				passwordField.requestFocusInWindow();
+				break;
+			case MESSAGE:
+				JOptionPane.showMessageDialog(this, "Server not initialized properly. Users file could not be found.");
 				break;
 			default: break;
 			}

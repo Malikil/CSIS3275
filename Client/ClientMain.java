@@ -40,11 +40,12 @@ public class ClientMain implements Client, Runnable
 			if (login.isCancelled()) return;
 			try
 			{
-				sock = new Socket(login.getEnteredIP(), 8001);
-				ObjectInputStream in = new ObjectInputStream(sock.getInputStream());
-				ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
-				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() });
-				Command conf = (Command)in.readObject();
+				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
+				ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
+				ObjectInputStream in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
+				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() }); System.out.println("Sent user/pass");
+				Command conf = (Command)in.readObject(); System.out.println("Response received");
+				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
 				if (conf == Command.CONNECTION_SUCCESS)
 					break;
 				else
@@ -53,11 +54,11 @@ public class ClientMain implements Client, Runnable
 			}
 			catch (IOException ex)
 			{
-				
+				System.out.println("Error communicating with server:\t" + ex.getMessage());
 			}
 			catch (ClassNotFoundException ex)
 			{
-				
+				ex.printStackTrace();
 			}
 		}
 		

@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ClientHandler implements Runnable
 {
@@ -16,8 +17,7 @@ public class ClientHandler implements Runnable
 	private ObjectOutputStream objOut;
 	private BufferedReader strIn;
 	private PrintWriter strOut;
-	
-	Server parent;
+	private Server parent;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -33,20 +33,7 @@ public class ClientHandler implements Runnable
 		}
 		catch (IOException ex)
 		{
-			// Problem establishing connections 
-		}
-	}
-	
-	public void sendMessage(String message)
-	{
-		try
-		{
-			objOut.writeObject(Command.MESSAGE);
-			strOut.println(message);
-		}
-		catch (IOException ex)
-		{
-			
+			System.out.println("Problem establishing connections");
 		}
 	}
 	
@@ -63,11 +50,14 @@ public class ClientHandler implements Runnable
 				{
 					// Receive username and password from client
 					String[] userPass = (String[])objIn.readObject();
-					
+					// Make received username lowercase to avoid case sensitivity
+					userPass[0] = userPass[0].toLowerCase();
 					String nextLine;
 					while ((nextLine = userList.readLine()) != null)
 					{
 						String[] userInfo = nextLine.split(",");
+						// Make username from file lowercase to avoid case sensitivity
+						userInfo[0] = userInfo[0].toLowerCase();
 						if (userInfo[0].equals(userPass[0]))
 							if (userInfo[1].equals(userPass[1]))
 							{
@@ -104,7 +94,18 @@ public class ClientHandler implements Runnable
 		}
 		catch (IOException ex)
 		{
-			// User file couldn't be found
+			System.out.println("User file couldn't be found");
+			try
+			{
+				objIn.readObject(); // Receive the String[] of user/pass, we just don't need it now
+				objOut.writeObject(Command.MESSAGE);
+				objOut.close();
+				objIn.close();
+				strOut.close();
+				strIn.close();
+			}
+			catch (IOException | ClassNotFoundException e2) { System.out.println("Couldn't close sockets"); } // TODO DEBUG
+			return;
 		}
 		
 		// Client is logged in, now wait for commands
@@ -130,6 +131,9 @@ public class ClientHandler implements Runnable
 					break;
 				case GET_TABLE:
 					break;
+				case GET_DATABASE:
+					objOut.writeObject(getDatabase(strIn.readLine()));
+					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
 					break;
@@ -139,6 +143,33 @@ public class ClientHandler implements Runnable
 			{
 				
 			}
+		}
+	}
+	
+	private String[] getDatabase(String databaseName)
+	{
+		File database = new File(databaseName);
+		if (database.exists())
+		{
+			String[] fileList = database.list();
+			for (int i = 0; i < fileList.length; i++)
+				fileList[i] = fileList[i].substring(0, fileList[i].length() - 5);
+			return fileList;	
+		}
+		else
+			return new String[] { "Database doesn't exist" };
+	}
+	
+	public void sendMessage(String message)
+	{
+		try
+		{
+			objOut.writeObject(Command.MESSAGE);
+			strOut.println(message);
+		}
+		catch (IOException ex)
+		{
+			
 		}
 	}
 }
