@@ -1,7 +1,8 @@
 package Client;
 
+import Server.Entry;
+
 public interface Client
 {
-	public void doSomething();
-	public void doSomethingElse();
+	public void sendEdits(Entry e);
 }
