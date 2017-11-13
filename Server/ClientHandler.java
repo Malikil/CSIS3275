@@ -28,7 +28,7 @@ public class ClientHandler implements Runnable
 			objOut = new ObjectOutputStream(connection.getOutputStream());
 			objIn = new ObjectInputStream(connection.getInputStream());
 			
-			strOut = new PrintWriter(connection.getOutputStream());
+			strOut = new PrintWriter(connection.getOutputStream(), true);
 			strIn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		}
 		catch (IOException ex)
@@ -65,6 +65,7 @@ public class ClientHandler implements Runnable
 								objOut.writeObject(Command.CONNECTION_SUCCESS);
 								// Send available databases to client
 								objOut.writeObject(parent.getUserDatabases(userInfo[0]));
+								// Yes, I know this way is is inefficient, but w/e
 								loggedIn = true;
 								break;
 							}
@@ -132,7 +133,10 @@ public class ClientHandler implements Runnable
 				case GET_TABLE:
 					break;
 				case GET_DATABASE:
-					objOut.writeObject(getDatabase(strIn.readLine()));
+					System.out.println("Received GET_DATABASE from client");
+					String database = strIn.readLine(); System.out.println("Received database name from client");
+					objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to client");
+					objOut.writeObject(parent.getTableList(database)); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
@@ -144,20 +148,6 @@ public class ClientHandler implements Runnable
 				
 			}
 		}
-	}
-	
-	private String[] getDatabase(String databaseName)
-	{
-		File database = new File(databaseName);
-		if (database.exists())
-		{
-			String[] fileList = database.list();
-			for (int i = 0; i < fileList.length; i++)
-				fileList[i] = fileList[i].substring(0, fileList[i].length() - 5);
-			return fileList;	
-		}
-		else
-			return new String[] { "Database doesn't exist" };
 	}
 	
 	public void sendMessage(String message)
