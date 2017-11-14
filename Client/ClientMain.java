@@ -113,7 +113,7 @@ public class ClientMain implements Client
 					case GET_TABLE:
 						break;
 					case GET_DATABASE:
-						gui.setTables((String[])objIn.readObject());
+						gui.setTables(received.getTableNames());
 						break;
 					case MESSAGE:
 						break;
@@ -160,8 +160,9 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to server");
-			strOut.write(database); System.out.println("Send db name to server");
+			Message send = new Message(Command.GET_DATABASE);
+			send.setDatabase(database);
+			objOut.writeObject(send); System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
 		{
