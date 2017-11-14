@@ -9,6 +9,7 @@ public class Message {
 	private String field;
 	private int fieldtype;
 	private String[] databases;
+	private String[] tablenames;
 	private String username;
 	private String password;
 	
@@ -70,6 +71,16 @@ public class Message {
 	public String[] getDatabases()
 	{
 		return databases;
+	}
+	
+	public void setTableNames(String[] TableNames)
+	{
+		tablenames = TableNames;
+	}
+	
+	public String[] getTableNames()
+	{
+		return tablenames;
 	}
 	
 	void setField(String fieldname, int fieldtype)
