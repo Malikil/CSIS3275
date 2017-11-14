@@ -146,14 +146,48 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(Command.EDIT_ENTRY);
-			objOut.writeObject(e);
+			Message send = new Message(Command.EDIT_ENTRY);
+			send.setEntry(e);
+			objOut.writeObject(send);
 		}
 		catch (IOException ex)
 		{
 			// I'm starting to get tired of writing catch blocks for IOException
 		}
 	}
+	
+	
+	public void addTable(String tablename, String DBname)
+	{
+		try
+		{
+			Message send = new Message(Command.ADD_TABLE);
+			send.setDatabase(DBname);
+			send.setTable(tablename);
+			objOut.writeObject(send);
+		}
+		catch (IOException ex)
+		{
+			// I'm starting to get tired of writing catch blocks for IOException
+		}
+	}
+	
+	@Override
+	public void deleteTable(String tablename, String DBname)
+	{
+		try
+		{
+			Message send = new Message(Command.DELETE_TABLE);
+			send.setDatabase(DBname);
+			send.setTable(tablename);
+			objOut.writeObject(send);
+		}
+		catch (IOException ex)
+		{
+			// I'm starting to get tired of writing catch blocks for IOException
+		}
+	}
+
 
 	@Override
 	public void getTables(String database)
