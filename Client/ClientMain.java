@@ -19,6 +19,7 @@ public class ClientMain implements Client
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private ClientGUI gui;
+	private static Message received;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -50,10 +51,10 @@ public class ClientMain implements Client
 				loginAttempt.setUsername(login.getEnteredUser());
 				loginAttempt.setPassword(login.getEnteredPass());
 				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
-				Message received = (Message)in.readObject();
+				received = (Message)in.readObject();
 				Command conf = received.getType(); System.out.println("Response received");
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
-				if (conf == Command.CONNECTION_SUCCESS)
+				if (conf == Command.CONNECTION_SUCCESS)		
 					break;
 				else
 					login.setMessage(conf);
@@ -72,6 +73,7 @@ public class ClientMain implements Client
 		try
 		{
 			new ClientMain(sock, out, in).start();
+			
 		}
 		catch (IOException ex)
 		{
@@ -83,12 +85,12 @@ public class ClientMain implements Client
 	public void start()
 	{
 		gui.setVisible(true);
+		gui.setDatabases(received.getDatabases());
 		try
 		{
 			Message received = (Message)objIn.readObject();
-			if(received.getType() == Command.CONNECTION_SUCCESS)
-			{
-				gui.setDatabases(received.getDatabases());
+				//140.161.89.12
+			
 				while (true)
 				{
 					received = (Message)objIn.readObject();
@@ -119,7 +121,7 @@ public class ClientMain implements Client
 						throw new IOException("Unexpected server command");
 					}
 				}
-			}
+			
 		}
 		catch (ClassNotFoundException ex)
 		{

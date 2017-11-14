@@ -1,6 +1,8 @@
 package Client;
+import java.io.Serializable;
+
 import Server.*;
-public class Message {
+public class Message implements Serializable{
 	private Command type;
 	private String chat;
 	private Entry entry;
