@@ -86,11 +86,9 @@ public class ClientMain implements Client
 	{
 		gui.setVisible(true);
 		gui.setDatabases(received.getDatabases());
+		System.out.println("Databases set");
 		try
 		{
-			Message received = (Message)objIn.readObject();
-				//140.161.89.12
-			
 				while (true)
 				{
 					received = (Message)objIn.readObject();
