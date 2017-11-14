@@ -12,7 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ClientMain implements Client, Runnable
+public class ClientMain implements Client
 {
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
@@ -20,12 +20,13 @@ public class ClientMain implements Client, Runnable
 	private PrintWriter strOut;
 	private ClientGUI gui;
 	
-	public ClientMain(Socket sock) throws IOException
+	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
-		objIn = new ObjectInputStream(sock.getInputStream());
-		objOut = new ObjectOutputStream(sock.getOutputStream());
+		objOut = out;
+		objIn = in;
+		
+		strOut = new PrintWriter(sock.getOutputStream(), true);
 		strIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
-		strOut = new PrintWriter(sock.getOutputStream());
 		gui = new ClientGUI(this);
 	}
 	
@@ -33,6 +34,8 @@ public class ClientMain implements Client, Runnable
 	{
 		LoginGUI login = new LoginGUI();
 		Socket sock;
+		ObjectOutputStream out;
+		ObjectInputStream in;
 		
 		while (true)
 		{
@@ -40,11 +43,12 @@ public class ClientMain implements Client, Runnable
 			if (login.isCancelled()) return;
 			try
 			{
-				sock = new Socket(login.getEnteredIP(), 8001);
-				ObjectInputStream in = new ObjectInputStream(sock.getInputStream());
-				ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
-				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() });
-				Command conf = (Command)in.readObject();
+				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
+				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
+				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
+				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() }); System.out.println("Sent user/pass");
+				Command conf = (Command)in.readObject(); System.out.println("Response received");
+				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
 				if (conf == Command.CONNECTION_SUCCESS)
 					break;
 				else
@@ -53,17 +57,17 @@ public class ClientMain implements Client, Runnable
 			}
 			catch (IOException ex)
 			{
-				
+				System.out.println("Error communicating with server:\t" + ex.getMessage());
 			}
 			catch (ClassNotFoundException ex)
 			{
-				
+				ex.printStackTrace();
 			}
 		}
 		
 		try
 		{
-			new Thread(new ClientMain(sock)).start();
+			new ClientMain(sock, out, in).start();
 		}
 		catch (IOException ex)
 		{
@@ -72,9 +76,9 @@ public class ClientMain implements Client, Runnable
 		}
 	}
 
-	@Override
-	public void run()
+	public void start()
 	{
+		gui.setVisible(true);
 		try
 		{
 			// Get databases
@@ -98,6 +102,9 @@ public class ClientMain implements Client, Runnable
 				case EDIT_ENTRY:
 					break;
 				case GET_TABLE:
+					break;
+				case GET_DATABASE:
+					gui.setTables((String[])objIn.readObject());
 					break;
 				case MESSAGE:
 					break;
@@ -135,6 +142,20 @@ public class ClientMain implements Client, Runnable
 		catch (IOException ex)
 		{
 			// I'm starting to get tired of writing catch blocks for IOException
+		}
+	}
+
+	@Override
+	public void getTables(String database)
+	{
+		try
+		{
+			objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to server");
+			strOut.write(database); System.out.println("Send db name to server");
+		}
+		catch (IOException ex)
+		{
+			System.out.println("Error asking for databases from server");
 		}
 	}
 }

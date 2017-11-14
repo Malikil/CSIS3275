@@ -24,6 +24,7 @@ public class ClientGUI extends JFrame
 	private DefaultTableModel tableModel;
 	private JTextField searchField;
 	JComboBox<String> databaseCB;
+	JComboBox<String> tablesCB;
 
 	/**
 	 * Create the application.
@@ -66,7 +67,7 @@ public class ClientGUI extends JFrame
 		create_tableLbl.setBounds(178, 136, 109, 19);
 		getContentPane().add(create_tableLbl);
 		
-		JComboBox<String> tablesCB = new JComboBox<String>();
+		tablesCB = new JComboBox<String>();
 		tablesCB.setBounds(99, 86, 188, 20);
 		getContentPane().add(tablesCB);
 		
@@ -112,6 +113,15 @@ public class ClientGUI extends JFrame
 		
 		JButton dbButton = new JButton("Go!");
 		dbButton.setBounds(297, 54, 89, 23);
+		dbButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String database = (String)databaseCB.getSelectedItem();
+				System.out.println("Ask for database " + database);
+				parent.getTables(database);
+			}
+		});
 		getContentPane().add(dbButton);
 		
 		databaseCB = new JComboBox<String>();
@@ -168,5 +178,13 @@ public class ClientGUI extends JFrame
 		databaseCB.removeAllItems();
 		for (String database : list)
 			databaseCB.addItem(database);
+	}
+	
+	public void setTables(String[] list)
+	{
+		tablesCB.removeAllItems();
+		for (String table : list)
+			tablesCB.addItem(table);
+		tablesCB.addItem("Create new table...");
 	}
 }

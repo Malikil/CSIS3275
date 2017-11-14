@@ -20,7 +20,7 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
-		ServerGUI gui = new ServerGUI(server);
+		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
 		try
 		{
@@ -73,8 +73,10 @@ public class ServerMain implements Server
 	@Override
 	public String[] getUserDatabases(String user)
 	{
+		// Avoid case sensitivity
+		user = user.toLowerCase();
 		BufferedReader usersFile = null;
-		String[] databases = null;
+		String[] databases = new String[] { "No databases associated with this user" };
 		try
 		{
 			usersFile = new BufferedReader(new FileReader(new File("Users.txt")));
@@ -83,7 +85,8 @@ public class ServerMain implements Server
 			while ((nextLine = usersFile.readLine()) != null)
 			{
 				userInfo = nextLine.split(",");
-				if (userInfo[0].equals(user))
+				// Avoid case sensitivity
+				if (userInfo[0].toLowerCase().equals(user))
 					break;
 			}
 			
@@ -96,7 +99,7 @@ public class ServerMain implements Server
 		}
 		catch (IOException ex)
 		{
-			databases = new String[] { "Could not read databases file" };
+			databases = new String[] { "Could not read Users file" };
 		}
 		finally
 		{
@@ -110,8 +113,16 @@ public class ServerMain implements Server
 
 	@Override
 	public String[] getTableList(String database) {
-		// TODO Auto-generated method stub
-		return null;
+		File db = new File(database);
+		if (db.exists())
+		{
+			String[] fileList = db.list();
+			for (int i = 0; i < fileList.length; i++)
+				fileList[i] = fileList[i].substring(0, fileList[i].length() - 5);
+			return fileList;
+		}
+		else
+			return new String[] { "Database doesn't exist" };
 	}
 
 	@Override

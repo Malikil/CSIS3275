@@ -17,7 +17,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 
-public class ServerGUI extends JFrame
+public class ServerGUI extends JFrame implements Runnable
 {
 	private JTextField textField;
 	private JTable tableArea;
@@ -128,5 +128,11 @@ public class ServerGUI extends JFrame
 		JScrollPane sp = new JScrollPane(serverErrorTextArea);
 		sp.setBounds(434, 53, 150, 605);
 		getContentPane().add(sp);
+	}
+
+	@Override
+	public void run()
+	{
+		this.setVisible(true);
 	}
 }
