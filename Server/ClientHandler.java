@@ -2,6 +2,7 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import Client.Message;
@@ -68,7 +70,6 @@ public class ClientHandler implements Runnable
 									// Send success to client
 									Message send = new Message(Command.CONNECTION_SUCCESS);
 									// Send available databases to client
-									System.out.println(parent.getUserDatabases(userInfo[0]));
 									send.setDatabases(parent.getUserDatabases(userInfo[0]));
 									objOut.writeObject(send);
 									loggedIn = true;
@@ -129,12 +130,53 @@ public class ClientHandler implements Runnable
 				case ADD_ENTRY:
 					break;
 				case ADD_TABLE:
+					File folder = new File(received.getDatabase());
+					File file = new File(folder + "\\" + received.getTable() + ".txt");
+					FileOutputStream fileOut = null;
+					ObjectOutputStream objWriter = null;
+					try
+					{
+						fileOut = new FileOutputStream(file);
+					}
+					catch (IOException e)
+					{
+						System.out.println("Cannot output file.");
+					}
+					try
+					{
+						objWriter = new ObjectOutputStream(fileOut);
+					}
+					catch (IOException e)
+					{
+						System.out.println("Cannot create Object Writer");
+						try
+						{
+							fileOut.close();
+						}
+						catch (IOException e1)
+						{
+							System.out.println("Could not close output file");
+						}
+						return;
+					}
+					try
+					{
+						objWriter.writeObject(null);
+						objWriter.close();
+					}
+					catch (IOException e)
+					{
+						System.out.println("Could not run write object");
+					}
 					break;
 				case DELETE_COLUMN:
 					break;
 				case DELETE_ENTRY:
 					break;
 				case DELETE_TABLE:
+					File db = new File(received.getDatabase());
+					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
+					deleteFile.delete();
 					break;
 				case EDIT_ENTRY:
 					break;
