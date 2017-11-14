@@ -11,6 +11,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import Client.Message;
+
 public class ClientHandler implements Runnable
 {
 	private ObjectInputStream objIn;
@@ -48,36 +50,40 @@ public class ClientHandler implements Runnable
 			{
 				try
 				{
-					// Receive username and password from client
-					String[] userPass = (String[])objIn.readObject();
-					// Make received username lowercase to avoid case sensitivity
-					userPass[0] = userPass[0].toLowerCase();
-					String nextLine;
-					while ((nextLine = userList.readLine()) != null)
-					{
-						String[] userInfo = nextLine.split(",");
-						// Make username from file lowercase to avoid case sensitivity
-						userInfo[0] = userInfo[0].toLowerCase();
-						if (userInfo[0].equals(userPass[0]))
-							if (userInfo[1].equals(userPass[1]))
-							{
-								// Send success to client
-								objOut.writeObject(Command.CONNECTION_SUCCESS);
-								// Send available databases to client
-								objOut.writeObject(parent.getUserDatabases(userInfo[0]));
-								// Yes, I know this way is is inefficient, but w/e
-								loggedIn = true;
-								break;
-							}
-							else
-							{
-								objOut.writeObject(Command.INCORRECT_PASSWORD);
-								break;
-							}
-					}
-					if (!loggedIn)
-					{
-						objOut.writeObject(Command.INCORRECT_USER);
+					Message received = (Message)objIn.readObject();
+					if(received.getType() == Command.LOGIN)
+					{	
+						String username = received.getUsername().toLowerCase();
+						// Make received username lowercase to avoid case sensitivity
+						String password = received.getPassword();
+						String nextLine;
+						while ((nextLine = userList.readLine()) != null)
+						{
+							String[] userInfo = nextLine.split(",");
+							// Make username from file lowercase to avoid case sensitivity
+							userInfo[0] = userInfo[0].toLowerCase();
+							if (userInfo[0].equals(username))
+								if (userInfo[1].equals(password))
+								{
+									// Send success to client
+									Message send = new Message(Command.CONNECTION_SUCCESS);
+									// Send available databases to client
+									send.setDatabases(parent.getUserDatabases(userInfo[0]));
+									objOut.writeObject(send);
+									loggedIn = true;
+									break;
+								}
+								else
+								{
+									Message send = new Message(Command.INCORRECT_PASSWORD);
+									objOut.writeObject(send);
+									break;
+								}
+						}
+						if (!loggedIn)
+						{
+							objOut.writeObject(Command.INCORRECT_USER);
+						}
 					}
 					
 				}

@@ -46,8 +46,12 @@ public class ClientMain implements Client
 				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
 				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
 				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
-				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() }); System.out.println("Sent user/pass");
-				Command conf = (Command)in.readObject(); System.out.println("Response received");
+				Message loginAttempt = new Message(Command.LOGIN);
+				loginAttempt.setUsername(login.getEnteredUser());
+				loginAttempt.setPassword(login.getEnteredPass());
+				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
+				Message received = (Message)in.readObject();
+				Command conf = received.getType(); System.out.println("Response received");
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
 				if (conf == Command.CONNECTION_SUCCESS)
 					break;
@@ -81,35 +85,39 @@ public class ClientMain implements Client
 		gui.setVisible(true);
 		try
 		{
-			// Get databases
-			gui.setDatabases((String[])objIn.readObject());
-			while (true)
+			Message received = (Message)objIn.readObject();
+			if(received.getType() == Command.CONNECTION_SUCCESS)
 			{
-				switch ((Command)objIn.readObject())
+				gui.setDatabases(received.getDatabases());
+				while (true)
 				{
-				case ADD_COLUMN:
-					break;
-				case ADD_ENTRY:
-					break;
-				case ADD_TABLE:
-					break;
-				case DELETE_COLUMN:
-					break;
-				case DELETE_ENTRY:
-					break;
-				case DELETE_TABLE:
-					break;
-				case EDIT_ENTRY:
-					break;
-				case GET_TABLE:
-					break;
-				case GET_DATABASE:
-					gui.setTables((String[])objIn.readObject());
-					break;
-				case MESSAGE:
-					break;
-				default:
-					throw new IOException("Unexpected server command");
+					received = (Message)objIn.readObject();
+					switch (received.getType())
+					{
+					case ADD_COLUMN:
+						break;
+					case ADD_ENTRY:
+						break;
+					case ADD_TABLE:
+						break;
+					case DELETE_COLUMN:
+						break;
+					case DELETE_ENTRY:
+						break;
+					case DELETE_TABLE:
+						break;
+					case EDIT_ENTRY:
+						break;
+					case GET_TABLE:
+						break;
+					case GET_DATABASE:
+						gui.setTables((String[])objIn.readObject());
+						break;
+					case MESSAGE:
+						break;
+					default:
+						throw new IOException("Unexpected server command");
+					}
 				}
 			}
 		}
