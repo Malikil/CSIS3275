@@ -22,6 +22,7 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
+	private Message send;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -174,9 +175,13 @@ public class ClientHandler implements Runnable
 				case DELETE_ENTRY:
 					break;
 				case DELETE_TABLE:
-					File db = new File(received.getDatabase());
+					String database2 = received.getDatabase();
+					File db = new File(database2);
 					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
 					deleteFile.delete();
+					send = new Message(Command.DELETE_TABLE);
+					send.setTableNames(parent.getTableList(database2));
+					objOut.writeObject(send);
 					break;
 				case EDIT_ENTRY:
 					break;
@@ -185,7 +190,7 @@ public class ClientHandler implements Runnable
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
 					String database = received.getDatabase(); System.out.println("Received database name from client");
-					Message send = new Message(Command.GET_DATABASE);
+					send = new Message(Command.GET_DATABASE);
 					send.setTableNames(parent.getTableList(database));
 					objOut.writeObject(send); System.out.println("Sent databases to client");
 					break;
