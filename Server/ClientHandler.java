@@ -68,6 +68,7 @@ public class ClientHandler implements Runnable
 									// Send success to client
 									Message send = new Message(Command.CONNECTION_SUCCESS);
 									// Send available databases to client
+									System.out.println(parent.getUserDatabases(userInfo[0]));
 									send.setDatabases(parent.getUserDatabases(userInfo[0]));
 									objOut.writeObject(send);
 									loggedIn = true;
@@ -120,7 +121,8 @@ public class ClientHandler implements Runnable
 		{
 			try
 			{
-				switch ((Command)objIn.readObject())
+				Message received = (Message) objIn.readObject();
+				switch (received.getType())
 				{
 				case ADD_COLUMN:
 					break;
@@ -140,12 +142,23 @@ public class ClientHandler implements Runnable
 					break;
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
-					String database = strIn.readLine(); System.out.println("Received database name from client");
-					objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to client");
-					objOut.writeObject(parent.getTableList(database)); System.out.println("Sent databases to client");
+					String database = received.getDatabase(); System.out.println("Received database name from client");
+					Message send = new Message(Command.GET_DATABASE);
+					send.setTableNames(parent.getTableList(database));
+					objOut.writeObject(send); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
+					break;
+				case CONNECTION_SUCCESS:
+					break;
+				case INCORRECT_PASSWORD:
+					break;
+				case INCORRECT_USER:
+					break;
+				case LOGIN:
+					break;
+				default:
 					break;
 				}
 			}
