@@ -2,7 +2,7 @@ package Server;
 
 
 public class Table {
-	Field[] fields;
+	MyAL<Field> fields;
 	AVLTree<Entry> entries;
 		
 	public Table()
@@ -18,6 +18,21 @@ public class Table {
 	public void rmvField(Field toRmv)
 	{
 		//field to linkedlist
+	}
+	
+	public void rmvEntry(Entry toDelete)
+	{
+		
+	}
+	
+	public void editEntry(Entry toEdit)
+	{
+		
+	}
+	
+	public void addEntry(Entry toAdd)
+	{
+		
 	}
 	
 }
