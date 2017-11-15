@@ -16,6 +16,15 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 
 public class ClientGUI extends JFrame
 {
@@ -31,6 +40,7 @@ public class ClientGUI extends JFrame
 	 */
 	public ClientGUI(Client owner) 
 	{
+		setTitle("Client Application");
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
@@ -43,68 +53,76 @@ public class ClientGUI extends JFrame
 	{
 		JFrame thisFrame = this;
 		new JFrame();
-		setBounds(100, 100, 638, 553);
+		setBounds(100, 100, 638, 699);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
-		JLabel appLabel = new JLabel("Client App.");
-		appLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		appLabel.setBounds(10, 11, 95, 19);
-		getContentPane().add(appLabel);
-		
 		JLabel tablesLbl = new JLabel("Tables");
 		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		tablesLbl.setBounds(10, 87, 80, 14);
+		tablesLbl.setBounds(10, 98, 80, 14);
 		getContentPane().add(tablesLbl);
 		
 		JButton tablesGoBttn = new JButton("Select");
-		tablesGoBttn.setBounds(297, 83, 89, 23);
+		tablesGoBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		tablesGoBttn.setBounds(297, 94, 89, 23);
 		getContentPane().add(tablesGoBttn);
 		
-		JLabel create_tableLbl = new JLabel("Create Table");
-		create_tableLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+		JButton tablesDeleteButton = new JButton("Delete");
+		tablesDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		tablesDeleteButton.setBounds(297, 118, 89, 23);
+		getContentPane().add(tablesDeleteButton);
+		
+		JLabel create_tableLbl = new JLabel("Entries");
+		create_tableLbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		create_tableLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		create_tableLbl.setBounds(178, 136, 109, 19);
+		create_tableLbl.setBounds(194, 167, 109, 19);
 		getContentPane().add(create_tableLbl);
 		
 		tablesCB = new JComboBox<String>();
-		tablesCB.setBounds(99, 86, 188, 20);
+		tablesCB.setToolTipText("");
+		tablesCB.setBounds(99, 97, 188, 20);
 		getContentPane().add(tablesCB);
 		
 		tableModel = new DefaultTableModel();
 		table = new JTable();
 		table.setBorder(new LineBorder(new Color(0, 0, 0)));
 		table.setModel(tableModel);
-		table.setBounds(52, 277, 334, 172);
+		table.setBounds(66, 396, 334, 172);
 		getContentPane().add(table);
 		
-		JButton button = new JButton("?");
-		button.setFont(new Font("Tahoma", Font.BOLD, 9));
-		button.setBounds(582, 475, 40, 40);
-		getContentPane().add(button);
-		button.addActionListener(new ActionListener() 
+		JButton helpBttn = new JButton("?");
+		helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
+		helpBttn.setBounds(582, 621, 40, 40);
+		getContentPane().add(helpBttn);
+		helpBttn.addActionListener(new ActionListener() 
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisFrame,
-						 "DataBase Dropdown Menu: \n" +
-							    "Choose A DataBase to modify and press go to recieve data \n" +
-							  "Table DropDown Menu: \n" +
-							    "Choose a Table to Modify and press select to recieve data \n" +
-							  "Add: \n" +
-							    "Shows GUI for adding new Entry \n" +
+						 "DataBase Dropdown Menu: \n\n" +
+							    "Choose A DataBase to modify and press go to recieve data \n\n" +
+							  "Table DropDown Menu: \n\n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n" +
+							  "Add: \n\n" +
+							    "Shows GUI for adding new Entry \n\n" +
 							  "Edit: \n" +
-							    "Shows GUI for editing selected Entry \n" +
+							    "Shows GUI for editing selected Entry \n\n" +
 							  "Delete: \n" +
-							    "Popup box will confirm the deletion of entry \n" +
-							  "Sort DropDown Menu: \n" +
+							    "Popup box will confirm the deletion of entry \n\n" +
+							  "Sort DropDown Menu: \n\n" +
 							    "Choose which column to Sort By \n" +
-							  "Search Field: \n" +
+							  "Search Field: \n\n" +
 							    "Enter Query to search by, Hit Search to Proceed");
 			}
 		});
-		getContentPane().add(button);
+		getContentPane().add(helpBttn);
 		
 		JLabel databseLbl = new JLabel("Database");
 		databseLbl.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -126,7 +144,6 @@ public class ClientGUI extends JFrame
 		
 		databaseCB = new JComboBox<String>();
 		databaseCB.setBounds(99, 54, 188, 20);
-		
 		getContentPane().add(databaseCB);
 		
 		JLabel lblErrorLog = new JLabel("Error Log");
@@ -134,43 +151,131 @@ public class ClientGUI extends JFrame
 		lblErrorLog.setBounds(473, 24, 80, 19);
 		getContentPane().add(lblErrorLog);
 		
-		JButton addButton = new JButton("Add");
-		addButton.setBounds(99, 166, 89, 23);
-		getContentPane().add(addButton);
+		JButton entriesAddButton = new JButton("Add");
+		entriesAddButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		entriesAddButton.setBounds(99, 197, 89, 23);
+		getContentPane().add(entriesAddButton);
 		
 		JButton editButton = new JButton("Edit");
-		editButton.setBounds(198, 166, 89, 23);
+		editButton.setBounds(198, 197, 89, 23);
 		getContentPane().add(editButton);
 		
 		JButton deleteButton = new JButton("Delete");
-		deleteButton.setBounds(297, 166, 89, 23);
+		deleteButton.setBounds(297, 197, 89, 23);
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String database = (String)databaseCB.getSelectedItem();
+				String table = (String)tablesCB.getSelectedItem();
+				parent.deleteTable(table, database);
+			}
+		});
 		getContentPane().add(deleteButton);
 		
 		JComboBox<String> sortCB = new JComboBox<String>();
-		sortCB.setBounds(99, 202, 188, 20);
+		sortCB.setBounds(99, 286, 287, 20);
 		getContentPane().add(sortCB);
 		
-		JButton btnSort = new JButton("Sort");
-		btnSort.setBounds(297, 201, 89, 23);
-		getContentPane().add(btnSort);
+		JButton sortBttn = new JButton("Sort");
+		sortBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+			}
+		});
+		sortBttn.setBounds(297, 317, 89, 23);
+		getContentPane().add(sortBttn);
 		
 		searchField = new JTextField();
-		searchField.setBounds(99, 234, 188, 20);
+		searchField.setBounds(86, 580, 201, 20);
 		getContentPane().add(searchField);
 		searchField.setColumns(10);
 		
 		JButton searchButton = new JButton("Search");
-		searchButton.setBounds(297, 233, 89, 23);
+		searchButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+			}
+		});
+		searchButton.setBounds(297, 579, 89, 23);
 		getContentPane().add(searchButton);
 		
-		JTextArea errorTextArea = new JTextArea();
-		errorTextArea.setEditable(false);
-		errorTextArea.setBounds(434, 53, 89, 396);
-		getContentPane().add(errorTextArea);
-		
-		JScrollPane sp = new JScrollPane(errorTextArea);
-		sp.setBounds(434, 53, 150, 396);
+		JScrollPane sp = new JScrollPane();
+		sp.setBounds(434, 53, 150, 515);
 		getContentPane().add(sp);
+		
+		JButton fieldsAddButton = new JButton("Add");
+		fieldsAddButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+			}
+		});
+		fieldsAddButton.setBounds(99, 317, 89, 23);
+		getContentPane().add(fieldsAddButton);
+		
+		JButton fieldsDeleteButton = new JButton("Delete");
+		fieldsDeleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+			}
+		});
+		fieldsDeleteButton.setBounds(198, 317, 89, 23);
+		getContentPane().add(fieldsDeleteButton);
+		
+		JLabel fieldsLbl = new JLabel("Fields");
+		fieldsLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		fieldsLbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		fieldsLbl.setBounds(194, 256, 109, 19);
+		getContentPane().add(fieldsLbl);
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBounds(0, 0, 65, 21);
+		getContentPane().add(menuBar);
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(fileMenu);
+		
+		JMenu menuItem_DB = new JMenu("Database");
+		fileMenu.add(menuItem_DB);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(helpMenu);
+		
+		JButton btnInstructions = new JButton("Details");
+		btnInstructions.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(thisFrame,
+						 "DataBase Dropdown Menu: \n\n" +
+							    "Choose A DataBase to modify and press go to recieve data \n\n" +
+							  "Table DropDown Menu: \n\n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n" +
+							  "Add: \n\n" +
+							    "Shows GUI for adding new Entry \n\n" +
+							  "Edit: \n" +
+							    "Shows GUI for editing selected Entry \n\n" +
+							  "Delete: \n" +
+							    "Popup box will confirm the deletion of entry \n\n" +
+							  "Sort DropDown Menu: \n\n" +
+							    "Choose which column to Sort By \n" +
+							  "Search Field: \n\n" +
+							    "Enter Query to search by, Hit Search to Proceed");
+			}
+		});
+		helpMenu.add(btnInstructions);
+		
+		
 	}
 	
 	public void setDatabases(String[] list)
@@ -186,5 +291,7 @@ public class ClientGUI extends JFrame
 		for (String table : list)
 			tablesCB.addItem(table);
 		tablesCB.addItem("Create new table...");
+	}
+	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 }
