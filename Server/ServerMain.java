@@ -2,10 +2,13 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 
 public class ServerMain implements Server
 {
@@ -125,6 +128,42 @@ public class ServerMain implements Server
 			return new String[] { "Database doesn't exist" };
 	}
 
+	public void saveToFile(AVLTree<Entry> tree, String databaseName, String tableName, 
+							String[] fieldNames, FieldType[] fieldTypes)
+	{
+		FileOutputStream fOut = null;
+		ObjectOutputStream oStream = null;
+		
+		try {
+			File dir = new File(databaseName);
+			if(!dir.isDirectory())
+				dir.mkdir();
+			File saveFile = new File(databaseName+"\\"+tableName+".ser");
+			
+			fOut = new FileOutputStream(saveFile);
+			oStream = new ObjectOutputStream(fOut);
+			oStream.writeObject(fieldNames);
+			oStream.writeObject(fieldTypes);
+			oStream.writeObject(tree); 
+			oStream.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public boolean deleteFile()
+	{
+		return true;
+	}
+	
+	
+	
 	@Override
 	public AVLTree<Entry> getTable(String tableName) {
 		// TODO Auto-generated method stub
