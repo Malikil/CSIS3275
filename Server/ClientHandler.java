@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientHandler implements Runnable
 {
@@ -18,6 +17,8 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
+	private String currentDatabase;
+	private String currentTable;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -48,8 +49,7 @@ public class ClientHandler implements Runnable
 			{
 				try
 				{
-					// Receive username and password from client
-					String[] userPass = (String[])objIn.readObject();
+					String[] userPass = ((Message)objIn.readObject()).getLogin();
 					// Make received username lowercase to avoid case sensitivity
 					userPass[0] = userPass[0].toLowerCase();
 					String nextLine;
@@ -62,23 +62,21 @@ public class ClientHandler implements Runnable
 							if (userInfo[1].equals(userPass[1]))
 							{
 								// Send success to client
-								objOut.writeObject(Command.CONNECTION_SUCCESS);
 								// Send available databases to client
-								objOut.writeObject(parent.getUserDatabases(userInfo[0]));
-								// Yes, I know this way is is inefficient, but w/e
+								objOut.writeObject(new Message(
+										Command.CONNECTION_SUCCESS,
+										parent.getUserDatabases(userInfo[0])));
 								loggedIn = true;
 								break;
 							}
 							else
 							{
-								objOut.writeObject(Command.INCORRECT_PASSWORD);
+								objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
 								break;
 							}
 					}
 					if (!loggedIn)
-					{
-						objOut.writeObject(Command.INCORRECT_USER);
-					}
+						objOut.writeObject(new Message(Command.INCORRECT_USER, null));
 					
 				}
 				catch (IOException ex)
@@ -114,19 +112,26 @@ public class ClientHandler implements Runnable
 		{
 			try
 			{
-				switch ((Command)objIn.readObject())
+				Message received = (Message) objIn.readObject();
+				switch (received.getCommandType())
 				{
 				case ADD_COLUMN:
 					break;
 				case ADD_ENTRY:
 					break;
 				case ADD_TABLE:
+					parent.createTable(received.getTable());
 					break;
 				case DELETE_COLUMN:
 					break;
 				case DELETE_ENTRY:
 					break;
 				case DELETE_TABLE:
+					String database2 = received.getDatabase();
+					File db = new File(database2);
+					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
+					deleteFile.delete();
+					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
 					break;
 				case EDIT_ENTRY:
 					break;
@@ -134,12 +139,21 @@ public class ClientHandler implements Runnable
 					break;
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
-					String database = strIn.readLine(); System.out.println("Received database name from client");
-					objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to client");
-					objOut.writeObject(parent.getTableList(database)); System.out.println("Sent databases to client");
+					String database = received.getDatabase(); System.out.println("Received database name from client");
+					objOut.writeObject(new Message(Command.GET_DATABASE, parent.getTableList(database))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
+					break;
+				case CONNECTION_SUCCESS:
+					break;
+				case INCORRECT_PASSWORD:
+					break;
+				case INCORRECT_USER:
+					break;
+				case LOGIN:
+					break;
+				default:
 					break;
 				}
 			}

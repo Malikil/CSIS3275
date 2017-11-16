@@ -156,7 +156,16 @@ public class ClientGUI extends JFrame
 		
 		JButton deleteBttn = new JButton("Delete Entry");
 		deleteBttn.setBounds(145, 289, 106, 43);
-		panel.add(deleteBttn);
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String database = (String)databaseCB.getSelectedItem();
+				String table = (String)tablesCB.getSelectedItem();
+				parent.deleteTable(table, database);
+			}
+		});
+    panel.add(deleteBttn);
 		
 		JButton editBttn = new JButton("Edit Entry");
 		editBttn.setBounds(261, 289, 109, 43);
