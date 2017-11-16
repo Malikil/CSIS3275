@@ -130,4 +130,10 @@ public class ServerMain implements Server
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void createTable(String tableName) {
+		// TODO Auto-generated method stub
+		
+	}
 }

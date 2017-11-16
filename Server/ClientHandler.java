@@ -2,7 +2,6 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,10 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.util.ArrayList;
-
-import Client.Message;
 
 public class ClientHandler implements Runnable
 {
@@ -22,7 +17,8 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
-	private Message send;
+	private String currentDatabase;
+	private String currentTable;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -53,41 +49,34 @@ public class ClientHandler implements Runnable
 			{
 				try
 				{
-					Message received = (Message)objIn.readObject();
-					if(received.getType() == Command.LOGIN)
-					{	
-						String username = received.getUsername().toLowerCase();
-						// Make received username lowercase to avoid case sensitivity
-						String password = received.getPassword();
-						String nextLine;
-						while ((nextLine = userList.readLine()) != null)
-						{
-							String[] userInfo = nextLine.split(",");
-							// Make username from file lowercase to avoid case sensitivity
-							userInfo[0] = userInfo[0].toLowerCase();
-							if (userInfo[0].equals(username))
-								if (userInfo[1].equals(password))
-								{
-									// Send success to client
-									Message send = new Message(Command.CONNECTION_SUCCESS);
-									// Send available databases to client
-									send.setDatabases(parent.getUserDatabases(userInfo[0]));
-									objOut.writeObject(send);
-									loggedIn = true;
-									break;
-								}
-								else
-								{
-									Message send = new Message(Command.INCORRECT_PASSWORD);
-									objOut.writeObject(send);
-									break;
-								}
-						}
-						if (!loggedIn)
-						{
-							objOut.writeObject(Command.INCORRECT_USER);
-						}
+					String[] userPass = ((Message)objIn.readObject()).getLogin();
+					// Make received username lowercase to avoid case sensitivity
+					userPass[0] = userPass[0].toLowerCase();
+					String nextLine;
+					while ((nextLine = userList.readLine()) != null)
+					{
+						String[] userInfo = nextLine.split(",");
+						// Make username from file lowercase to avoid case sensitivity
+						userInfo[0] = userInfo[0].toLowerCase();
+						if (userInfo[0].equals(userPass[0]))
+							if (userInfo[1].equals(userPass[1]))
+							{
+								// Send success to client
+								// Send available databases to client
+								objOut.writeObject(new Message(
+										Command.CONNECTION_SUCCESS,
+										parent.getUserDatabases(userInfo[0])));
+								loggedIn = true;
+								break;
+							}
+							else
+							{
+								objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+								break;
+							}
 					}
+					if (!loggedIn)
+						objOut.writeObject(new Message(Command.INCORRECT_USER, null));
 					
 				}
 				catch (IOException ex)
@@ -124,51 +113,14 @@ public class ClientHandler implements Runnable
 			try
 			{
 				Message received = (Message) objIn.readObject();
-				switch (received.getType())
+				switch (received.getCommandType())
 				{
 				case ADD_COLUMN:
 					break;
 				case ADD_ENTRY:
 					break;
 				case ADD_TABLE:
-					File folder = new File(received.getDatabase());
-					File file = new File(folder + "\\" + received.getTable() + ".txt");
-					FileOutputStream fileOut = null;
-					ObjectOutputStream objWriter = null;
-					try
-					{
-						fileOut = new FileOutputStream(file);
-					}
-					catch (IOException e)
-					{
-						System.out.println("Cannot output file.");
-					}
-					try
-					{
-						objWriter = new ObjectOutputStream(fileOut);
-					}
-					catch (IOException e)
-					{
-						System.out.println("Cannot create Object Writer");
-						try
-						{
-							fileOut.close();
-						}
-						catch (IOException e1)
-						{
-							System.out.println("Could not close output file");
-						}
-						return;
-					}
-					try
-					{
-						objWriter.writeObject(null);
-						objWriter.close();
-					}
-					catch (IOException e)
-					{
-						System.out.println("Could not run write object");
-					}
+					parent.createTable(received.getTable());
 					break;
 				case DELETE_COLUMN:
 					break;
@@ -179,9 +131,7 @@ public class ClientHandler implements Runnable
 					File db = new File(database2);
 					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
 					deleteFile.delete();
-					send = new Message(Command.DELETE_TABLE);
-					send.setTableNames(parent.getTableList(database2));
-					objOut.writeObject(send);
+					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
 					break;
 				case EDIT_ENTRY:
 					break;
@@ -190,9 +140,7 @@ public class ClientHandler implements Runnable
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
 					String database = received.getDatabase(); System.out.println("Received database name from client");
-					send = new Message(Command.GET_DATABASE);
-					send.setTableNames(parent.getTableList(database));
-					objOut.writeObject(send); System.out.println("Sent databases to client");
+					objOut.writeObject(new Message(Command.GET_DATABASE, parent.getTableList(database))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
