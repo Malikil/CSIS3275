@@ -16,21 +16,30 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 
 public class ClientGUI extends JFrame
 {
 	private Client parent;
-	private JTable table;
 	private DefaultTableModel tableModel;
-	private JTextField searchField;
-	JComboBox<String> databaseCB;
-	JComboBox<String> tablesCB;
+	private JTable table_1;
 
 	/**
 	 * Create the application.
 	 */
 	public ClientGUI(Client owner) 
 	{
+		setTitle("Client Application");
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
 		initialize();
@@ -43,107 +52,110 @@ public class ClientGUI extends JFrame
 	{
 		JFrame thisFrame = this;
 		new JFrame();
-		setBounds(100, 100, 638, 553);
+		setBounds(100, 100, 638, 486);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
-		JLabel appLabel = new JLabel("Client App.");
-		appLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		appLabel.setBounds(10, 11, 95, 19);
-		getContentPane().add(appLabel);
-		
-		JLabel tablesLbl = new JLabel("Tables");
-		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		tablesLbl.setBounds(10, 87, 80, 14);
-		getContentPane().add(tablesLbl);
-		
-		JButton tablesGoBttn = new JButton("Select");
-		tablesGoBttn.setBounds(297, 83, 89, 23);
-		getContentPane().add(tablesGoBttn);
-		
-		JLabel create_tableLbl = new JLabel("Create Table");
-		create_tableLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
-		create_tableLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		create_tableLbl.setBounds(178, 136, 109, 19);
-		getContentPane().add(create_tableLbl);
-		
-		tablesCB = new JComboBox<String>();
-		tablesCB.setBounds(99, 86, 188, 20);
-		getContentPane().add(tablesCB);
-		
 		tableModel = new DefaultTableModel();
-		table = new JTable();
-		table.setBorder(new LineBorder(new Color(0, 0, 0)));
-		table.setModel(tableModel);
-		table.setBounds(52, 277, 334, 172);
-		getContentPane().add(table);
 		
-		JButton button = new JButton("?");
-		button.setFont(new Font("Tahoma", Font.BOLD, 9));
-		button.setBounds(582, 475, 40, 40);
-		getContentPane().add(button);
-		button.addActionListener(new ActionListener() 
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setForeground(Color.BLACK);
+		menuBar.setBackground(Color.PINK);
+		menuBar.setBounds(0, 0, 622, 21);
+		getContentPane().add(menuBar);
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setBackground(new Color(153, 204, 255));
+		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(fileMenu);
+		
+		JMenu menuItem_DB = new JMenu("Database");
+		fileMenu.add(menuItem_DB);
+		
+		JMenu mnTables = new JMenu("Tables");
+		fileMenu.add(mnTables);
+		
+		JSeparator separator = new JSeparator();
+		fileMenu.add(separator);
+		
+		JMenuItem mntmAddTable = new JMenuItem("Add Table");
+		fileMenu.add(mntmAddTable);
+		
+		JMenuItem mntmDeleteTable = new JMenuItem("Delete Table");
+		fileMenu.add(mntmDeleteTable);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setBackground(new Color(102, 204, 255));
+		helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(helpMenu);
+		
+		JButton instructionsBttn = new JButton("Details");
+		instructionsBttn.addActionListener(new ActionListener() 
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisFrame,
-						 "DataBase Dropdown Menu: \n" +
-							    "Choose A DataBase to modify and press go to recieve data \n" +
-							  "Table DropDown Menu: \n" +
-							    "Choose a Table to Modify and press select to recieve data \n" +
-							  "Add: \n" +
-							    "Shows GUI for adding new Entry \n" +
+						 "DataBase Dropdown Menu: \n\n" +
+							    "Choose A DataBase to modify and press go to recieve data \n\n" +
+							  "Table DropDown Menu: \n\n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n" +
+							  "Add: \n\n" +
+							    "Shows GUI for adding new Entry \n\n" +
 							  "Edit: \n" +
-							    "Shows GUI for editing selected Entry \n" +
+							    "Shows GUI for editing selected Entry \n\n" +
 							  "Delete: \n" +
-							    "Popup box will confirm the deletion of entry \n" +
-							  "Sort DropDown Menu: \n" +
+							    "Popup box will confirm the deletion of entry \n\n" +
+							  "Sort DropDown Menu: \n\n" +
 							    "Choose which column to Sort By \n" +
-							  "Search Field: \n" +
+							  "Search Field: \n\n" +
 							    "Enter Query to search by, Hit Search to Proceed");
 			}
 		});
-		getContentPane().add(button);
+		helpMenu.add(instructionsBttn);
 		
-		JLabel databseLbl = new JLabel("Database");
-		databseLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		databseLbl.setBounds(10, 58, 80, 14);
-		getContentPane().add(databseLbl);
+		JTabbedPane searchTab = new JTabbedPane(JTabbedPane.TOP);
+		searchTab.setBackground(Color.WHITE);
+		searchTab.setBounds(0, 21, 622, 427);
+		getContentPane().add(searchTab);
 		
-		JButton dbButton = new JButton("Go!");
-		dbButton.setBounds(297, 54, 89, 23);
-		dbButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				String database = (String)databaseCB.getSelectedItem();
-				System.out.println("Ask for database " + database);
-				parent.getTables(database);
-			}
-		});
-		getContentPane().add(dbButton);
+		JPanel panel = new JPanel();
+		searchTab.addTab("Tables", null, panel, null);
+		panel.setLayout(null);
 		
-		databaseCB = new JComboBox<String>();
-		databaseCB.setBounds(99, 54, 188, 20);
+		JLabel fieldLabel = new JLabel("Fields");
+		fieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		fieldLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		fieldLabel.setBounds(152, 11, 109, 19);
+		panel.add(fieldLabel);
 		
-		getContentPane().add(databaseCB);
+		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.setBounds(56, 41, 300, 20);
+		panel.add(comboBox);
 		
-		JLabel lblErrorLog = new JLabel("Error Log");
-		lblErrorLog.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblErrorLog.setBounds(473, 24, 80, 19);
-		getContentPane().add(lblErrorLog);
+		JButton button = new JButton("Add");
+		button.setBounds(56, 72, 89, 23);
+		panel.add(button);
 		
-		JButton addButton = new JButton("Add");
-		addButton.setBounds(99, 166, 89, 23);
-		getContentPane().add(addButton);
+		JButton button_1 = new JButton("Delete");
+		button_1.setBounds(162, 72, 89, 23);
+		panel.add(button_1);
 		
-		JButton editButton = new JButton("Edit");
-		editButton.setBounds(198, 166, 89, 23);
-		getContentPane().add(editButton);
+		JButton button_2 = new JButton("Sort");
+		button_2.setBounds(267, 72, 89, 23);
+		panel.add(button_2);
 		
-		JButton deleteButton = new JButton("Delete");
-		deleteButton.setBounds(297, 166, 89, 23);
+		table_1 = new JTable();
+		table_1.setBorder(new LineBorder(new Color(0, 0, 0)));
+		table_1.setBounds(36, 106, 334, 172);
+		panel.add(table_1);
+		
+		JButton addBttn = new JButton("Add Entry");
+		addBttn.setBounds(36, 289, 99, 43);
+		panel.add(addBttn);
+		
+		JButton deleteBttn = new JButton("Delete Entry");
+		deleteBttn.setBounds(145, 289, 106, 43);
 		deleteButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -153,35 +165,33 @@ public class ClientGUI extends JFrame
 				parent.deleteTable(table, database);
 			}
 		});
-		getContentPane().add(deleteButton);
+    panel.add(deleteBttn);
 		
-		JComboBox<String> sortCB = new JComboBox<String>();
-		sortCB.setBounds(99, 202, 188, 20);
-		getContentPane().add(sortCB);
+		JButton editBttn = new JButton("Edit Entry");
+		editBttn.setBounds(261, 289, 109, 43);
+		panel.add(editBttn);
 		
-		JButton btnSort = new JButton("Sort");
-		btnSort.setBounds(297, 201, 89, 23);
-		getContentPane().add(btnSort);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(398, 38, 150, 294);
+		panel.add(scrollPane);
 		
-		searchField = new JTextField();
-		searchField.setBounds(99, 234, 188, 20);
-		getContentPane().add(searchField);
-		searchField.setColumns(10);
+		JLabel label_1 = new JLabel("Error Log");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		label_1.setBounds(439, 11, 80, 19);
+		panel.add(label_1);
 		
-		JButton searchButton = new JButton("Search");
-		searchButton.setBounds(297, 233, 89, 23);
-		getContentPane().add(searchButton);
+		JPanel mainPanel = new JPanel();
+		searchTab.addTab("Search", null, mainPanel, null);
 		
-		JTextArea errorTextArea = new JTextArea();
-		errorTextArea.setEditable(false);
-		errorTextArea.setBounds(434, 53, 89, 396);
-		getContentPane().add(errorTextArea);
+		mainPanel.setLayout(null);
 		
-		JScrollPane sp = new JScrollPane(errorTextArea);
-		sp.setBounds(434, 53, 150, 396);
-		getContentPane().add(sp);
+		JPanel searchPanel = new JPanel();
+		searchPanel.setBounds(0, 0, 617, 366);
+		mainPanel.add(searchPanel);
+		
+		
 	}
-	
+	/*
 	public void setDatabases(String[] list)
 	{
 		databaseCB.removeAllItems();
@@ -195,5 +205,8 @@ public class ClientGUI extends JFrame
 		for (String table : list)
 			tablesCB.addItem(table);
 		tablesCB.addItem("Create new table...");
+	}
+	*/
+	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 }
