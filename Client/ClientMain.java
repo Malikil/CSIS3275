@@ -1,32 +1,25 @@
 package Client;
 
-import Server.Command;
-import Server.Entry;
-import Server.AVLTree;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
+
+import Server.Command;
+import Server.Entry;
+import Server.Message;
 
 public class ClientMain implements Client
 {
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
-	private BufferedReader strIn;
-	private PrintWriter strOut;
 	private ClientGUI gui;
+	private static Message received;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
 		objOut = out;
 		objIn = in;
-		
-		strOut = new PrintWriter(sock.getOutputStream(), true);
-		strIn = new BufferedReader(new InputStreamReader(sock.getInputStream()));
 		gui = new ClientGUI(this);
 	}
 	
@@ -46,10 +39,13 @@ public class ClientMain implements Client
 				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
 				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
 				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
-				out.writeObject(new String[] { login.getEnteredUser(), login.getEnteredPass() }); System.out.println("Sent user/pass");
-				Command conf = (Command)in.readObject(); System.out.println("Response received");
+				Message loginAttempt = new Message(Command.LOGIN,
+						new String[] { login.getEnteredUser(), login.getEnteredPass() });
+				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
+				received = (Message)in.readObject();
+				Command conf = received.getCommandType(); System.out.println("Response received");
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
-				if (conf == Command.CONNECTION_SUCCESS)
+				if (conf == Command.CONNECTION_SUCCESS)		
 					break;
 				else
 					login.setMessage(conf);
@@ -79,39 +75,41 @@ public class ClientMain implements Client
 	public void start()
 	{
 		gui.setVisible(true);
+		gui.setDatabases(received.getDatabaseList());
+		System.out.println("Databases set");
 		try
 		{
-			// Get databases
-			gui.setDatabases((String[])objIn.readObject());
-			while (true)
-			{
-				switch ((Command)objIn.readObject())
+				while (true)
 				{
-				case ADD_COLUMN:
-					break;
-				case ADD_ENTRY:
-					break;
-				case ADD_TABLE:
-					break;
-				case DELETE_COLUMN:
-					break;
-				case DELETE_ENTRY:
-					break;
-				case DELETE_TABLE:
-					break;
-				case EDIT_ENTRY:
-					break;
-				case GET_TABLE:
-					break;
-				case GET_DATABASE:
-					gui.setTables((String[])objIn.readObject());
-					break;
-				case MESSAGE:
-					break;
-				default:
-					throw new IOException("Unexpected server command");
+					received = (Message)objIn.readObject();
+					switch (received.getCommandType())
+					{
+					case ADD_COLUMN:
+						break;
+					case ADD_ENTRY:
+						break;
+					case ADD_TABLE:
+						break;
+					case DELETE_COLUMN:
+						break;
+					case DELETE_ENTRY:
+						break;
+					case DELETE_TABLE:
+						break;
+					case EDIT_ENTRY:
+						break;
+					case GET_TABLE:
+						break;
+					case TABLE_LIST:
+						gui.setTables(received.getTableList());
+						break;
+					case MESSAGE:
+						break;
+					default:
+						throw new IOException("Unexpected server command");
+					}
 				}
-			}
+			
 		}
 		catch (ClassNotFoundException ex)
 		{
@@ -124,8 +122,6 @@ public class ClientMain implements Client
 			{
 				objIn.close();
 				objOut.close();
-				strIn.close();
-				strOut.close();
 			}
 			catch (IOException ex) { /* Couldn't close streams */ }
 		}
@@ -136,8 +132,36 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(Command.EDIT_ENTRY);
-			objOut.writeObject(e);
+			Message send = new Message(Command.EDIT_ENTRY, e);
+			objOut.writeObject(send);
+		}
+		catch (IOException ex)
+		{
+			// I'm starting to get tired of writing catch blocks for IOException
+		}
+	}
+	
+	
+	public void addTable(String tableName, String DBname)
+	{
+		try
+		{
+			Message send = new Message(Command.ADD_TABLE, tableName);
+			objOut.writeObject(send);
+		}
+		catch (IOException ex)
+		{
+			// I'm starting to get tired of writing catch blocks for IOException
+		}
+	}
+	
+	@Override
+	public void deleteTable(String tableName, String DBname)
+	{
+		try
+		{
+			Message send = new Message(Command.DELETE_TABLE, tableName);
+			objOut.writeObject(send);
 		}
 		catch (IOException ex)
 		{
@@ -145,13 +169,14 @@ public class ClientMain implements Client
 		}
 	}
 
+
 	@Override
 	public void getTables(String database)
 	{
 		try
 		{
-			objOut.writeObject(Command.GET_DATABASE); System.out.println("Sent GET_DATABASE to server");
-			strOut.write(database); System.out.println("Send db name to server");
+			Message send = new Message(Command.GET_DATABASE, database);
+			objOut.writeObject(send); System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
 		{

@@ -144,6 +144,15 @@ public class ClientGUI extends JFrame
 		
 		JButton deleteButton = new JButton("Delete");
 		deleteButton.setBounds(297, 166, 89, 23);
+		deleteButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String database = (String)databaseCB.getSelectedItem();
+				String table = (String)tablesCB.getSelectedItem();
+				parent.deleteTable(table, database);
+			}
+		});
 		getContentPane().add(deleteButton);
 		
 		JComboBox<String> sortCB = new JComboBox<String>();
