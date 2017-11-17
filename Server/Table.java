@@ -15,7 +15,7 @@ public class Table {
 	public <T> void addField(Column toAdd)
 	{
 		columns.add(toAdd);
-		AVLNode base = entries.getBase();
+		AVLNode base = entries.minimum();
 		while(base != null)
 		{
 			Entry entry = (Entry) base.getValue();
@@ -27,7 +27,7 @@ public class Table {
 	public void rmvField(int toRmv)
 	{
 		columns.remove(toRmv);
-		AVLNode base = entries.getBase();
+		AVLNode base = entries.minimum();
 		while(base != null)
 		{
 			Entry entry = (Entry) base.getValue();
