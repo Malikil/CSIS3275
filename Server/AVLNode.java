@@ -167,12 +167,12 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 	public AVLNode<T> getNext()
 	{
 		AVLNode<T> next = this;
-		if(right != null)
+		if(next.getRight() != null)
 		{
-			next = right;
-			while(left != null)
+			next = next.getRight();
+			while(next.getLeft() != null)
 			{
-				next = left;
+				next = next.getLeft();
 			}
 			return next;
 		}
@@ -181,17 +181,19 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 		{
 			while(true)
 			{
+
 				if(parent  == null)
 				{
 					return next;
 				}
 				
-				if(parent.getLeft() == next)
+				if(parent.getLeft() != next)
 				{
-					next = next.parent;
+					next = next.getParent().getLeft();
+					return next;
 				}
 				
-				next = next.parent;
+				next = next.getParent();
 			}
 		}
 	}
