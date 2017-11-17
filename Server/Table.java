@@ -2,37 +2,39 @@ package Server;
 
 
 public class Table {
-	MyAL<Field> fields;
+	DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> entries;
+	
 		
 	public Table()
 	{
 		 entries = new AVLTree<Entry>();
+		 columns = new DefinitelyNotArrayList();
 	}	
 	
-	public void addField(Field toAdd)
+	public void addField(Column toAdd)
 	{
-		//Addfield to linkedlist
+		columns.add(toAdd);
 	}
 	
-	public void rmvField(Field toRmv)
+	public void rmvField(Column toRmv)
 	{
-		//field to linkedlist
+		columns.remove(toRmv);
 	}
 	
 	public void rmvEntry(Entry toDelete)
 	{
-		
+		entries.delete(toDelete);
 	}
 	
 	public void editEntry(Entry toEdit)
 	{
-		
+		//toEdit.getKey() entries. TODO.
 	}
 	
 	public void addEntry(Entry toAdd)
 	{
-		
+		entries.add(toAdd);
 	}
 	
 }

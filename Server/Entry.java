@@ -1,31 +1,32 @@
 package Server;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 @SuppressWarnings("rawtypes")
 public class Entry implements Comparable<Entry>, Serializable
 {
 	private static final long serialVersionUID = 481061902950995857L;
 	
-	private static int comparer = -1;
+	private static int comparer;
 	public static int getComparer() { return comparer; }
 	public static void setComparer(int fieldNumber) { comparer = fieldNumber; }
 	
+	private DefinitelyNotArrayList<Comparable> fields; 
 	private final int primaryKey;
-	private DefinitelyNotArrayList<Comparable> fields;
 	
 	public Entry(int key)
 	{
-		fields = new DefinitelyNotArrayList<Comparable>();
+		fields = new DefinitelyNotArrayList<Comparable>(); 
 		primaryKey = key;
 	}
 	
 	public Entry(int key, Comparable[] data)
 	{
-		fields = new DefinitelyNotArrayList<Comparable>(data.length);
+		fields = new DefinitelyNotArrayList<Comparable>(); 
 		for (Comparable d : data)
 			fields.add(d);
-		primaryKey = key;
+		this.primaryKey = key;
 	}
 	
 	public Comparable getField(int fieldNumber)
@@ -40,7 +41,7 @@ public class Entry implements Comparable<Entry>, Serializable
 	
 	public void addField(int fieldNumber, Comparable data)
 	{
-		fields.add(data, fieldNumber);
+		fields.insert(fieldNumber, data);
 	}
 	
 	public void addField(Comparable data)
