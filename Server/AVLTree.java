@@ -20,7 +20,14 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	/**
 	 * A constructor to set the base of the tree to an initial value
 	 * @param value The initial base value
+	 * @return 
 	 */
+	
+	public AVLNode<T> getBase()
+	{
+		return base;
+	}
+	
 	public AVLTree(T value)
 	{
 		base = new AVLNode<T>(value);
@@ -277,4 +284,6 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		if (node.getRight() != null)
 			printNode(node.getRight(), pre + ".R");
 	}
+
+	
 }

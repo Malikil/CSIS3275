@@ -9,7 +9,6 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 	private AVLNode<T> parent;
 	private AVLNode<T> left, right;
 	private int layers;
-	
 	public T getValue() { return value; }
 	public AVLNode<T> getParent() { return parent; }
 	public AVLNode<T> getLeft() { return left; }
@@ -162,5 +161,38 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 	public String toString()
 	{
 		return value.toString();
+	}
+	
+	
+	public AVLNode<T> getNext()
+	{
+		AVLNode<T> next = this;
+		if(right != null)
+		{
+			next = right;
+			while(left != null)
+			{
+				next = left;
+			}
+			return next;
+		}
+		
+		else // TODO: This part needs fixing.
+		{
+			while(true)
+			{
+				if(parent  == null)
+				{
+					return next;
+				}
+				
+				if(parent.getLeft() == next)
+				{
+					next = next.parent;
+				}
+				
+				next = next.parent;
+			}
+		}
 	}
 }

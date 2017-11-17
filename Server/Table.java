@@ -12,14 +12,28 @@ public class Table {
 		 columns = new DefinitelyNotArrayList();
 	}	
 	
-	public void addField(Column toAdd)
+	public <T> void addField(Column toAdd)
 	{
 		columns.add(toAdd);
+		AVLNode base = entries.getBase();
+		while(base != null)
+		{
+			Entry entry = (Entry) base.getValue();
+			entry.addField(null);
+			base = base.getNext();
+		}
 	}
 	
-	public void rmvField(Column toRmv)
+	public void rmvField(int toRmv)
 	{
 		columns.remove(toRmv);
+		AVLNode base = entries.getBase();
+		while(base != null)
+		{
+			Entry entry = (Entry) base.getValue();
+			entry.deleteField(toRmv);
+			base = base.getNext();
+		}
 	}
 	
 	public void rmvEntry(Entry toDelete)
