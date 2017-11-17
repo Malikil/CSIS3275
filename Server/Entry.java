@@ -12,18 +12,18 @@ public class Entry implements Comparable<Entry>, Serializable
 	public static int getComparer() { return comparer; }
 	public static void setComparer(int fieldNumber) { comparer = fieldNumber; }
 	
-	private MyAL<Comparable> fields; //TODO: Need to change ArrayList to LinkedList 
+	private DefinitelyNotArrayList<Comparable> fields; 
 	private final int primaryKey;
 	
 	public Entry(int key)
 	{
-		fields = new MyAL<Comparable>(); //TODO: Need to change ArrayList to LinkedList 
+		fields = new DefinitelyNotArrayList<Comparable>(); 
 		primaryKey = key;
 	}
 	
 	public Entry(int key, Comparable[] data)
 	{
-		fields = new MyAL<Comparable>(data.length);
+		fields = new DefinitelyNotArrayList<Comparable>(); 
 		for (Comparable d : data)
 			fields.add(d);
 		this.primaryKey = key;
@@ -41,7 +41,7 @@ public class Entry implements Comparable<Entry>, Serializable
 	
 	public void addField(int fieldNumber, Comparable data)
 	{
-		fields.add(fieldNumber, data);
+		fields.insert(fieldNumber, data);
 	}
 	
 	public void addField(Comparable data)
