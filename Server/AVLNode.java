@@ -182,15 +182,14 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 			while(true)
 			{
 
-				if(parent  == null)
+				if(next.getParent()  == null)
 				{
 					return next;
 				}
 				
-				if(parent.getLeft() != next)
+				if(next.getParent().getLeft() == next)
 				{
-					next = next.getParent().getLeft();
-					return next;
+					return next.getParent();
 				}
 				
 				next = next.getParent();
