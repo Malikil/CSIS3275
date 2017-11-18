@@ -71,7 +71,7 @@ public class DefinitelyNotArrayList<E> implements Serializable
 		}
 	}
 	
-	public void add(E item, int index)
+	public void insert(int index, E item)
 	{
 		if (index < 0 || index > count)
 			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");

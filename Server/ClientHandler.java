@@ -17,8 +17,9 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
-	private String currentDatabase;
-	private String currentTable;
+	private String currentDatabaseName;
+	private String currentTableName;
+	private Table currentTable;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -27,8 +28,7 @@ public class ClientHandler implements Runnable
 		try
 		{
 			objOut = new ObjectOutputStream(connection.getOutputStream());
-			objIn = new ObjectInputStream(connection.getInputStream());
-			
+			objIn = new ObjectInputStream(connection.getInputStream());	
 			strOut = new PrintWriter(connection.getOutputStream(), true);
 			strIn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		}
@@ -116,6 +116,9 @@ public class ClientHandler implements Runnable
 				switch (received.getCommandType())
 				{
 				case ADD_COLUMN:
+					Column toAdd = received.getColToAdd();
+					currentTable.addField(toAdd);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case ADD_ENTRY:
 					break;
@@ -123,6 +126,9 @@ public class ClientHandler implements Runnable
 					parent.createTable(received.getTable());
 					break;
 				case DELETE_COLUMN:
+					int ToRmv = received.getColToRmv();
+					currentTable.rmvField(ToRmv);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case DELETE_ENTRY:
 					break;
@@ -136,6 +142,12 @@ public class ClientHandler implements Runnable
 				case EDIT_ENTRY:
 					break;
 				case GET_TABLE:
+					System.out.println("Received GET_TABLE from client");
+					String[] data = received.getTable().split(",");
+					String currentDatabaseName = data[0];
+					String currentTableName = data[1];
+					Table currentTable = parent.getTable(currentDatabaseName, currentTableName);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable)); System.out.println("Sent table to client");
 					break;
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
