@@ -23,7 +23,13 @@ public class Message implements Serializable
 				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
 			break;
 		case ADD_COLUMN:
+			if (!(messageData instanceof Column))
+				throw new IllegalArgumentException("messageData must be of type Column for messageType " + messageType);
+			break;
 		case DELETE_COLUMN:
+			if (!(messageData instanceof Integer))
+				throw new IllegalArgumentException("messageData must be of type Integer for messageType " + messageType);
+			break;
 		case ADD_ENTRY:
 		case DELETE_ENTRY:
 		case EDIT_ENTRY:
@@ -98,4 +104,15 @@ public class Message implements Serializable
 		else
 			return null;
 	}
+	
+	public int getColToRmv() 
+	{
+			return (Integer)data;
+	}
+	
+	public Column getColToAdd() 
+	{
+			return (Column)data;
+	}
+	
 }

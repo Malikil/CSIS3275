@@ -2,9 +2,11 @@ package Server;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.io.FileOutputStream;
@@ -165,14 +167,42 @@ public class ServerMain implements Server
 	
 	
 	@Override
-	public AVLTree<Entry> getTable(String tableName) {
-		// TODO Auto-generated method stub
-		return null;
+	public Table getTable(String dbname, String tableName) {
+		Table tableReq = null;
+		FileInputStream file = null;
+		try {
+			file = new FileInputStream(new File(dbname + "\\" + tableName + ".eric"));
+		} catch (FileNotFoundException e1) {
+		}
+		try {
+			ObjectInputStream fileObjIn = new ObjectInputStream(file);
+			tableReq = (Table) fileObjIn.readObject();
+		} catch (IOException e) {
+		} catch (ClassNotFoundException e) {
+		}
+		return tableReq;
+		
 	}
+	
 
 	@Override
 	public void createTable(String tableName) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	public void updateTable(String db, String table, Table newTable)
+	{
+		FileOutputStream file = null;
+		try {
+			file = new FileOutputStream(new File(db + "\\" + table + ".eric"));
+		} catch (FileNotFoundException e1) {
+		}
+		try {
+			ObjectOutputStream fileObjOut = new ObjectOutputStream(file);
+			fileObjOut.writeObject(newTable);
+		} catch (IOException e) {
+		}
 		
 	}
 }
