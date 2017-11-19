@@ -37,6 +37,10 @@ public class ClientGUI extends JFrame
 	private JTable tables;
 	private JTextField itemField;
 	private JTextField fieldField;
+	private JMenu menuItem_DB;
+	private JMenu mnTables;
+	JComboBox<String> fieldsCB;
+	
 
 	/**
 	 * Create the application.
@@ -74,10 +78,10 @@ public class ClientGUI extends JFrame
 		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(fileMenu);
 		
-		JMenu menuItem_DB = new JMenu("Database");
+		menuItem_DB = new JMenu("Database");
 		fileMenu.add(menuItem_DB);
 		
-		JMenu mnTables = new JMenu("Tables");
+		mnTables = new JMenu("Tables");
 		fileMenu.add(mnTables);
 		
 		JSeparator separator = new JSeparator();
@@ -135,7 +139,7 @@ public class ClientGUI extends JFrame
 		fieldLabel.setBounds(152, 11, 109, 19);
 		tablesPanel.add(fieldLabel);
 		
-		JComboBox<String> fieldsCB = new JComboBox<String>();
+		fieldsCB = new JComboBox<String>();
 		fieldsCB.setBounds(56, 41, 300, 20);
 		tablesPanel.add(fieldsCB);
 		
@@ -229,22 +233,41 @@ public class ClientGUI extends JFrame
 		
 		
 	}
-	/*
+	
 	public void setDatabases(String[] list)
 	{
-		databaseCB.removeAllItems();
-		for (String database : list)
-			databaseCB.addItem(database);
+		menuItem_DB.removeAll();
+		for (String dbname : list)
+		{
+			JMenuItem newDB = new JMenuItem(dbname);
+			newDB.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTableNames(dbname);
+				}
+			});
+			menuItem_DB.add(newDB);
+		}
 	}
 	
 	public void setTables(String[] list)
 	{
-		tablesCB.removeAllItems();
+		mnTables.removeAll();
 		for (String table : list)
-			tablesCB.addItem(table);
-		tablesCB.addItem("Create new table...");
+		{
+			JMenuItem newTable = new JMenuItem(table);
+			newTable.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTable(table);
+				}
+			});
+			mnTables.add(newTable);
+		}
 	}
-	*/
+	
 	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 }
