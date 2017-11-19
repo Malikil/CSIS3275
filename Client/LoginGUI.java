@@ -11,6 +11,8 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.UIManager;
+import java.awt.Color;
+import java.awt.SystemColor;
 
 public class LoginGUI extends JDialog
 {	
@@ -29,7 +31,8 @@ public class LoginGUI extends JDialog
 	 */
 	public LoginGUI()
 	{
-		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
+		setBackground(new Color(204, 204, 255));
+		getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 		setTitle("Login Page");
 		enteredUser = "";
 		enteredPass = "";
@@ -62,16 +65,19 @@ public class LoginGUI extends JDialog
 		getContentPane().add(lblPassword);
 		
 		ipField = new JTextField();
+		ipField.setBackground(SystemColor.control);
 		ipField.setBounds(100, 23, 133, 20);
 		getContentPane().add(ipField);
 		ipField.setColumns(10);
 		
 		usernameField = new JTextField();
+		usernameField.setBackground(SystemColor.control);
 		usernameField.setBounds(100, 62, 133, 20);
 		getContentPane().add(usernameField);
 		usernameField.setColumns(10);
 		
 		passwordField = new JPasswordField();
+		passwordField.setBackground(SystemColor.control);
 		passwordField.setBounds(100, 93, 133, 20);
 		getContentPane().add(passwordField);
 		passwordField.setEchoChar('*');
@@ -148,7 +154,7 @@ public class LoginGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisDialog,
-					"IP Address Field:  \n   Enter Server IP Address\n" + 
+					"IP Address Field:  \n   Enter Server IP Address\n\n" + 
 					"UserName TextField: \n  Enter Username with corresponding Password \n\n" +
 					"	Press 'Login' to continue");
 			}

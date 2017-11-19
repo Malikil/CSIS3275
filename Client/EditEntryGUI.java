@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 public class EditEntryGUI extends JDialog
 {
@@ -25,6 +26,8 @@ public class EditEntryGUI extends JDialog
 	 */
 	public EditEntryGUI(String[] fields, Entry entry)
 	{
+		setTitle("Edit Entry");
+		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
 		initialize();
 		JTextField[] newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)

@@ -12,9 +12,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-
-import Server.Command;
-
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JScrollPane;
@@ -31,6 +28,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+import java.awt.SystemColor;
 
 public class ClientGUI extends JFrame
 {
@@ -39,8 +37,6 @@ public class ClientGUI extends JFrame
 	private JTable tables;
 	private JTextField itemField;
 	private JTextField fieldField;
-	private JMenu menuItem_DB = new JMenu("Database");
-	private JMenu mnTables = new JMenu("Tables");
 
 	/**
 	 * Create the application.
@@ -77,7 +73,11 @@ public class ClientGUI extends JFrame
 		fileMenu.setBackground(new Color(153, 204, 255));
 		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(fileMenu);
+		
+		JMenu menuItem_DB = new JMenu("Database");
 		fileMenu.add(menuItem_DB);
+		
+		JMenu mnTables = new JMenu("Tables");
 		fileMenu.add(mnTables);
 		
 		JSeparator separator = new JSeparator();
@@ -94,30 +94,30 @@ public class ClientGUI extends JFrame
 		helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(helpMenu);
 		
-		JButton instructionsBttn = new JButton("Details");
-		instructionsBttn.addActionListener(new ActionListener() 
+		JMenuItem details = new JMenuItem("Details");
+		details.addActionListener(new ActionListener() 
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisFrame,
-						 "DataBase Dropdown Menu: \n\n" +
-							    "Choose A DataBase to modify and press go to recieve data \n\n" +
-							  "Table DropDown Menu: \n\n" +
-							    "Choose a Table to Modify and press select to recieve data \n\n" +
-							  "Add: \n\n" +
-							    "Shows GUI for adding new Entry \n\n" +
+						 "Database Dropdown Menu: \n" +
+							    "Choose A Database to modify and press go to recieve data \n\n\n" +
+							  "Table Dropdown Menu: \n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n\n" +
+							  "Add: \n" +
+							    "Shows GUI for adding new Entry \n\n\n" +
 							  "Edit: \n" +
-							    "Shows GUI for editing selected Entry \n\n" +
+							    "Shows GUI for editing selected Entry \n\n\n" +
 							  "Delete: \n" +
-							    "Popup box will confirm the deletion of entry \n\n" +
-							  "Sort DropDown Menu: \n\n" +
-							    "Choose which column to Sort By \n" +
-							  "Search Field: \n\n" +
+							    "Popup box will confirm the deletion of entry \n\n\n" +
+							  "Sort Dropdown Menu: \n" +
+							    "Choose which column to Sort By \n\n\n" +
+							  "Search Field: \n" +
 							    "Enter Query to search by, Hit Search to Proceed");
 			}
 		});
-		helpMenu.add(instructionsBttn);
+		helpMenu.add(details);
 		
 		JTabbedPane searchTab = new JTabbedPane(JTabbedPane.TOP);
 		searchTab.setBackground(UIManager.getColor("Tree.selectionBackground"));
@@ -135,9 +135,9 @@ public class ClientGUI extends JFrame
 		fieldLabel.setBounds(152, 11, 109, 19);
 		tablesPanel.add(fieldLabel);
 		
-		JComboBox<String> comboBox = new JComboBox<String>();
-		comboBox.setBounds(56, 41, 300, 20);
-		tablesPanel.add(comboBox);
+		JComboBox<String> fieldsCB = new JComboBox<String>();
+		fieldsCB.setBounds(56, 41, 300, 20);
+		tablesPanel.add(fieldsCB);
 		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
@@ -156,6 +156,7 @@ public class ClientGUI extends JFrame
 		tablesPanel.add(sortFieldBttn);
 		
 		tables = new JTable();
+		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
 		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
 		tables.setBounds(36, 106, 334, 172);
 		tablesPanel.add(tables);
@@ -201,11 +202,13 @@ public class ClientGUI extends JFrame
 		searchPanel.setLayout(null);
 		
 		itemField = new JTextField();
+		itemField.setBackground(SystemColor.control);
 		itemField.setBounds(211, 64, 227, 20);
 		searchPanel.add(itemField);
 		itemField.setColumns(10);
 		
 		fieldField = new JTextField();
+		fieldField.setBackground(SystemColor.control);
 		fieldField.setBounds(211, 99, 227, 20);
 		searchPanel.add(fieldField);
 		fieldField.setColumns(10);
@@ -226,42 +229,22 @@ public class ClientGUI extends JFrame
 		
 		
 	}
-	
+	/*
 	public void setDatabases(String[] list)
 	{
-		menuItem_DB.removeAll();
+		databaseCB.removeAllItems();
 		for (String database : list)
-		{
-			JMenuItem fuckingShit = new JMenuItem(database);
-			fuckingShit.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					parent.getTableNames(fuckingShit.getText());
-				}
-			});
-			menuItem_DB.add(fuckingShit);
-		}
+			databaseCB.addItem(database);
 	}
 	
 	public void setTables(String[] list)
 	{
-		mnTables.removeAll();
+		tablesCB.removeAllItems();
 		for (String table : list)
-		{
-			JMenuItem tables = new JMenuItem(table);
-			tables.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					parent.getTable(tables.getText());
-				}
-			});
-			mnTables.add(tables);
-		}
-
+			tablesCB.addItem(table);
+		tablesCB.addItem("Create new table...");
 	}
-	
+	*/
 	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 }
