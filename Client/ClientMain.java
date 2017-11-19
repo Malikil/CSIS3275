@@ -75,7 +75,7 @@ public class ClientMain implements Client
 	public void start()
 	{
 		gui.setVisible(true);
-		gui.setDatabases(received.getDatabaseList());
+		//gui.setDatabases(received.getDatabaseList());
 		System.out.println("Databases set");
 		try
 		{
@@ -101,7 +101,7 @@ public class ClientMain implements Client
 					case GET_TABLE:
 						break;
 					case TABLE_LIST:
-						gui.setTables(received.getTableList());
+						//gui.setTables(received.getTableList());
 						break;
 					case MESSAGE:
 						break;

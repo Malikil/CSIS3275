@@ -10,6 +10,7 @@ import javax.swing.JDialog;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.UIManager;
 
 public class LoginGUI extends JDialog
 {	
@@ -28,6 +29,7 @@ public class LoginGUI extends JDialog
 	 */
 	public LoginGUI()
 	{
+		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
 		setTitle("Login Page");
 		enteredUser = "";
 		enteredPass = "";
@@ -146,9 +148,9 @@ public class LoginGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisDialog,
-					"IP Address Field: \nEnter Server IP Address\n" + 
-					"UserName TextField: \nEnter Username with corresponding Password \n" +
-					"Press 'Login' to continue");
+					"IP Address Field:  \n   Enter Server IP Address\n" + 
+					"UserName TextField: \n  Enter Username with corresponding Password \n\n" +
+					"	Press 'Login' to continue");
 			}
 		});
 		getContentPane().add(button);
