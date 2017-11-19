@@ -23,6 +23,37 @@ public class ServerMain implements Server
 	
 	public static void main(String[] args)
 	{
+		Table test = new Table();
+		test.addField(new Column("Field1", 1));
+		test.addField(new Column("Field2", 1));
+		test.addField(new Column("Field3", 1));
+		Comparable[] gah = {1,2,3};
+
+		{
+			FileOutputStream fOut = null;
+			ObjectOutputStream oStream = null;
+			
+			try {
+				File dir = new File("db1");
+				if(!dir.isDirectory())
+					dir.mkdir();
+				File saveFile = new File("db1"+"\\"+"test7665"+".eric");
+				
+				fOut = new FileOutputStream(saveFile);
+				oStream = new ObjectOutputStream(fOut);
+				oStream.writeObject(test);
+				oStream.close();
+				fOut.close();
+			} 
+			catch (FileNotFoundException e) 
+			{
+				e.printStackTrace();
+			} 
+			catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		new Thread(new ServerGUI(server)).start();
@@ -172,15 +203,20 @@ public class ServerMain implements Server
 		Table tableReq = null;
 		FileInputStream file = null;
 		try {
-			file = new FileInputStream(new File(dbname + "\\" + tableName + ".eric"));
+			file = new FileInputStream(new File(dbname + "\\"+ tableName +".eric"));
 		} catch (FileNotFoundException e1) {
+			
 		}
 		try {
 			ObjectInputStream fileObjIn = new ObjectInputStream(file);
 			tableReq = (Table) fileObjIn.readObject();
+			file.close();
+			fileObjIn.close();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}
+		
+		
 		return tableReq;
 		
 	}

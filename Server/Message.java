@@ -19,8 +19,6 @@ public class Message implements Serializable
 		case DELETE_TABLE:
 		case GET_TABLE:
 		case GET_DATABASE:
-			if (!(messageData instanceof String))
-				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
 			break;
 		case ADD_COLUMN:
 			if (!(messageData instanceof Column))
@@ -84,13 +82,18 @@ public class Message implements Serializable
 			return null;
 	}
 	
-	public String getTable()
+	public String getTableName()
 	{
-		if (data instanceof String)
 			return (String)data;
-		else
-			return null;
 	}
+	
+	public Table getTable()
+	{
+
+			return (Table)data;
+
+	}
+
 	
 	public String getDatabase()
 	{

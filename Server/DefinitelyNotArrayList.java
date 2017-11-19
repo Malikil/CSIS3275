@@ -14,6 +14,7 @@ public class DefinitelyNotArrayList<E> implements Serializable
 	public DefinitelyNotArrayList()
 	{
 		array = new Object[10];
+		
 		count = 0;
 	}
 	

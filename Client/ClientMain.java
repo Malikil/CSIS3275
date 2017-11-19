@@ -101,6 +101,8 @@ public class ClientMain implements Client
 					case EDIT_ENTRY:
 						break;
 					case GET_TABLE:
+						currentTable = received.getTable();
+						setTable(currentTable);
 						break;
 					case TABLE_LIST:
 						gui.setTables(received.getTableList());
@@ -201,7 +203,12 @@ public class ClientMain implements Client
 	
 	public void setTable(Table newTable)
 	{
-		newTable = currentTable;
-		
+		currentTable = newTable;
+		String[] colNames =  currentTable.getColumnNames();
+		gui.fieldsCB.removeAllItems();
+		for(String name: colNames)
+		{
+			gui.fieldsCB.addItem(name);
+		}
 	}
 }

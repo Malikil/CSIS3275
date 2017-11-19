@@ -1,7 +1,8 @@
 package Server;
 
+import java.io.Serializable;
 
-public class Table {
+public class Table implements Serializable {
 	DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> entries;
 	int nextPK = 0;
@@ -17,18 +18,21 @@ public class Table {
 	public <T> void addField(Column toAdd)
 	{
 		columns.add(toAdd);
-		AVLNode base = entries.minimum();
-		boolean isMax = false;
-		while(base != null)
+		if(nextPK !=0)
 		{
-			Entry entry = (Entry) base.getValue();
-			entry.addField(null);
-			if(base != entries.maximum())
+			AVLNode base = entries.minimum();
+			boolean isMax = false;
+			while(base != null)
 			{
-				base = base.getNext();
-			}
-			else
-				isMax = false;
+				Entry entry = (Entry) base.getValue();
+				entry.addField(null);
+				if(base != entries.maximum())
+				{
+					base = base.getNext();
+				}
+				else
+					isMax = false;
+			}	
 		}
 	}
 	
@@ -77,4 +81,14 @@ public class Table {
 			}
 	}
 	
+	public String[] getColumnNames()
+	{
+		String[] temp = new String[columns.size()]; 
+		for(int i = 0; i<columns.size();i++)
+		{
+			temp[i] = (columns.get(i).name);
+		}
+		return temp;
+		
+	}
 }

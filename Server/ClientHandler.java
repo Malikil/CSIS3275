@@ -17,9 +17,9 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
-	private String currentDatabaseName;
-	private String currentTableName;
-	private Table currentTable;
+	private String currentDatabaseName = null;
+	private String currentTableName = null;
+	private Table currentTable = null;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -126,7 +126,7 @@ public class ClientHandler implements Runnable
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case ADD_TABLE:
-					parent.createTable(received.getTable());
+					parent.createTable(received.getTableName());
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();
@@ -152,16 +152,16 @@ public class ClientHandler implements Runnable
 					break;
 				case GET_TABLE:
 					System.out.println("Received GET_TABLE from client");
-					String[] data = received.getTable().split(",");
-					String currentDatabaseName = data[0];
-					String currentTableName = data[1];
-					Table currentTable = parent.getTable(currentDatabaseName, currentTableName);
+					System.out.println(currentDatabaseName);
+					currentTableName = received.getTableName();
+					System.out.println(currentTableName);
+				    currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable)); System.out.println("Sent table to client");
 					break;
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
-					String database = received.getDatabase(); System.out.println("Received database name from client");
-					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(database))); System.out.println("Sent databases to client");
+					currentDatabaseName  = received.getDatabase(); System.out.println("Received database name from client");
+					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());
