@@ -94,10 +94,7 @@ public class Message implements Serializable
 	
 	public String getDatabase()
 	{
-		if (data instanceof String)
 			return (String)data;
-		else
-			return null;
 	}
 	
 	public String[] getDatabaseList()
@@ -110,10 +107,7 @@ public class Message implements Serializable
 	
 	public String[] getTableList()
 	{
-		if (data instanceof String[])
 			return (String[])data;
-		else
-			return null;
 	}
 	
 	public String[] getLogin()

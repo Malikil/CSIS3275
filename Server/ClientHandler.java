@@ -161,7 +161,7 @@ public class ClientHandler implements Runnable
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");
 					String database = received.getDatabase(); System.out.println("Received database name from client");
-					objOut.writeObject(new Message(Command.GET_DATABASE, parent.getTableList(database))); System.out.println("Sent databases to client");
+					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(database))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
 					parent.messageReceived(strIn.readLine());

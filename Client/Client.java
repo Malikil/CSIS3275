@@ -5,6 +5,7 @@ import Server.Entry;
 public interface Client
 {
 	public void sendEdits(Entry e);
-	public void getTables(String database);
+	public void getTableNames(String database);
 	public void deleteTable(String table, String database);
+	public void getTable(String database);
 }

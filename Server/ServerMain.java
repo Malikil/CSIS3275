@@ -148,6 +148,7 @@ public class ServerMain implements Server
 			oStream.writeObject(fieldTypes);
 			oStream.writeObject(tree); 
 			oStream.close();
+			fOut.close();
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -201,6 +202,8 @@ public class ServerMain implements Server
 		try {
 			ObjectOutputStream fileObjOut = new ObjectOutputStream(file);
 			fileObjOut.writeObject(newTable);
+			fileObjOut.close();
+			file.close();
 		} catch (IOException e) {
 		}
 		

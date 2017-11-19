@@ -12,6 +12,9 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import Server.Command;
+
 import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JScrollPane;
@@ -36,6 +39,8 @@ public class ClientGUI extends JFrame
 	private JTable tables;
 	private JTextField itemField;
 	private JTextField fieldField;
+	private JMenu menuItem_DB = new JMenu("Database");
+	private JMenu mnTables = new JMenu("Tables");
 
 	/**
 	 * Create the application.
@@ -72,11 +77,7 @@ public class ClientGUI extends JFrame
 		fileMenu.setBackground(new Color(153, 204, 255));
 		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(fileMenu);
-		
-		JMenu menuItem_DB = new JMenu("Database");
 		fileMenu.add(menuItem_DB);
-		
-		JMenu mnTables = new JMenu("Tables");
 		fileMenu.add(mnTables);
 		
 		JSeparator separator = new JSeparator();
@@ -225,22 +226,42 @@ public class ClientGUI extends JFrame
 		
 		
 	}
-	/*
+	
 	public void setDatabases(String[] list)
 	{
-		databaseCB.removeAllItems();
+		menuItem_DB.removeAll();
 		for (String database : list)
-			databaseCB.addItem(database);
+		{
+			JMenuItem fuckingShit = new JMenuItem(database);
+			fuckingShit.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTableNames(fuckingShit.getText());
+				}
+			});
+			menuItem_DB.add(fuckingShit);
+		}
 	}
 	
 	public void setTables(String[] list)
 	{
-		tablesCB.removeAllItems();
+		mnTables.removeAll();
 		for (String table : list)
-			tablesCB.addItem(table);
-		tablesCB.addItem("Create new table...");
+		{
+			JMenuItem tables = new JMenuItem(table);
+			tables.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTable(tables.getText());
+				}
+			});
+			mnTables.add(tables);
+		}
+
 	}
-	*/
+	
 	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 }

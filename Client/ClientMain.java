@@ -8,6 +8,7 @@ import java.net.Socket;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
+import Server.Table;
 
 public class ClientMain implements Client
 {
@@ -15,6 +16,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private static Message received;
+	private Table currentTable = null;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -75,7 +77,7 @@ public class ClientMain implements Client
 	public void start()
 	{
 		gui.setVisible(true);
-		//gui.setDatabases(received.getDatabaseList());
+		gui.setDatabases(received.getDatabaseList());
 		System.out.println("Databases set");
 		try
 		{
@@ -101,7 +103,7 @@ public class ClientMain implements Client
 					case GET_TABLE:
 						break;
 					case TABLE_LIST:
-						//gui.setTables(received.getTableList());
+						gui.setTables(received.getTableList());
 						break;
 					case MESSAGE:
 						break;
@@ -171,7 +173,7 @@ public class ClientMain implements Client
 
 
 	@Override
-	public void getTables(String database)
+	public void getTableNames(String database)
 	{
 		try
 		{
@@ -182,5 +184,24 @@ public class ClientMain implements Client
 		{
 			System.out.println("Error asking for databases from server");
 		}
+	}
+	
+	public void getTable(String tablename)
+	{
+		try
+		{
+			Message send = new Message(Command.GET_TABLE, tablename);
+			objOut.writeObject(send); System.out.println("Sent GET_TABLE to server");
+		}
+		catch (IOException ex)
+		{
+			System.out.println("Error asking for databases from server");
+		}
+	}
+	
+	public void setTable(Table newTable)
+	{
+		newTable = currentTable;
+		
 	}
 }
