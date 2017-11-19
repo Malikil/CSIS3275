@@ -17,8 +17,9 @@ public class ClientHandler implements Runnable
 	private BufferedReader strIn;
 	private PrintWriter strOut;
 	private Server parent;
-	private String currentDatabase;
-	private String currentTable;
+	private String currentDatabaseName;
+	private String currentTableName;
+	private Table currentTable;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -27,8 +28,7 @@ public class ClientHandler implements Runnable
 		try
 		{
 			objOut = new ObjectOutputStream(connection.getOutputStream());
-			objIn = new ObjectInputStream(connection.getInputStream());
-			
+			objIn = new ObjectInputStream(connection.getInputStream());	
 			strOut = new PrintWriter(connection.getOutputStream(), true);
 			strIn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		}
@@ -116,15 +116,27 @@ public class ClientHandler implements Runnable
 				switch (received.getCommandType())
 				{
 				case ADD_COLUMN:
+					Column toAdd = received.getColToAdd();
+					currentTable.addField(toAdd);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case ADD_ENTRY:
+					Comparable[] entrydata = received.getAddEntry();
+					currentTable.addEntry(entrydata);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case ADD_TABLE:
 					parent.createTable(received.getTable());
 					break;
 				case DELETE_COLUMN:
+					int ToRmv = received.getColToRmv();
+					currentTable.rmvField(ToRmv);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case DELETE_ENTRY:
+					Entry entryToRmv = received.getEntry();
+					currentTable.rmvEntry(entryToRmv);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case DELETE_TABLE:
 					String database2 = received.getDatabase();
@@ -134,8 +146,17 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
 					break;
 				case EDIT_ENTRY:
+					Entry entryToEdit = received.getEntry();
+					currentTable.editEntry(entryToEdit);
+					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
 					break;
 				case GET_TABLE:
+					System.out.println("Received GET_TABLE from client");
+					String[] data = received.getTable().split(",");
+					String currentDatabaseName = data[0];
+					String currentTableName = data[1];
+					Table currentTable = parent.getTable(currentDatabaseName, currentTableName);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable)); System.out.println("Sent table to client");
 					break;
 				case GET_DATABASE:
 					System.out.println("Received GET_DATABASE from client");

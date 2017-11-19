@@ -23,9 +23,21 @@ public class Message implements Serializable
 				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
 			break;
 		case ADD_COLUMN:
+			if (!(messageData instanceof Column))
+				throw new IllegalArgumentException("messageData must be of type Column for messageType " + messageType);
+			break;
 		case DELETE_COLUMN:
+			if (!(messageData instanceof Integer))
+				throw new IllegalArgumentException("messageData must be of type Integer for messageType " + messageType);
+			break;
 		case ADD_ENTRY:
+			if (!(messageData instanceof String))
+				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
+			break;
 		case DELETE_ENTRY:
+			if (!(messageData instanceof Entry))
+				throw new IllegalArgumentException("messageData must be of type Entry for messageType " + messageType);
+			break;
 		case EDIT_ENTRY:
 			if (!(messageData instanceof Entry))
 				throw new IllegalArgumentException("messageData must be of type Entry for messageType " + messageType);
@@ -54,7 +66,20 @@ public class Message implements Serializable
 	public Entry getEntry()
 	{
 		if (data instanceof Entry)
+		{
 			return (Entry)data;
+		}
+		else
+			return null;
+	}
+	
+	public Comparable[] getAddEntry()
+	{
+		if (data instanceof String)
+		{
+			Comparable[] entry = ((String) data).split(",");
+			return entry;
+		}
 		else
 			return null;
 	}
@@ -98,4 +123,15 @@ public class Message implements Serializable
 		else
 			return null;
 	}
+	
+	public int getColToRmv() 
+	{
+			return (Integer)data;
+	}
+	
+	public Column getColToAdd() 
+	{
+			return (Column)data;
+	}
+	
 }
