@@ -34,12 +34,13 @@ public class ClientGUI extends JFrame
 {
 	private Client parent;
 	private DefaultTableModel tableModel;
-	private JTable tables;
+	JTable tables;
 	private JTextField itemField;
 	private JTextField fieldField;
 	private JMenu menuItem_DB;
 	private JMenu mnTables;
 	JComboBox<String> fieldsCB;
+	private JPanel tablesPanel;
 	
 
 	/**
@@ -128,7 +129,7 @@ public class ClientGUI extends JFrame
 		searchTab.setBounds(0, 21, 622, 427);
 		getContentPane().add(searchTab);
 		
-		JPanel tablesPanel = new JPanel();
+		tablesPanel = new JPanel();
 		tablesPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		searchTab.addTab("Tables", null, tablesPanel, null);
 		tablesPanel.setLayout(null);
@@ -253,6 +254,7 @@ public class ClientGUI extends JFrame
 	
 	public void setTables(String[] list)
 	{
+		
 		mnTables.removeAll();
 		for (String table : list)
 		{
@@ -266,8 +268,37 @@ public class ClientGUI extends JFrame
 			});
 			mnTables.add(newTable);
 		}
+		
+	}
+	
+	void setTableModel(DefaultTableModel newModel)
+	{
+		tableModel = newModel;
+		tables = new JTable(tableModel);
+		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
+		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tables.setBounds(36, 106, 334, 172);
+		tablesPanel.add(tables);
+		tables.setVisible(true);
+		tables.getColumnModel().getColumn(0).setMinWidth(0);
+		tables.getColumnModel().getColumn(0).setMaxWidth(0);
+		tables.repaint();
+		
 	}
 	
 	private static void addPopup(Component component, final JPopupMenu popup) {
+	}
+
+	public void setTableModel(Object[][] entryList, String[] newColNames) {
+		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
+		tables = new JTable(tableModel);
+		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
+		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tables.setBounds(36, 106, 334, 172);
+		tablesPanel.add(tables);
+		tables.setVisible(true);
+		tables.getColumnModel().getColumn(0).setMinWidth(0);
+		tables.getColumnModel().getColumn(0).setMaxWidth(0);
+		tables.repaint();
 	}
 }

@@ -27,7 +27,12 @@ public class ServerMain implements Server
 		test.addField(new Column("Field1", 1));
 		test.addField(new Column("Field2", 1));
 		test.addField(new Column("Field3", 1));
-		Comparable[] gah = {1,2,3};
+		Comparable[] gah = {"1","2","3"};
+		test.addEntry(gah);
+		test.addEntry(gah);
+		test.addEntry(gah);
+		test.addEntry(gah);
+		
 
 		{
 			FileOutputStream fOut = null;

@@ -77,4 +77,20 @@ public class Entry implements Comparable<Entry>, Serializable
 		}
 		return fields.get(comparer).compareTo(o.fields.get(comparer));
 	}
+	
+	public Object [] getData()
+	{
+		Object[] temp = new String[fields.size()+1]; 
+		temp[0] = Integer.toString(primaryKey);
+		for(int i = 1; i<fields.size()+1;i++)
+		{
+			temp[i] = fields.get(i-1);
+		}
+		return temp;
+	}
+	
+	int getFieldSize()
+	{
+		return fields.size();
+	}
 }

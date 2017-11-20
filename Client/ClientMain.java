@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.table.DefaultTableModel;
+
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -206,9 +208,25 @@ public class ClientMain implements Client
 		currentTable = newTable;
 		String[] colNames =  currentTable.getColumnNames();
 		gui.fieldsCB.removeAllItems();
+		
+		String[] newColNames = new String[colNames.length+1];
+		newColNames[0] = "Primary Key";
+		int i = 1;
 		for(String name: colNames)
 		{
+			newColNames[i] = name;
+			i++;
 			gui.fieldsCB.addItem(name);
 		}
+		
+		Object[][] entryList = currentTable.getEntries();
+		System.out.println(entryList[0]);
+		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
+		tableModel.addRow(new Object[] {5,6,7,8});
+			gui.setTableModel(entryList,newColNames);
+		
+
+
+
 	}
 }

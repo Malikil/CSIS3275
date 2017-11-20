@@ -299,4 +299,9 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		}
 		 current.set(value);
 	}
+	
+	int getCount()
+	{
+		return count;
+	}
 }

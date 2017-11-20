@@ -53,6 +53,11 @@ public class DefinitelyNotArrayList<E> implements Serializable
 	
 	public E get(int index)
 	{
+		if(index == 0)
+		{
+			return (E)array[index];
+		}
+	
 		if (index < 0 || index >= count)
 			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
 		return (E)array[index];

@@ -21,7 +21,6 @@ public class Table implements Serializable {
 		if(nextPK !=0)
 		{
 			AVLNode base = entries.minimum();
-			boolean isMax = false;
 			while(base != null)
 			{
 				Entry entry = (Entry) base.getValue();
@@ -31,7 +30,7 @@ public class Table implements Serializable {
 					base = base.getNext();
 				}
 				else
-					isMax = false;
+					base = null;
 			}	
 		}
 	}
@@ -40,7 +39,6 @@ public class Table implements Serializable {
 	{
 		columns.remove(toRmv);
 		AVLNode base = entries.minimum();
-		boolean isMax = false;
 		while(base != null)
 		{
 			Entry entry = (Entry) base.getValue();
@@ -50,7 +48,7 @@ public class Table implements Serializable {
 				base = base.getNext();
 			}
 			else
-				isMax = false;
+				base = null;
 		}
 	}
 	
@@ -90,5 +88,23 @@ public class Table implements Serializable {
 		}
 		return temp;
 		
+	}
+	
+	public Object[][] getEntries()
+	{
+		
+		AVLNode base = entries.minimum();
+		Entry entry = (Entry) base.getValue();
+		Object[][] entriesArray = new Object[entries.getCount()][entry.getFieldSize()+1];
+		
+		for(int i = 0; i< entries.getCount(); i++)
+		{			
+			 entry = (Entry) base.getValue();
+			 entriesArray[i] = entry.getData();
+				base = base.getNext();
+
+		}
+		
+		return entriesArray;
 	}
 }
