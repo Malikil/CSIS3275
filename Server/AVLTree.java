@@ -8,6 +8,8 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	private AVLNode<T> base;
 	private int count;
 	
+	public int size() { return count; }
+	
 	/**
 	 * The default constructor, the base will be set to null and no items will be in the tree 
 	 */
