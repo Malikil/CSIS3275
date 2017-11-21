@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
@@ -14,35 +15,36 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.LineBorder;
+
+
 import java.awt.Color;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
-import java.awt.SystemColor;
 
 public class ClientGUI extends JFrame
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
-	JTable tables;
+	JTable tables = new JTable();
 	private JTextField itemField;
 	private JTextField fieldField;
 	private JMenu menuItem_DB;
 	private JMenu mnTables;
 	JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
-	private JScrollPane Scroller;
+	private JScrollPane Scroller = new JScrollPane(tables);
 	
 
 	/**
@@ -146,6 +148,10 @@ public class ClientGUI extends JFrame
 		fieldsCB.setBounds(56, 41, 300, 20);
 		tablesPanel.add(fieldsCB);
 		
+		Scroller.setBounds(36, 106, 334, 172);
+		tablesPanel.add(Scroller);
+		
+		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
@@ -168,11 +174,7 @@ public class ClientGUI extends JFrame
 		sortFieldBttn.setBounds(267, 72, 89, 23);
 		tablesPanel.add(sortFieldBttn);
 		
-		tables = new JTable();
-		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
-		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
-		tables.setBounds(36, 106, 334, 172);
-		tablesPanel.add(tables);
+	
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(36, 289, 99, 43);
@@ -224,7 +226,6 @@ public class ClientGUI extends JFrame
 		searchPanel.setBounds(0, 0, 617, 399);
 		mainPanel.add(searchPanel);
 		searchPanel.setLayout(null);
-		
 		itemField = new JTextField();
 		itemField.setBackground(SystemColor.control);
 		itemField.setBounds(211, 64, 227, 20);
@@ -241,15 +242,17 @@ public class ClientGUI extends JFrame
 		searchItemLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
 		searchItemLbl.setBounds(155, 67, 46, 14);
 		searchPanel.add(searchItemLbl);
-		
+		 		
 		JLabel searchFieldLbl = new JLabel("Field ");
 		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
 		searchFieldLbl.setBounds(155, 102, 46, 14);
 		searchPanel.add(searchFieldLbl);
-		
+
 		JButton searchBttn = new JButton("Search");
 		searchBttn.setBounds(349, 140, 89, 23);
 		searchPanel.add(searchBttn);
+		
+		
 		
 		
 	}
@@ -295,14 +298,29 @@ public class ClientGUI extends JFrame
 	}
 
 	public void setTableModel(Object[][] entryList, String[] newColNames) {
-		tables = new JTable(entryList, newColNames);
+		tablesPanel.remove(Scroller);
+		tables = new JTable(entryList, newColNames){
+			      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 6626198581056258616L;
+
+				public boolean isCellEditable(int row, int column){  
+			        return false;  
+			      }
+ 
+		};
 		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
 		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
 		tables.getColumnModel().getColumn(0).setMinWidth(0);
 		tables.getColumnModel().getColumn(0).setMaxWidth(0);
 		tables.setRowSelectionAllowed(true);
+		tables.setColumnSelectionAllowed(false);
+		tables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		Scroller = new JScrollPane(tables);
 		Scroller.setBounds(36, 106, 334, 172);
 		tablesPanel.add(Scroller);
+		tablesPanel.repaint();
+		
 	}
 }
