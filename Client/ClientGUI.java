@@ -152,6 +152,7 @@ public class ClientGUI extends JFrame
 		JButton deleteFieldBttn = new JButton("Delete");
 		deleteFieldBttn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				parent.deleteColumn(fieldsCB.getSelectedIndex());
 			}
 		});
 		deleteFieldBttn.setBounds(162, 72, 89, 23);
@@ -169,6 +170,17 @@ public class ClientGUI extends JFrame
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(36, 289, 99, 43);
+		addBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int i = fieldsCB.getItemCount();
+				String[] headers = new String[i];
+				for(int j = 0;j<headers.length;j++)
+					headers[j] = fieldsCB.getItemAt(j);
+				parent.addEntry(headers);
+			}
+		});
 		tablesPanel.add(addBttn);
 		
 		JButton deleteBttn = new JButton("Delete Entry");

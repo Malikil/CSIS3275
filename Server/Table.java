@@ -3,7 +3,7 @@ package Server;
 import java.io.Serializable;
 
 public class Table implements Serializable {
-	DefinitelyNotArrayList<Column> columns;
+	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> entries;
 	int nextPK = 0;
 	DefinitelyNotArrayList<Integer> unusedPKs = new DefinitelyNotArrayList<Integer>(); 
@@ -12,12 +12,12 @@ public class Table implements Serializable {
 	public Table()
 	{
 		 entries = new AVLTree<Entry>();
-		 columns = new DefinitelyNotArrayList();
+		 setColumns(new DefinitelyNotArrayList());
 	}	
 	
 	public <T> void addField(Column toAdd)
 	{
-		columns.add(toAdd);
+		getColumns().add(toAdd);
 		if(nextPK !=0)
 		{
 			AVLNode base = entries.minimum();
@@ -37,7 +37,7 @@ public class Table implements Serializable {
 	
 	public void rmvField(int toRmv)
 	{
-		columns.remove(toRmv);
+		getColumns().remove(toRmv);
 		AVLNode base = entries.minimum();
 		while(base != null)
 		{
@@ -81,21 +81,21 @@ public class Table implements Serializable {
 	
 	public String[] getColumnNames()
 	{
-		String[] temp = new String[columns.size()]; 
-		for(int i = 0; i<columns.size();i++)
+		String[] temp = new String[getColumns().size()]; 
+		for(int i = 0; i<getColumns().size();i++)
 		{
-			temp[i] = (columns.get(i).name);
+			temp[i] = (getColumns().get(i).name);
 		}
 		return temp;
 		
 	}
 	
-	public Object[][] getEntries()
+	public Comparable[][] getEntries()
 	{
 		
 		AVLNode base = entries.minimum();
 		Entry entry = (Entry) base.getValue();
-		Object[][] entriesArray = new Object[entries.getCount()][entry.getFieldSize()+1];
+		Comparable[][] entriesArray = new Comparable[entries.getCount()][entry.getFieldSize()+1];
 		
 		for(int i = 0; i< entries.getCount(); i++)
 		{			
@@ -106,5 +106,13 @@ public class Table implements Serializable {
 		}
 		
 		return entriesArray;
+	}
+
+	public DefinitelyNotArrayList<Column> getColumns() {
+		return columns;
+	}
+
+	public void setColumns(DefinitelyNotArrayList<Column> columns) {
+		this.columns = columns;
 	}
 }

@@ -119,24 +119,29 @@ public class ClientHandler implements Runnable
 					Column toAdd = received.getColToAdd();
 					currentTable.addField(toAdd);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_ENTRY:
 					Comparable[] entrydata = received.getAddEntry();
 					currentTable.addEntry(entrydata);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:
-					parent.createTable(received.getTableName());
+					parent.createTable(currentDatabaseName,received.getTableName());
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();
 					currentTable.rmvField(ToRmv);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_ENTRY:
 					Entry entryToRmv = received.getEntry();
 					currentTable.rmvEntry(entryToRmv);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_TABLE:
 					String database2 = received.getDatabase();
@@ -149,6 +154,7 @@ public class ClientHandler implements Runnable
 					Entry entryToEdit = received.getEntry();
 					currentTable.editEntry(entryToEdit);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case GET_TABLE:
 					System.out.println("Received GET_TABLE from client");

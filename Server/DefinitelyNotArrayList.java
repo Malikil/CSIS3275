@@ -113,15 +113,23 @@ public class DefinitelyNotArrayList<E> implements Serializable
 		return false;
 	}
 	
-	public E remove(int index)
+	public void remove(int index)
 	{
-		if (index < 0 || index >= count)
-			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
+
+			if (index < 0 || index >= count)
+				throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
 		E value = (E)array[index];
-		for (int i = index; i < count; i++)
-			array[i] = array[i + 1];
+		Object[] temp = array;
+		array = new Object[array.length-1];
+		for (int i = 0; i < array.length; i++) {
+			if(i < index)
+			{
+				array[i] = temp[i];
+			}
+			else
+				array[i] = temp[i+1];
+		}
 		count--;
-		return value;
 	}
 	
 	public E set(int index, E value)

@@ -27,11 +27,15 @@ public class ServerMain implements Server
 		test.addField(new Column("Field1", 1));
 		test.addField(new Column("Field2", 1));
 		test.addField(new Column("Field3", 1));
-		Comparable[] gah = {"1","2","3"};
+		Comparable[] gah =  {"1","2","3"};
+		Comparable[] gah2 =  {"65","52","98"};
+		Comparable[] gah3 =  {"1","2","dfgdfg"};
+		Comparable[] gah4 =  {"1","2","gdf"};
+		
 		test.addEntry(gah);
-		test.addEntry(gah);
-		test.addEntry(gah);
-		test.addEntry(gah);
+		test.addEntry(gah2);
+		test.addEntry(gah3);
+		test.addEntry(gah4);
 		
 
 		{
@@ -228,8 +232,24 @@ public class ServerMain implements Server
 	
 
 	@Override
-	public void createTable(String tableName) {
-		// TODO Auto-generated method stub
+	public void createTable(String database, String tableName) {
+		File newFile = new File(database + "\\" + tableName + ".eric");
+		try {
+			newFile.createNewFile();
+		} catch (IOException e2) {
+		}
+		FileOutputStream file = null;
+		try {
+			file = new FileOutputStream(new File(database + "\\" + tableName + ".eric"));
+		} catch (FileNotFoundException e1) {
+		}
+		try {
+			ObjectOutputStream fileObjOut = new ObjectOutputStream(file);
+			fileObjOut.writeObject(null);
+			fileObjOut.close();
+			file.close();
+		} catch (IOException e) {
+		}
 		
 	}
 	

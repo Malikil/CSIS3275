@@ -222,9 +222,17 @@ public class ClientMain implements Client
 		Comparable[][] entryList = currentTable.getEntries();
 		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
 			gui.setTableModel(entryList,newColNames);
-		
+	}
 
-
-
+	@Override
+	public void deleteColumn(int selectedIndex) {
+		try {
+			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex)); //-1 because Primary Key is the first element
+		} catch (IOException e) {
+		} 
+	}
+	
+	public void addEntry(String[] headers) { //TODO: MAKE ThIS WORK.
+		EditEntryGUI weird = new EditEntryGUI(headers);
 	}
 }
