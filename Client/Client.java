@@ -12,4 +12,5 @@ public interface Client
 	public void deleteColumn(int selectedIndex);
 	public void addEntry(String[] headers);
 	public void writeMessage(Message send);
+	public void addColumn();
 }
