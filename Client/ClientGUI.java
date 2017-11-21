@@ -41,6 +41,7 @@ public class ClientGUI extends JFrame
 	private JMenu mnTables;
 	JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
+	private JScrollPane Scroller;
 	
 
 	/**
@@ -294,11 +295,11 @@ public class ClientGUI extends JFrame
 		tables = new JTable(tableModel);
 		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
 		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
-		tables.setBounds(36, 106, 334, 172);
-		tablesPanel.add(tables);
-		tables.setVisible(true);
 		tables.getColumnModel().getColumn(0).setMinWidth(0);
 		tables.getColumnModel().getColumn(0).setMaxWidth(0);
 		tables.repaint();
+		Scroller = new JScrollPane(tables);
+		Scroller.setBounds(36, 106, 334, 172);
+		tablesPanel.add(Scroller);
 	}
 }

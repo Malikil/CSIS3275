@@ -219,10 +219,8 @@ public class ClientMain implements Client
 			gui.fieldsCB.addItem(name);
 		}
 		
-		Object[][] entryList = currentTable.getEntries();
-		System.out.println(entryList[0]);
+		Comparable[][] entryList = currentTable.getEntries();
 		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
-		tableModel.addRow(new Object[] {5,6,7,8});
 			gui.setTableModel(entryList,newColNames);
 		
 
