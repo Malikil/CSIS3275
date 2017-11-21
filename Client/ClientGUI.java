@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
@@ -284,32 +285,17 @@ public class ClientGUI extends JFrame
 		
 	}
 	
-	void setTableModel(DefaultTableModel newModel)
-	{
-		tableModel = newModel;
-		tables = new JTable(tableModel);
-		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
-		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
-		tables.setBounds(36, 106, 334, 172);
-		tablesPanel.add(tables);
-		tables.setVisible(true);
-		tables.getColumnModel().getColumn(0).setMinWidth(0);
-		tables.getColumnModel().getColumn(0).setMaxWidth(0);
-		tables.repaint();
-		
-	}
 	
 	private static void addPopup(Component component, final JPopupMenu popup) {
 	}
 
 	public void setTableModel(Object[][] entryList, String[] newColNames) {
-		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
-		tables = new JTable(tableModel);
-		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
+		tables = new JTable(entryList, newColNames);
+		//tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
 		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
 		tables.getColumnModel().getColumn(0).setMinWidth(0);
 		tables.getColumnModel().getColumn(0).setMaxWidth(0);
-		tables.repaint();
+		tables.setRowSelectionAllowed(true);
 		Scroller = new JScrollPane(tables);
 		Scroller.setBounds(36, 106, 334, 172);
 		tablesPanel.add(Scroller);

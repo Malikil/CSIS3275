@@ -1,6 +1,7 @@
 package Client;
 
 import Server.Entry;
+import Server.Message;
 
 public interface Client
 {
@@ -10,4 +11,5 @@ public interface Client
 	public void getTable(String database);
 	public void deleteColumn(int selectedIndex);
 	public void addEntry(String[] headers);
+	public void writeMessage(Message send);
 }

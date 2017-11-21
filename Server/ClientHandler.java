@@ -125,6 +125,7 @@ public class ClientHandler implements Runnable
 					Comparable[] entrydata = received.getAddEntry();
 					currentTable.addEntry(entrydata);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:

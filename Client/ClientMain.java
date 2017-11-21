@@ -232,7 +232,16 @@ public class ClientMain implements Client
 		} 
 	}
 	
-	public void addEntry(String[] headers) { //TODO: MAKE ThIS WORK.
-		EditEntryGUI weird = new EditEntryGUI(headers);
+	public void addEntry(String[] headers) { 
+		EditEntryGUI weird = new EditEntryGUI(headers,this);
+		weird.setVisible(true);
+	}
+	
+	public void writeMessage(Message send)
+	{
+		try {
+			objOut.writeObject(send);
+		} catch (IOException e) {
+		}
 	}
 }

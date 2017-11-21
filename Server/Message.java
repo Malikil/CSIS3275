@@ -29,8 +29,6 @@ public class Message implements Serializable
 				throw new IllegalArgumentException("messageData must be of type Integer for messageType " + messageType);
 			break;
 		case ADD_ENTRY:
-			if (!(messageData instanceof String))
-				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
 			break;
 		case DELETE_ENTRY:
 			if (!(messageData instanceof Entry))
@@ -73,13 +71,7 @@ public class Message implements Serializable
 	
 	public Comparable[] getAddEntry()
 	{
-		if (data instanceof String)
-		{
-			Comparable[] entry = ((String) data).split(",");
-			return entry;
-		}
-		else
-			return null;
+		return (Comparable[]) data;
 	}
 	
 	public String getTableName()
