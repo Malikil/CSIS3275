@@ -52,10 +52,10 @@ public class Table implements Serializable {
 		}
 	}
 	
-	public void rmvEntry(Entry toDelete)
+	public void rmvEntry(int toDelete)
 	{
-		unusedPKs.add(toDelete.getKey());
-		entries.delete(toDelete);
+		unusedPKs.add(toDelete);
+		entries.delete(new Entry(toDelete));
 	}
 	
 	public void editEntry(Entry toEdit)

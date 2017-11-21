@@ -13,4 +13,5 @@ public interface Client
 	public void addEntry(String[] headers);
 	public void writeMessage(Message send);
 	public void addColumn();
+	public void rmvEntry(int entryKey);
 }

@@ -31,8 +31,6 @@ public class Message implements Serializable
 		case ADD_ENTRY:
 			break;
 		case DELETE_ENTRY:
-			if (!(messageData instanceof Entry))
-				throw new IllegalArgumentException("messageData must be of type Entry for messageType " + messageType);
 			break;
 		case EDIT_ENTRY:
 			if (!(messageData instanceof Entry))
@@ -72,6 +70,11 @@ public class Message implements Serializable
 	public Comparable[] getAddEntry()
 	{
 		return (Comparable[]) data;
+	}
+	
+	public int getDelEntry()
+	{
+		return (int) data;
 	}
 	
 	public String getTableName()
