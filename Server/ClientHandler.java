@@ -119,6 +119,7 @@ public class ClientHandler implements Runnable
 					Column toAdd = received.getColToAdd();
 					currentTable.addField(toAdd);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_ENTRY:

@@ -148,6 +148,11 @@ public class ClientGUI extends JFrame
 		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
+		addFieldBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parent.addColumn();
+			}
+		});
 		tablesPanel.add(addFieldBttn);
 		
 		JButton deleteFieldBttn = new JButton("Delete");
@@ -291,7 +296,7 @@ public class ClientGUI extends JFrame
 
 	public void setTableModel(Object[][] entryList, String[] newColNames) {
 		tables = new JTable(entryList, newColNames);
-		//tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
+		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
 		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
 		tables.getColumnModel().getColumn(0).setMinWidth(0);
 		tables.getColumnModel().getColumn(0).setMaxWidth(0);

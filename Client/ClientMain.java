@@ -233,8 +233,8 @@ public class ClientMain implements Client
 	}
 	
 	public void addEntry(String[] headers) { 
-		EditEntryGUI weird = new EditEntryGUI(headers,this);
-		weird.setVisible(true);
+		EditEntryGUI addEnt = new EditEntryGUI(headers,this);
+		addEnt.setVisible(true);
 	}
 	
 	public void writeMessage(Message send)
@@ -243,5 +243,12 @@ public class ClientMain implements Client
 			objOut.writeObject(send);
 		} catch (IOException e) {
 		}
+	}
+
+	@Override
+	public void addColumn() {
+		AddFieldGUI addCol = new AddFieldGUI(this);
+		addCol.setVisible(true);
+		
 	}
 }
