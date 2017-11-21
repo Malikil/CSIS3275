@@ -13,6 +13,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.LineBorder;
 
@@ -45,6 +46,7 @@ public class ClientGUI extends JFrame
 	JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
 	private JScrollPane Scroller = new JScrollPane(tables);
+	private JTextArea chatArea;
 	
 
 	/**
@@ -196,18 +198,42 @@ public class ClientGUI extends JFrame
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					//code to delete entry
+					int entryRow = tables.getSelectedRow();
+					if (entryRow == -1)
+					{
+						chatArea.append("SELECT SOMETHING DUMBASS");
+					}
+					else
+					{
+						int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
+						parent.rmvEntry(entryKey);
+					}
 				}
 			});
 		deleteBttn.setBounds(145, 289, 106, 43);
-		
-    tablesPanel.add(deleteBttn);
+		tablesPanel.add(deleteBttn);
 		
 		JButton editBttn = new JButton("Edit Entry");
 		editBttn.setBounds(261, 289, 109, 43);
+		editBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int entryRow = tables.getSelectedRow();
+				int entryKey = (int) tables.getModel().getValueAt(entryRow, 0);
+				int colCount =  tables.getModel().getColumnCount()-1;
+				Comparable[] entryData = new Comparable[colCount];
+				for(int i = 1; i<colCount; i++)
+				{
+					
+				}
+			}
+		});
 		tablesPanel.add(editBttn);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		chatArea = new JTextArea();
+		chatArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(chatArea);
 		scrollPane.setBounds(398, 38, 150, 294);
 		tablesPanel.add(scrollPane);
 		

@@ -140,9 +140,10 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_ENTRY:
-					Entry entryToRmv = received.getEntry();
+					int entryToRmv = received.getDelEntry();
 					currentTable.rmvEntry(entryToRmv);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_TABLE:

@@ -237,6 +237,14 @@ public class ClientMain implements Client
 		addEnt.setVisible(true);
 	}
 	
+	public void rmvEntry(int primaryKey)
+	{
+		try {
+			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
+		} catch (IOException e) {
+		}
+	}
+	
 	public void writeMessage(Message send)
 	{
 		try {
