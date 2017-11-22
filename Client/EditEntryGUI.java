@@ -1,8 +1,7 @@
 package Client;
 
-import Server.Command;
+import Server.Column;
 import Server.Entry;
-import Server.Message;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -18,26 +17,27 @@ import javax.swing.JTextField;
 
 public class EditEntryGUI extends JDialog
 {
-	JPanel panel;
-	Entry edit;
-	Client parent;
-	JTextField[] newData;
-	boolean Edit;
+	private JPanel panel;
+	
+	private Entry edit;
+	private JTextField[] newData;
+	
+	public JTextField[] getData() { return newData; }
 
 	/**
 	 * Create the application.
 	 * @param fields The names of the fields to display
+	 * @param entry The entry to edit
 	 */
-	public EditEntryGUI(String[] fields, Entry entryToEdit, Client client)
+	public EditEntryGUI(Column[] fields, Entry entry)
 	{
-		edit = entryToEdit;
-		parent = client;
-		Edit = true;
 		initialize();
+		setTitle("Edit Entry");
+		edit = entry;
 		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
-			JLabel label = new JLabel(fields[i]);
+			JLabel label = new JLabel(fields[i].toString());
 			label.setBounds(10, i * 25 + 11, 90, 14);
 			panel.add(label);
 			JTextField newField = new JTextField();
@@ -49,28 +49,11 @@ public class EditEntryGUI extends JDialog
 		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
 	}
 	
-	public EditEntryGUI(String[] fields, Client client)
+	public EditEntryGUI(String[] fields)
 	{
-		parent = client;
-		Edit = false;
 		initialize();
-		newData = new JTextField[fields.length];
-		for (int i = 0; i < fields.length; i++)
-		{
-			JLabel label = new JLabel(fields[i]);
-			label.setBounds(10, i * 25 + 11, 90, 14);
-			panel.add(label);
-			newData[i] = new JTextField("");
-			newData[i].setBounds(110, i * 25 + 8, 120, 20);
-			panel.add(newData[i]);
-		}
-		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
-	}
-	
-	public EditEntryGUI(String[] fields, Client client)
-	{
-		parent = client;
-		initialize();
+		setTitle("Create Entry");
+		edit = null;
 		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
@@ -92,7 +75,7 @@ public class EditEntryGUI extends JDialog
 		JDialog thisDialog = this;
 		setResizable(false);
 		setBounds(100, 100, 325, 282);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		getContentPane().setLayout(null);
 		
@@ -110,25 +93,9 @@ public class EditEntryGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				Comparable[] newEntry = new Comparable[newData.length];
-				if(Edit == false)
-				{
-					
-					for(int i = 0; i<newData.length; i++)
-					{
-						newEntry[i] = newData[i].getText();
-					}
-					parent.writeMessage(new Message(Command.ADD_ENTRY, newEntry));
-				}
-				else
-				{
-					for(int i = 0; i<newData.length; i++)
-					{
-						newEntry[i] = newData[i].getText();
-					}
-					parent.writeMessage(new Message(Command.EDIT_ENTRY, new Entry(edit.getKey(), newEntry)));
-					thisDialog.dispose();
-				}
+				// If we do data validation, it'll probably be here
+				
+				thisDialog.dispose();
 			}
 		});
 		getContentPane().add(btnCommit);
@@ -139,6 +106,7 @@ public class EditEntryGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				newData = null;
 				thisDialog.dispose();
 			}
 		});

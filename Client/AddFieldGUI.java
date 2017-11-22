@@ -73,7 +73,6 @@ public class AddFieldGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				parent.writeMessage(new Message(Command.ADD_COLUMN, new Column(column.getText(), columnType.getSelectedIndex())));
 				thisDialog.dispose();
 			}
 		});

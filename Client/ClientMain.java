@@ -132,46 +132,30 @@ public class ClientMain implements Client
 			catch (IOException ex) { /* Couldn't close streams */ }
 		}
 	}
-
+	
 	@Override
-	public void sendEdits(Entry e)
+	public void createTable(String tableName)
 	{
 		try
 		{
-			Message send = new Message(Command.EDIT_ENTRY, e);
-			objOut.writeObject(send);
+			objOut.writeObject(new Message(Command.ADD_TABLE, tableName));
 		}
 		catch (IOException ex)
 		{
-			// I'm starting to get tired of writing catch blocks for IOException
-		}
-	}
-	
-	
-	public void addTable(String tableName, String DBname)
-	{
-		try
-		{
-			Message send = new Message(Command.ADD_TABLE, tableName);
-			objOut.writeObject(send);
-		}
-		catch (IOException ex)
-		{
-			// I'm starting to get tired of writing catch blocks for IOException
+			// TODO Catch block
 		}
 	}
 	
 	@Override
-	public void deleteTable(String tableName, String DBname)
+	public void deleteTable(String tableName)
 	{
 		try
 		{
-			Message send = new Message(Command.DELETE_TABLE, tableName);
-			objOut.writeObject(send);
+			objOut.writeObject(new Message(Command.DELETE_TABLE, tableName));
 		}
 		catch (IOException ex)
 		{
-			// I'm starting to get tired of writing catch blocks for IOException
+			// TODO Catch block
 		}
 	}
 
@@ -221,19 +205,24 @@ public class ClientMain implements Client
 		
 		Comparable[][] entryList = currentTable.getEntries();
 		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
-			gui.setTableModel(entryList,newColNames);
+		gui.setTableModel(entryList,newColNames);
 	}
 
 	@Override
-	public void deleteColumn(int selectedIndex) {
-		try {
+	public void deleteColumn(int selectedIndex)
+	{
+		try
+		{
 			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex)); //-1 because Primary Key is the first element
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
+			// TODO Catch block
 		} 
 	}
 	
 	public void addEntry(String[] headers) { 
-		EditEntryGUI addEnt = new EditEntryGUI(headers,this);
+		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
 	}
 	
@@ -241,14 +230,6 @@ public class ClientMain implements Client
 	{
 		try {
 			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
-		} catch (IOException e) {
-		}
-	}
-	
-	public void writeMessage(Message send)
-	{
-		try {
-			objOut.writeObject(send);
 		} catch (IOException e) {
 		}
 	}
@@ -261,8 +242,21 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void editEntry(int entryKey, Comparable[] entryData, String[] headers) {
+	public void editEntry(int entryIndex)
+	{
 		EditEntryGUI editEnt = new EditEntryGUI(headers, new Entry(entryKey,entryData), this);
 		editEnt.setVisible(true);
+	}
+
+	@Override
+	public void createEntry(String[] headers) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void deleteEntry(int entryKey) {
+		// TODO Auto-generated method stub
+		
 	}
 }
