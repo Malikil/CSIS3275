@@ -14,6 +14,7 @@ public class DefinitelyNotArrayList<E> implements Serializable
 	public DefinitelyNotArrayList()
 	{
 		array = new Object[10];
+		
 		count = 0;
 	}
 	
@@ -52,6 +53,11 @@ public class DefinitelyNotArrayList<E> implements Serializable
 	
 	public E get(int index)
 	{
+		if(index == 0)
+		{
+			return (E)array[index];
+		}
+	
 		if (index < 0 || index >= count)
 			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
 		return (E)array[index];
@@ -71,7 +77,7 @@ public class DefinitelyNotArrayList<E> implements Serializable
 		}
 	}
 	
-	public void add(E item, int index)
+	public void insert(int index, E item)
 	{
 		if (index < 0 || index > count)
 			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
@@ -107,15 +113,23 @@ public class DefinitelyNotArrayList<E> implements Serializable
 		return false;
 	}
 	
-	public E remove(int index)
+	public void remove(int index)
 	{
-		if (index < 0 || index >= count)
-			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
+
+			if (index < 0 || index >= count)
+				throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
 		E value = (E)array[index];
-		for (int i = index; i < count; i++)
-			array[i] = array[i + 1];
+		Object[] temp = array;
+		array = new Object[array.length-1];
+		for (int i = 0; i < array.length; i++) {
+			if(i < index)
+			{
+				array[i] = temp[i];
+			}
+			else
+				array[i] = temp[i+1];
+		}
 		count--;
-		return value;
 	}
 	
 	public E set(int index, E value)

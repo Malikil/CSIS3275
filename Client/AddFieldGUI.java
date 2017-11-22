@@ -1,5 +1,6 @@
 package Client;
 
+import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -12,52 +13,29 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JTextField;
 
-public class EditEntryGUI extends JDialog
+public class AddFieldGUI extends JDialog
 {
 	JPanel panel;
-	Entry edit;
 	Client parent;
-	JTextField[] newData;
+	JTextField column;
+	JComboBox<String> columnType;
 
 	/**
 	 * Create the application.
 	 * @param fields The names of the fields to display
 	 */
-	public EditEntryGUI(String[] fields, Entry entry, Client client)
-	{
-		initialize();
-		JTextField[] newData = new JTextField[fields.length];
-		for (int i = 0; i < fields.length; i++)
-		{
-			JLabel label = new JLabel(fields[i]);
-			label.setBounds(10, i * 25 + 11, 90, 14);
-			panel.add(label);
-			newData[i] = new JTextField(entry.getField(i).toString());
-			newData[i].setBounds(110, i * 25 + 8, 120, 20);
-			panel.add(newData[i]);
-		}
-		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
-	}
+
 	
-	public EditEntryGUI(String[] fields, Client client)
+	public AddFieldGUI(Client client)
 	{
 		parent = client;
 		initialize();
-		newData = new JTextField[fields.length];
-		for (int i = 0; i < fields.length; i++)
-		{
-			JLabel label = new JLabel(fields[i]);
-			label.setBounds(10, i * 25 + 11, 90, 14);
-			panel.add(label);
-			newData[i] = new JTextField("");
-			newData[i].setBounds(110, i * 25 + 8, 120, 20);
-			panel.add(newData[i]);
-		}
-		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
+		
 	}
 
 	/**
@@ -71,27 +49,32 @@ public class EditEntryGUI extends JDialog
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		getContentPane().setLayout(null);
-		
 		panel = new JPanel();
-		JScrollPane scrollPane = new JScrollPane(panel);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.setLayout(null);
-		
-		scrollPane.setBounds(10, 10, 300, 200);
-		getContentPane().add(scrollPane);
-		
+		column = new JTextField(30);
+		column.setBounds(90,50,150,30);
+		JLabel columnLabel = new JLabel("Field name");
+		columnLabel.setBounds(130,20,150,30);
+		JLabel typeLabel = new JLabel("Field type");
+		typeLabel.setBounds(130,80,150,30);
+		columnType = new JComboBox<String>();
+		columnType.addItem("String");
+		columnType.addItem("Integer");
+		columnType.addItem("Double");
+		columnType.addItem("Date");
+		columnType.setBounds(90, 110, 150, 30);
+		getContentPane().add(column);
+		getContentPane().add(columnLabel);
+		getContentPane().add(typeLabel);
+		getContentPane().add(columnType);
 		JButton btnCommit = new JButton("Commit");
 		btnCommit.setBounds(20, 221, 90, 23);
 		btnCommit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				Comparable[] newEntry = new Comparable[newData.length];
-				for(int i = 0; i<newData.length; i++)
-				{
-					newEntry[i] = newData[i].getText();
-				}
-				parent.writeMessage(new Message(Command.ADD_ENTRY, newEntry));
+				parent.writeMessage(new Message(Command.ADD_COLUMN, new Column(column.getText(), columnType.getSelectedIndex())));
+				thisDialog.dispose();
 			}
 		});
 		getContentPane().add(btnCommit);
