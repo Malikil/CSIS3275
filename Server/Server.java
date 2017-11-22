@@ -5,6 +5,7 @@ public interface Server
 	public void messageReceived(String message);
 	public String[] getUserDatabases(String user);
 	public String[] getTableList(String database);
-	public AVLTree<Entry> getTable(String tableName);
-	public void createTable(String tableName);
+	public Table getTable(String dbname, String tableName);
+	public void updateTable(String db, String table, Table newTable);
+	public void createTable(String databbase, String tableName);
 }

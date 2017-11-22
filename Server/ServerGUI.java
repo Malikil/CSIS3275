@@ -3,6 +3,9 @@ package Server;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.awt.Color;
@@ -15,14 +18,21 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.border.LineBorder;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.JSeparator;
+import java.awt.SystemColor;
 
 public class ServerGUI extends JFrame implements Runnable
 {
 	private JTextField textField;
-	private JTable tableArea;
 	private DefaultTableModel tableModel;
 	private Server parent;
+	private JTable table;
 
 	/**
 	 * Create the application.
@@ -30,6 +40,7 @@ public class ServerGUI extends JFrame implements Runnable
 	 */
 	public ServerGUI(Server server)
 	{
+		getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 		setTitle("Server Application");
 		parent = server;
 		initialize();
@@ -41,93 +52,159 @@ public class ServerGUI extends JFrame implements Runnable
 	private void initialize() 
 	{
 		new JFrame();
-		setBounds(100, 100, 636, 749);
+		setBounds(100, 100, 636, 817);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
-		JLabel usrListLbl = new JLabel("Userlist");
-		usrListLbl.setBounds(31, 61, 80, 14);
-		usrListLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(usrListLbl);
-		
-		JComboBox<String> entriesCB = new JComboBox<String>();
-		entriesCB.setBounds(120, 345, 188, 20);
-		getContentPane().add(entriesCB);
-		
-		JButton usrListGoBttn = new JButton("Select User");
-		usrListGoBttn.setBounds(318, 57, 89, 23);
-		getContentPane().add(usrListGoBttn);
-		
-		JLabel lblDatabase = new JLabel("Database");
-		lblDatabase.setBounds(31, 290, 80, 14);
-		lblDatabase.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(lblDatabase);
-		
-		JComboBox<String> tablesCB = new JComboBox<String>();
-		tablesCB.setBounds(120, 318, 188, 20);
-		getContentPane().add(tablesCB);
-		
-		JButton dtbseSelectBttn = new JButton("Select");
-		dtbseSelectBttn.setBounds(318, 286, 89, 23);
-		getContentPane().add(dtbseSelectBttn);
-		
-		JLabel tablesLbl = new JLabel("Tables");
-		tablesLbl.setBounds(31, 319, 80, 14);
-		tablesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(tablesLbl);
+		JButton selectUserBttn = new JButton("Select User");
+		selectUserBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+			}
+		});
+		selectUserBttn.setBounds(69, 103, 107, 23);
+		getContentPane().add(selectUserBttn);
 		
 		JComboBox<String> userlistCB = new JComboBox<String>();
-		userlistCB.setBounds(120, 60, 188, 20);
+		userlistCB.setBounds(69, 72, 338, 20);
 		getContentPane().add(userlistCB);
 		
-		JButton tablesGoBttn = new JButton("Go!");
-		tablesGoBttn.setBounds(318, 315, 89, 23);
-		getContentPane().add(tablesGoBttn);
-		
-		JLabel entriesLbl = new JLabel("Entries");
-		entriesLbl.setBounds(31, 348, 80, 14);
-		entriesLbl.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(entriesLbl);
-		
-		JComboBox<String> dbCB = new JComboBox<String>();
-		dbCB.setBounds(120, 287, 188, 20);
-		getContentPane().add(dbCB);
-		
-		JButton entriesChangeBttn = new JButton("Change");
-		entriesChangeBttn.setBounds(318, 344, 89, 23);
-		getContentPane().add(entriesChangeBttn);
-		
 		tableModel = new DefaultTableModel();
-		tableArea = new JTable();
-		tableArea.setBorder(new LineBorder(new Color(0, 0, 0)));
-		tableArea.setBounds(69, 396, 338, 264);
-		tableArea.setModel(tableModel);
-		getContentPane().add(tableArea);
 		
-		JButton helpBttn = new JButton("?");
-		helpBttn.setBounds(580, 671, 40, 40);
-		helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
-		getContentPane().add(helpBttn);
+		JScrollPane userlistListSP = new JScrollPane();
+		userlistListSP.setBorder(new LineBorder(new Color(0, 0, 0)));
+		userlistListSP.setBounds(69, 145, 338, 253);
+		getContentPane().add(userlistListSP);
 		
-		JList<String> userlistList = new JList<String>();
-		userlistList.setEnabled(false);
-		userlistList.setBorder(new LineBorder(new Color(0, 0, 0)));
-		userlistList.setBounds(69, 97, 338, 153);
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setForeground(Color.BLACK);
+		menuBar.setBackground(new Color(204, 204, 255));
+		menuBar.setBounds(0, 0, 628, 21);
+		getContentPane().add(menuBar);
+		
+		JMenu fileMenu = new JMenu("File");
+		fileMenu.setBackground(new Color(153, 204, 255));
+		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(fileMenu);
+		
+		JMenu dbMenu = new JMenu("Databases");
+		fileMenu.add(dbMenu);
+		
+		JMenu tablesMenu = new JMenu("Tables");
+		fileMenu.add(tablesMenu);
+		
+		JSeparator separator = new JSeparator();
+		fileMenu.add(separator);
+		
+		JMenuItem addTable = new JMenuItem("Add Table");
+		fileMenu.add(addTable);
+		
+		JMenuItem deleteTable = new JMenuItem("Delete Table");
+		fileMenu.add(deleteTable);
+		
+		JMenu helpMenu = new JMenu("Help");
+		helpMenu.setBackground(new Color(153, 204, 255));
+		helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		menuBar.add(helpMenu);
+		
+		JMenuItem details = new JMenuItem("Details");
+		details.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JOptionPane.showMessageDialog(details,
+						 "Userlist: \n\n\n"
+						 + "" +
+						 "" +
+							  "Database Dropdown Menu: \n" +
+							    "Choose A Database to modify and press go to recieve data \n\n\n" +
+							  "Table Dropdown Menu: \n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n\n" +
+							  "Add: \n" +
+							    "Shows GUI for adding new Entry \n\n\n" +
+							  "Edit: \n" +
+							    "Shows GUI for editing selected Entry \n\n\n" +
+							  "Delete: \n" +
+							    "Popup box will confirm the deletion of entry \n\n\n" +
+							  "Sort Dropdown Menu: \n" +
+							    "Choose which column to Sort By \n\n\n" +
+							  "Search Field: \n" +
+							    "Enter Query to search by, Hit Search to Proceed");
+			}
+		});
+		helpMenu.add(details);
+		
+		JLabel fieldsLbl = new JLabel("Fields");
+		fieldsLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		fieldsLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+		fieldsLbl.setBounds(195, 409, 80, 19);
+		getContentPane().add(fieldsLbl);
+		
+		JComboBox<String> fieldsCB = new JComboBox<String>();
+		fieldsCB.setToolTipText("Fields");
+		fieldsCB.setBounds(69, 439, 338, 20);
+		getContentPane().add(fieldsCB);
+		
+		JButton addField = new JButton("Add");
+		addField.setBounds(69, 470, 107, 23);
+		getContentPane().add(addField);
+		
+		JButton deleteField = new JButton("Delete");
+		deleteField.setBounds(186, 470, 104, 23);
+		getContentPane().add(deleteField);
+		
+		JButton sortField = new JButton("Sort");
+		sortField.setBounds(300, 470, 107, 23);
+		getContentPane().add(sortField);
+		
+		table = new JTable();
+		table.setBackground(SystemColor.control);
+		table.setBorder(new LineBorder(new Color(0, 0, 0)));
+		table.setBounds(69, 504, 338, 172);
+		getContentPane().add(table);
+		
+		JButton addEntry = new JButton("Add Entry");
+		addEntry.setBounds(69, 687, 99, 43);
+		getContentPane().add(addEntry);
+		
+		JButton deleteEntry = new JButton("Delete Entry");
+		deleteEntry.setBounds(178, 687, 106, 43);
+		getContentPane().add(deleteEntry);
+		
+		JButton editEntry = new JButton("Edit Entry");
+		editEntry.setBounds(294, 687, 109, 43);
+		getContentPane().add(editEntry);
+		
+		JScrollPane errorLogSP = new JScrollPane();
+		errorLogSP.setBounds(431, 72, 158, 658);
+		getContentPane().add(errorLogSP);
+		
+		JLabel errorLogLbl = new JLabel("Error Log");
+		errorLogLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		errorLogLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+		errorLogLbl.setBounds(461, 45, 80, 19);
+		getContentPane().add(errorLogLbl);
+		
+		JLabel userlistLbl = new JLabel("Userlist");
+		userlistLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
+		userlistLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		userlistLbl.setBounds(195, 47, 80, 14);
+		getContentPane().add(userlistLbl);
+		
+		JButton addUserBttn = new JButton("Add User");
+		addUserBttn.setBounds(183, 103, 107, 23);
+		getContentPane().add(addUserBttn);
+		
+		JButton deleteUserBttn = new JButton("Delete User");
+		deleteUserBttn.setBounds(300, 103, 107, 23);
+		getContentPane().add(deleteUserBttn);
+		
+		JList userlistList = new JList();
 		getContentPane().add(userlistList);
-		
-		JLabel errorLabel = new JLabel("Error Log");
-		errorLabel.setFont(new Font("Tahoma", Font.BOLD, 15));
-		errorLabel.setBounds(437, 28, 80, 19);
-		getContentPane().add(errorLabel);
-		
-		JTextArea serverErrorTextArea = new JTextArea();
-		serverErrorTextArea.setEditable(false);
-		serverErrorTextArea.setBounds(432, 61, 161, 599);
-		getContentPane().add(serverErrorTextArea);
-		
-		JScrollPane sp = new JScrollPane(serverErrorTextArea);
-		sp.setBounds(434, 53, 150, 605);
-		getContentPane().add(sp);
+		userlistList.setBackground(UIManager.getColor("Viewport.background"));
+		userlistList.setBounds(69, 145, 336, 253);
 	}
 
 	@Override

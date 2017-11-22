@@ -4,41 +4,62 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
+
+import Server.Command;
+import Server.Entry;
+import Server.Message;
+
 import javax.swing.border.LineBorder;
+
+
 import java.awt.Color;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+import javax.swing.UIManager;
 
 public class ClientGUI extends JFrame
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
-	private JTable table_1;
+	JTable tables = new JTable();
+	private JTextField itemField;
+	private JTextField fieldField;
+	private JMenu menuItem_DB;
+	private JMenu mnTables;
+	JComboBox<String> fieldsCB;
+	private JPanel tablesPanel;
+	private JScrollPane Scroller = new JScrollPane(tables);
+	private JTextArea chatArea;
+	
 
 	/**
 	 * Create the application.
 	 */
 	public ClientGUI(Client owner) 
 	{
+		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
 		setTitle("Client Application");
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
@@ -52,7 +73,7 @@ public class ClientGUI extends JFrame
 	{
 		JFrame thisFrame = this;
 		new JFrame();
-		setBounds(100, 100, 638, 486);
+		setBounds(100, 100, 638, 482);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
@@ -60,7 +81,7 @@ public class ClientGUI extends JFrame
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setForeground(Color.BLACK);
-		menuBar.setBackground(Color.PINK);
+		menuBar.setBackground(new Color(204, 204, 255));
 		menuBar.setBounds(0, 0, 622, 21);
 		getContentPane().add(menuBar);
 		
@@ -69,10 +90,10 @@ public class ClientGUI extends JFrame
 		fileMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(fileMenu);
 		
-		JMenu menuItem_DB = new JMenu("Database");
+		menuItem_DB = new JMenu("Database");
 		fileMenu.add(menuItem_DB);
 		
-		JMenu mnTables = new JMenu("Tables");
+		mnTables = new JMenu("Tables");
 		fileMenu.add(mnTables);
 		
 		JSeparator separator = new JSeparator();
@@ -89,96 +110,150 @@ public class ClientGUI extends JFrame
 		helpMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		menuBar.add(helpMenu);
 		
-		JButton instructionsBttn = new JButton("Details");
-		instructionsBttn.addActionListener(new ActionListener() 
+		JMenuItem details = new JMenuItem("Details");
+		details.addActionListener(new ActionListener() 
 		{
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisFrame,
-						 "DataBase Dropdown Menu: \n\n" +
-							    "Choose A DataBase to modify and press go to recieve data \n\n" +
-							  "Table DropDown Menu: \n\n" +
-							    "Choose a Table to Modify and press select to recieve data \n\n" +
-							  "Add: \n\n" +
-							    "Shows GUI for adding new Entry \n\n" +
+						 "Database Dropdown Menu: \n" +
+							    "Choose A Database to modify and press go to recieve data \n\n\n" +
+							  "Table Dropdown Menu: \n" +
+							    "Choose a Table to Modify and press select to recieve data \n\n\n" +
+							  "Add: \n" +
+							    "Shows GUI for adding new Entry \n\n\n" +
 							  "Edit: \n" +
-							    "Shows GUI for editing selected Entry \n\n" +
+							    "Shows GUI for editing selected Entry \n\n\n" +
 							  "Delete: \n" +
-							    "Popup box will confirm the deletion of entry \n\n" +
-							  "Sort DropDown Menu: \n\n" +
-							    "Choose which column to Sort By \n" +
-							  "Search Field: \n\n" +
+							    "Popup box will confirm the deletion of entry \n\n\n" +
+							  "Sort Dropdown Menu: \n" +
+							    "Choose which column to Sort By \n\n\n" +
+							  "Search Field: \n" +
 							    "Enter Query to search by, Hit Search to Proceed");
 			}
 		});
-		helpMenu.add(instructionsBttn);
+		helpMenu.add(details);
 		
 		JTabbedPane searchTab = new JTabbedPane(JTabbedPane.TOP);
-		searchTab.setBackground(Color.WHITE);
+		searchTab.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		searchTab.setBounds(0, 21, 622, 427);
 		getContentPane().add(searchTab);
 		
-		JPanel panel = new JPanel();
-		searchTab.addTab("Tables", null, panel, null);
-		panel.setLayout(null);
+		tablesPanel = new JPanel();
+		tablesPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
+		searchTab.addTab("Tables", null, tablesPanel, null);
+		tablesPanel.setLayout(null);
 		
 		JLabel fieldLabel = new JLabel("Fields");
 		fieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		fieldLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		fieldLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
 		fieldLabel.setBounds(152, 11, 109, 19);
-		panel.add(fieldLabel);
+		tablesPanel.add(fieldLabel);
 		
-		JComboBox<String> comboBox = new JComboBox<String>();
-		comboBox.setBounds(56, 41, 300, 20);
-		panel.add(comboBox);
+		fieldsCB = new JComboBox<String>();
+		fieldsCB.setBounds(56, 41, 300, 20);
+		tablesPanel.add(fieldsCB);
 		
-		JButton button = new JButton("Add");
-		button.setBounds(56, 72, 89, 23);
-		panel.add(button);
+		Scroller.setBounds(36, 106, 334, 172);
+		tablesPanel.add(Scroller);
 		
-		JButton button_1 = new JButton("Delete");
-		button_1.setBounds(162, 72, 89, 23);
-		panel.add(button_1);
 		
-		JButton button_2 = new JButton("Sort");
-		button_2.setBounds(267, 72, 89, 23);
-		panel.add(button_2);
+		JButton addFieldBttn = new JButton("Add");
+		addFieldBttn.setBounds(56, 72, 89, 23);
+		addFieldBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parent.addColumn();
+			}
+		});
+		tablesPanel.add(addFieldBttn);
 		
-		table_1 = new JTable();
-		table_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-		table_1.setBounds(36, 106, 334, 172);
-		panel.add(table_1);
+		JButton deleteFieldBttn = new JButton("Delete");
+		deleteFieldBttn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parent.deleteColumn(fieldsCB.getSelectedIndex());
+			}
+		});
+		deleteFieldBttn.setBounds(162, 72, 89, 23);
+		tablesPanel.add(deleteFieldBttn);
+		
+		JButton sortFieldBttn = new JButton("Sort");
+		sortFieldBttn.setBounds(267, 72, 89, 23);
+		tablesPanel.add(sortFieldBttn);
+		
+	
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(36, 289, 99, 43);
-		panel.add(addBttn);
-		
-		JButton deleteBttn = new JButton("Delete Entry");
-		deleteBttn.setBounds(145, 289, 106, 43);
-		deleteButton.addActionListener(new ActionListener() {
+		addBttn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				String database = (String)databaseCB.getSelectedItem();
-				String table = (String)tablesCB.getSelectedItem();
-				parent.deleteTable(table, database);
+				int i = fieldsCB.getItemCount();
+				String[] headers = new String[i];
+				for(int j = 0;j<headers.length;j++)
+					headers[j] = fieldsCB.getItemAt(j);
+				parent.addEntry(headers);
 			}
 		});
-    panel.add(deleteBttn);
+		tablesPanel.add(addBttn);
+		
+		JButton deleteBttn = new JButton("Delete Entry");
+		deleteBttn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					int entryRow = tables.getSelectedRow();
+					if (entryRow == -1)
+					{
+						chatArea.append("SELECT SOMETHING DUMBASS");
+					}
+					else
+					{
+						int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
+						parent.rmvEntry(entryKey);
+					}
+				}
+			});
+		deleteBttn.setBounds(145, 289, 106, 43);
+		tablesPanel.add(deleteBttn);
 		
 		JButton editBttn = new JButton("Edit Entry");
 		editBttn.setBounds(261, 289, 109, 43);
-		panel.add(editBttn);
+		editBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				int entryRow = tables.getSelectedRow();
+				int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
+				int colCount =  tables.getModel().getColumnCount()-1; //Because PK is one of the columns
+				Comparable[] entryData = new Comparable[colCount];
+				for(int i = 1; i<colCount+1; i++)
+				{
+					Comparable data = (Comparable) tables.getModel().getValueAt(entryRow, i);
+					entryData[i-1] = data;
+				}
+				
+				int i = fieldsCB.getItemCount();
+				String[] headers = new String[i];
+				for(int j = 0;j<headers.length;j++)
+					headers[j] = fieldsCB.getItemAt(j);
+				
+				parent.editEntry(entryKey,entryData,headers);
+			}
+		});
+		tablesPanel.add(editBttn);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		chatArea = new JTextArea();
+		chatArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(chatArea);
 		scrollPane.setBounds(398, 38, 150, 294);
-		panel.add(scrollPane);
+		tablesPanel.add(scrollPane);
 		
 		JLabel label_1 = new JLabel("Error Log");
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		label_1.setFont(new Font("Tahoma", Font.BOLD, 14));
 		label_1.setBounds(439, 11, 80, 19);
-		panel.add(label_1);
+		tablesPanel.add(label_1);
 		
 		JPanel mainPanel = new JPanel();
 		searchTab.addTab("Search", null, mainPanel, null);
@@ -186,27 +261,105 @@ public class ClientGUI extends JFrame
 		mainPanel.setLayout(null);
 		
 		JPanel searchPanel = new JPanel();
-		searchPanel.setBounds(0, 0, 617, 366);
+		searchPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
+		searchPanel.setBounds(0, 0, 617, 399);
 		mainPanel.add(searchPanel);
+		searchPanel.setLayout(null);
+		itemField = new JTextField();
+		itemField.setBackground(SystemColor.control);
+		itemField.setBounds(211, 64, 227, 20);
+		searchPanel.add(itemField);
+		itemField.setColumns(10);
+		
+		fieldField = new JTextField();
+		fieldField.setBackground(SystemColor.control);
+		fieldField.setBounds(211, 99, 227, 20);
+		searchPanel.add(fieldField);
+		fieldField.setColumns(10);
+		
+		JLabel searchItemLbl = new JLabel("Item");
+		searchItemLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
+		searchItemLbl.setBounds(155, 67, 46, 14);
+		searchPanel.add(searchItemLbl);
+		 		
+		JLabel searchFieldLbl = new JLabel("Field ");
+		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
+		searchFieldLbl.setBounds(155, 102, 46, 14);
+		searchPanel.add(searchFieldLbl);
+
+		JButton searchBttn = new JButton("Search");
+		searchBttn.setBounds(349, 140, 89, 23);
+		searchPanel.add(searchBttn);
+		
+		
 		
 		
 	}
-	/*
+	
 	public void setDatabases(String[] list)
 	{
-		databaseCB.removeAllItems();
-		for (String database : list)
-			databaseCB.addItem(database);
+		menuItem_DB.removeAll();
+		for (String dbname : list)
+		{
+			JMenuItem newDB = new JMenuItem(dbname);
+			newDB.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTableNames(dbname);
+				}
+			});
+			menuItem_DB.add(newDB);
+		}
 	}
 	
 	public void setTables(String[] list)
 	{
-		tablesCB.removeAllItems();
+		
+		mnTables.removeAll();
 		for (String table : list)
-			tablesCB.addItem(table);
-		tablesCB.addItem("Create new table...");
+		{
+			JMenuItem newTable = new JMenuItem(table);
+			newTable.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTable(table);
+				}
+			});
+			mnTables.add(newTable);
+		}
+		
 	}
-	*/
+	
+	
 	private static void addPopup(Component component, final JPopupMenu popup) {
+	}
+
+	public void setTableModel(Object[][] entryList, String[] newColNames) {
+		tablesPanel.remove(Scroller);
+		tables = new JTable(entryList, newColNames){
+			      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 6626198581056258616L;
+
+				public boolean isCellEditable(int row, int column){  
+			        return false;  
+			      }
+ 
+		};
+		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
+		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
+		tables.getColumnModel().getColumn(0).setMinWidth(0);
+		tables.getColumnModel().getColumn(0).setMaxWidth(0);
+		tables.setRowSelectionAllowed(true);
+		tables.setColumnSelectionAllowed(false);
+		tables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		Scroller = new JScrollPane(tables);
+		Scroller.setBounds(36, 106, 334, 172);
+		tablesPanel.add(Scroller);
+		tablesPanel.repaint();
+		
 	}
 }

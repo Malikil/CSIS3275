@@ -5,9 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.table.DefaultTableModel;
+
 import Server.Command;
 import Server.Entry;
 import Server.Message;
+import Server.Table;
 
 public class ClientMain implements Client
 {
@@ -15,6 +18,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private static Message received;
+	private Table currentTable = null;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -99,6 +103,8 @@ public class ClientMain implements Client
 					case EDIT_ENTRY:
 						break;
 					case GET_TABLE:
+						currentTable = received.getTable();
+						setTable(currentTable);
 						break;
 					case TABLE_LIST:
 						gui.setTables(received.getTableList());
@@ -171,7 +177,7 @@ public class ClientMain implements Client
 
 
 	@Override
-	public void getTables(String database)
+	public void getTableNames(String database)
 	{
 		try
 		{
@@ -182,5 +188,81 @@ public class ClientMain implements Client
 		{
 			System.out.println("Error asking for databases from server");
 		}
+	}
+	
+	public void getTable(String tablename)
+	{
+		try
+		{
+			Message send = new Message(Command.GET_TABLE, tablename);
+			objOut.writeObject(send); System.out.println("Sent GET_TABLE to server");
+		}
+		catch (IOException ex)
+		{
+			System.out.println("Error asking for databases from server");
+		}
+	}
+	
+	public void setTable(Table newTable)
+	{
+		currentTable = newTable;
+		String[] colNames =  currentTable.getColumnNames();
+		gui.fieldsCB.removeAllItems();
+		
+		String[] newColNames = new String[colNames.length+1];
+		newColNames[0] = "Primary Key";
+		int i = 1;
+		for(String name: colNames)
+		{
+			newColNames[i] = name;
+			i++;
+			gui.fieldsCB.addItem(name);
+		}
+		
+		Comparable[][] entryList = currentTable.getEntries();
+		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
+			gui.setTableModel(entryList,newColNames);
+	}
+
+	@Override
+	public void deleteColumn(int selectedIndex) {
+		try {
+			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex)); //-1 because Primary Key is the first element
+		} catch (IOException e) {
+		} 
+	}
+	
+	public void addEntry(String[] headers) { 
+		EditEntryGUI addEnt = new EditEntryGUI(headers,this);
+		addEnt.setVisible(true);
+	}
+	
+	public void rmvEntry(int primaryKey)
+	{
+		try {
+			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
+		} catch (IOException e) {
+		}
+	}
+	
+	public void writeMessage(Message send)
+	{
+		try {
+			objOut.writeObject(send);
+		} catch (IOException e) {
+		}
+	}
+
+	@Override
+	public void addColumn() {
+		AddFieldGUI addCol = new AddFieldGUI(this);
+		addCol.setVisible(true);
+		
+	}
+
+	@Override
+	public void editEntry(int entryKey, Comparable[] entryData, String[] headers) {
+		EditEntryGUI editEnt = new EditEntryGUI(headers, new Entry(entryKey,entryData), this);
+		editEnt.setVisible(true);
 	}
 }

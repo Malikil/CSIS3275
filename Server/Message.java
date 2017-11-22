@@ -19,16 +19,20 @@ public class Message implements Serializable
 		case DELETE_TABLE:
 		case GET_TABLE:
 		case GET_DATABASE:
-			if (!(messageData instanceof String))
-				throw new IllegalArgumentException("messageData must be of type String for messageType " + messageType);
 			break;
 		case ADD_COLUMN:
+			if (!(messageData instanceof Column))
+				throw new IllegalArgumentException("messageData must be of type Column for messageType " + messageType);
+			break;
 		case DELETE_COLUMN:
+			if (!(messageData instanceof Integer))
+				throw new IllegalArgumentException("messageData must be of type Integer for messageType " + messageType);
+			break;
 		case ADD_ENTRY:
+			break;
 		case DELETE_ENTRY:
+			break;
 		case EDIT_ENTRY:
-			if (!(messageData instanceof Entry))
-				throw new IllegalArgumentException("messageData must be of type Entry for messageType " + messageType);
 			break;
 		case LOGIN:
 		case DATABASE_LIST:
@@ -53,26 +57,36 @@ public class Message implements Serializable
 	
 	public Entry getEntry()
 	{
-		if (data instanceof Entry)
 			return (Entry)data;
-		else
-			return null;
+
 	}
 	
-	public String getTable()
+	public Comparable[] getAddEntry()
 	{
-		if (data instanceof String)
-			return (String)data;
-		else
-			return null;
+		return (Comparable[]) data;
 	}
+	
+	public int getDelEntry()
+	{
+		return (int) data;
+	}
+	
+	public String getTableName()
+	{
+			return (String)data;
+	}
+	
+	public Table getTable()
+	{
+
+			return (Table)data;
+
+	}
+
 	
 	public String getDatabase()
 	{
-		if (data instanceof String)
 			return (String)data;
-		else
-			return null;
 	}
 	
 	public String[] getDatabaseList()
@@ -85,10 +99,7 @@ public class Message implements Serializable
 	
 	public String[] getTableList()
 	{
-		if (data instanceof String[])
 			return (String[])data;
-		else
-			return null;
 	}
 	
 	public String[] getLogin()
@@ -98,4 +109,15 @@ public class Message implements Serializable
 		else
 			return null;
 	}
+	
+	public int getColToRmv() 
+	{
+			return (Integer)data;
+	}
+	
+	public Column getColToAdd() 
+	{
+			return (Column)data;
+	}
+	
 }
