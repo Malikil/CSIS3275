@@ -60,7 +60,8 @@ public class Table implements Serializable {
 	
 	public void editEntry(Entry toEdit)
 	{
-		entries.replace(toEdit);
+		entries.delete(new Entry(toEdit.getKey()));
+		entries.add(toEdit);
 		
 	}
 	

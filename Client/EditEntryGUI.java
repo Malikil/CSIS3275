@@ -22,21 +22,45 @@ public class EditEntryGUI extends JDialog
 	Entry edit;
 	Client parent;
 	JTextField[] newData;
+	boolean Edit;
 
 	/**
 	 * Create the application.
 	 * @param fields The names of the fields to display
 	 */
-	public EditEntryGUI(String[] fields, Entry entry, Client client)
+	public EditEntryGUI(String[] fields, Entry entryToEdit, Client client)
 	{
+		edit = entryToEdit;
+		parent = client;
+		Edit = true;
 		initialize();
-		JTextField[] newData = new JTextField[fields.length];
+		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
 			JLabel label = new JLabel(fields[i]);
 			label.setBounds(10, i * 25 + 11, 90, 14);
 			panel.add(label);
-			newData[i] = new JTextField(entry.getField(i).toString());
+			JTextField newField = new JTextField();
+			newField.setText(edit.getField(i).toString());
+			newData[i] = newField;
+			newData[i].setBounds(110, i * 25 + 8, 120, 20);
+			panel.add(newData[i]);
+		}
+		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
+	}
+	
+	public EditEntryGUI(String[] fields, Client client)
+	{
+		parent = client;
+		Edit = false;
+		initialize();
+		newData = new JTextField[fields.length];
+		for (int i = 0; i < fields.length; i++)
+		{
+			JLabel label = new JLabel(fields[i]);
+			label.setBounds(10, i * 25 + 11, 90, 14);
+			panel.add(label);
+			newData[i] = new JTextField("");
 			newData[i].setBounds(110, i * 25 + 8, 120, 20);
 			panel.add(newData[i]);
 		}
@@ -87,11 +111,24 @@ public class EditEntryGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				Comparable[] newEntry = new Comparable[newData.length];
-				for(int i = 0; i<newData.length; i++)
+				if(Edit == false)
 				{
-					newEntry[i] = newData[i].getText();
+					
+					for(int i = 0; i<newData.length; i++)
+					{
+						newEntry[i] = newData[i].getText();
+					}
+					parent.writeMessage(new Message(Command.ADD_ENTRY, newEntry));
 				}
-				parent.writeMessage(new Message(Command.ADD_ENTRY, newEntry));
+				else
+				{
+					for(int i = 0; i<newData.length; i++)
+					{
+						newEntry[i] = newData[i].getText();
+					}
+					parent.writeMessage(new Message(Command.EDIT_ENTRY, new Entry(edit.getKey(), newEntry)));
+					thisDialog.dispose();
+				}
 			}
 		});
 		getContentPane().add(btnCommit);

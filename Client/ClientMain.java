@@ -259,4 +259,10 @@ public class ClientMain implements Client
 		addCol.setVisible(true);
 		
 	}
+
+	@Override
+	public void editEntry(int entryKey, Comparable[] entryData, String[] headers) {
+		EditEntryGUI editEnt = new EditEntryGUI(headers, new Entry(entryKey,entryData), this);
+		editEnt.setVisible(true);
+	}
 }

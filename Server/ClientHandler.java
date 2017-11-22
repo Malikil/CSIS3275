@@ -157,6 +157,7 @@ public class ClientHandler implements Runnable
 					Entry entryToEdit = received.getEntry();
 					currentTable.editEntry(entryToEdit);
 					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);					
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case GET_TABLE:

@@ -8,8 +8,6 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	private AVLNode<T> base;
 	private int count;
 	
-	public int size() { return count; }
-	
 	/**
 	 * The default constructor, the base will be set to null and no items will be in the tree 
 	 */
@@ -287,14 +285,14 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 			printNode(node.getRight(), pre + ".R");
 	}
 
-	void replace(T value) //I WANT SET - Angelo
+	void replace(T value, T oldValue) //I WANT SET - Angelo
 	{
 		AVLNode<T> current = base;
 		while (current != null)
 		{
-			if (current.compareTo(value) > 0)
+			if (current.compareTo(oldValue) > 0)
 				current = current.getRight();
-			else if (current.compareTo(value) < 0)
+			else if (current.compareTo(oldValue) < 0)
 				current = current.getLeft();
 			else 
 				break;

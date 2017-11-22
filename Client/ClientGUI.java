@@ -15,6 +15,11 @@ import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
+
+import Server.Command;
+import Server.Entry;
+import Server.Message;
+
 import javax.swing.border.LineBorder;
 
 
@@ -153,7 +158,6 @@ public class ClientGUI extends JFrame
 		Scroller.setBounds(36, 106, 334, 172);
 		tablesPanel.add(Scroller);
 		
-		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
@@ -175,8 +179,6 @@ public class ClientGUI extends JFrame
 		JButton sortFieldBttn = new JButton("Sort");
 		sortFieldBttn.setBounds(267, 72, 89, 23);
 		tablesPanel.add(sortFieldBttn);
-		
-	
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(36, 289, 99, 43);
@@ -220,13 +222,21 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				int entryRow = tables.getSelectedRow();
-				int entryKey = (int) tables.getModel().getValueAt(entryRow, 0);
-				int colCount =  tables.getModel().getColumnCount()-1;
+				int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
+				int colCount =  tables.getModel().getColumnCount()-1; //Because PK is one of the columns
 				Comparable[] entryData = new Comparable[colCount];
-				for(int i = 1; i<colCount; i++)
+				for(int i = 1; i<colCount+1; i++)
 				{
-					
+					Comparable data = (Comparable) tables.getModel().getValueAt(entryRow, i);
+					entryData[i-1] = data;
 				}
+				
+				int i = fieldsCB.getItemCount();
+				String[] headers = new String[i];
+				for(int j = 0;j<headers.length;j++)
+					headers[j] = fieldsCB.getItemAt(j);
+				
+				parent.editEntry(entryKey,entryData,headers);
 			}
 		});
 		tablesPanel.add(editBttn);
