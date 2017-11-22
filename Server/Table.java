@@ -8,12 +8,18 @@ public class Table implements Serializable {
 	int nextPK = 0;
 	DefinitelyNotArrayList<Integer> unusedPKs = new DefinitelyNotArrayList<Integer>(); 
 	
-		
 	public Table()
 	{
 		 entries = new AVLTree<Entry>();
 		 setColumns(new DefinitelyNotArrayList());
-	}	
+	}
+	
+	public Table(Column newColumn)
+	{
+		entries = new AVLTree<Entry>();
+		this.addField(newColumn);
+		setColumns(new DefinitelyNotArrayList());
+	}
 	
 	public <T> void addField(Column toAdd)
 	{
@@ -60,7 +66,8 @@ public class Table implements Serializable {
 	
 	public void editEntry(Entry toEdit)
 	{
-		entries.replace(toEdit);
+		entries.delete(new Entry(toEdit.getKey()));
+		entries.add(toEdit);
 		
 	}
 	

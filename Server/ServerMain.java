@@ -5,13 +5,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-
+import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
@@ -168,44 +169,7 @@ public class ServerMain implements Server
 		}
 		else
 			return new String[] { "Database doesn't exist" };
-	}
-
-	public void saveToFile(AVLTree<Entry> tree, String databaseName, String tableName, 
-							String[] fieldNames, FieldType[] fieldTypes)
-	{
-		FileOutputStream fOut = null;
-		ObjectOutputStream oStream = null;
-		
-		try {
-			File dir = new File(databaseName);
-			if(!dir.isDirectory())
-				dir.mkdir();
-			File saveFile = new File(databaseName+"\\"+tableName+".ser");
-			
-			fOut = new FileOutputStream(saveFile);
-			oStream = new ObjectOutputStream(fOut);
-			oStream.writeObject(fieldNames);
-			oStream.writeObject(fieldTypes);
-			oStream.writeObject(tree); 
-			oStream.close();
-			fOut.close();
-		} 
-		catch (FileNotFoundException e) 
-		{
-			e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public boolean deleteFile()
-	{
-		return true;
-	}
-	
-	
+	}	
 	
 	@Override
 	public Table getTable(String dbname, String tableName) {
@@ -224,13 +188,9 @@ public class ServerMain implements Server
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}
-		
-		
-		return tableReq;
-		
+		return tableReq;	
 	}
 	
-
 	@Override
 	public void createTable(String database, String tableName) {
 		File newFile = new File(database + "\\" + tableName + ".eric");
@@ -250,9 +210,9 @@ public class ServerMain implements Server
 			file.close();
 		} catch (IOException e) {
 		}
-		
 	}
 	
+	@Override
 	public void updateTable(String db, String table, Table newTable)
 	{
 		FileOutputStream file = null;
@@ -267,6 +227,143 @@ public class ServerMain implements Server
 			file.close();
 		} catch (IOException e) {
 		}
+	}
+	
+	public boolean saveDatabase(String databaseName)
+	{
 		
+		File dir = new File(databaseName);
+		if(!dir.isDirectory())
+		{
+			dir.mkdir();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean deleteDatabase(String databaseName)
+	{
+		File dir = new File(databaseName);
+		if(dir.delete())
+			return true;
+		return false;
+	}
+	
+	public boolean deleteTable(String databaseName, String tableName)
+	{
+		File table = new File(databaseName+"\\"+tableName+".eric");
+		if(table.delete())
+			return true;
+		return false;
+	}
+	
+	public boolean addUser(String username, String password) //returns false if user already exists
+	{
+		File file = new File("users.txt");
+		try {
+			BufferedReader userList = new BufferedReader(new FileReader(file));
+			String nextLine = null;
+			while((nextLine = userList.readLine())!=null)
+			{
+				String[] validList = nextLine.split(",");
+				if((username.toLowerCase()).compareTo(validList[0]) == 0)
+					return false;
+			}
+			userList.close();
+			FileOutputStream fOut = new FileOutputStream(file);
+			BufferedWriter write = new BufferedWriter(new FileWriter("users.txt", true));
+			
+			write.write("\n"+username+","+password);
+			write.close();
+			return true;
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+		return false;
+	}
+	
+	public boolean deleteUser(String username)
+	{
+		File file = new File("users.txt");
+		File tempFile = new File("tempFile.txt");
+		try {
+			FileOutputStream fOut = new FileOutputStream(file);
+			BufferedWriter write = new BufferedWriter(new FileWriter(tempFile));
+			BufferedReader userList = new BufferedReader(new FileReader(file));
+			
+			String nextLine = null;
+			
+			while((nextLine = userList.readLine())!=null)
+			{
+				String[] validList = nextLine.split(",");
+				int userMatch = username.toLowerCase().compareTo(validList[0]);
+				for(int i = 0; i < validList.length;i++)
+				{
+					if(i==0)
+					{
+						if(userMatch == 0)
+							break;
+						else
+							write.write(validList[i]);
+					}
+					else 
+						write.write(","+validList[i]);
+				}
+			}
+			tempFile.renameTo(file);
+			userList.close();
+			write.close();
+			fOut.close();
+			return true;
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public boolean changeUserDatabases(String username, String[] databases)
+	{
+		File file = new File("users.txt");
+		File tempFile = new File("tempFile.txt");
+		try {
+			FileOutputStream fOut = new FileOutputStream(file);
+			BufferedWriter write = new BufferedWriter(new FileWriter(tempFile));
+			BufferedReader userList = new BufferedReader(new FileReader(file));
+			
+			String nextLine = null;
+			
+			while((nextLine = userList.readLine())!=null)
+			{
+				String[] validList = nextLine.split(",");
+				int userMatch = username.toLowerCase().compareTo(validList[0]);
+				for(int i = 0; i < validList.length;i++)
+				{
+					if(i==0)
+					{
+						if(userMatch == 0)
+						{
+							write.write(validList[0]+","+validList[1]);
+							for(int j = 0;j<databases.length;j++)
+							{
+								write.write(","+databases[j]);
+							}
+							break;
+						}
+						else
+							write.write(validList[0]);
+					}
+					else 
+						write.write(","+validList[i]);
+				}
+			}
+			tempFile.renameTo(file);
+			userList.close();
+			write.close();
+			fOut.close();
+			return true;
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+		return false;
 	}
 }
