@@ -7,7 +7,9 @@ import java.net.Socket;
 
 import javax.swing.table.DefaultTableModel;
 
+import Server.Column;
 import Server.Command;
+import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
 import Server.Table;
@@ -17,8 +19,8 @@ public class ClientMain implements Client
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
-	private static Message received;
 	private Table currentTable = null;
+	private DefinitelyNotArrayList<Column> headers;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -30,7 +32,7 @@ public class ClientMain implements Client
 	public static void main(String[] args)
 	{
 		LoginGUI login = new LoginGUI();
-		Socket sock;
+		Socket sock = null;
 		ObjectOutputStream out;
 		ObjectInputStream in;
 		
@@ -46,11 +48,16 @@ public class ClientMain implements Client
 				Message loginAttempt = new Message(Command.LOGIN,
 						new String[] { login.getEnteredUser(), login.getEnteredPass() });
 				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
-				received = (Message)in.readObject();
-				Command conf = received.getCommandType(); System.out.println("Response received");
+				loginAttempt = (Message)in.readObject();
+				Command conf = loginAttempt.getCommandType(); System.out.println("Response received");
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
-				if (conf == Command.CONNECTION_SUCCESS)		
-					break;
+				if (conf == Command.CONNECTION_SUCCESS)
+				{
+					ClientMain client = new ClientMain(sock, out, in);
+					client.setDatabaseList(loginAttempt.getDatabaseList());
+					System.out.println("Databases set");
+					client.start();
+				}
 				else
 					login.setMessage(conf);
 						
@@ -58,34 +65,30 @@ public class ClientMain implements Client
 			catch (IOException ex)
 			{
 				System.out.println("Error communicating with server:\t" + ex.getMessage());
+				try
+				{
+					sock.close();
+				}
+				catch (IOException io)
+				{
+					/* Couldn't close socket */
+				}
 			}
 			catch (ClassNotFoundException ex)
 			{
 				ex.printStackTrace();
 			}
 		}
-		
-		try
-		{
-			new ClientMain(sock, out, in).start();
-		}
-		catch (IOException ex)
-		{
-			try	{ sock.close(); }
-			catch (IOException io) { /* Couldn't close socket */ }
-		}
 	}
 
 	public void start()
 	{
 		gui.setVisible(true);
-		gui.setDatabases(received.getDatabaseList());
-		System.out.println("Databases set");
 		try
 		{
 				while (true)
 				{
-					received = (Message)objIn.readObject();
+					Message received = (Message)objIn.readObject();
 					switch (received.getCommandType())
 					{
 					case ADD_COLUMN:
@@ -134,6 +137,12 @@ public class ClientMain implements Client
 	}
 	
 	@Override
+	public void setDatabaseList(String[] list)
+	{
+		gui.setDatabases(list);
+	}
+	
+	@Override
 	public void createTable(String tableName)
 	{
 		try
@@ -158,7 +167,6 @@ public class ClientMain implements Client
 			// TODO Catch block
 		}
 	}
-
 
 	@Override
 	public void getTableNames(String database)
@@ -221,12 +229,14 @@ public class ClientMain implements Client
 		} 
 	}
 	
-	public void addEntry(String[] headers) { 
+	@Override
+	public void createEntry(String[] headers) { 
 		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
 	}
 	
-	public void rmvEntry(int primaryKey)
+	@Override
+	public void deleteEntry(int primaryKey)
 	{
 		try {
 			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
@@ -244,19 +254,7 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry(int entryIndex)
 	{
-		EditEntryGUI editEnt = new EditEntryGUI(headers, new Entry(entryKey,entryData), this);
+		EditEntryGUI editEnt = new EditEntryGUI(headers, );
 		editEnt.setVisible(true);
-	}
-
-	@Override
-	public void createEntry(String[] headers) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteEntry(int entryKey) {
-		// TODO Auto-generated method stub
-		
 	}
 }

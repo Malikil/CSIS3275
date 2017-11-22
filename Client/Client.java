@@ -1,10 +1,8 @@
 package Client;
 
-import Server.Entry;
-import Server.Message;
-
 public interface Client
 {
+	public void setDatabaseList(String[] list);
 	public void getTableNames(String database);
 	public void createTable(String table);
 	public void deleteTable(String table);
