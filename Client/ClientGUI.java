@@ -158,7 +158,6 @@ public class ClientGUI extends JFrame
 		Scroller.setBounds(36, 106, 334, 172);
 		tablesPanel.add(Scroller);
 		
-		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
@@ -180,8 +179,6 @@ public class ClientGUI extends JFrame
 		JButton sortFieldBttn = new JButton("Sort");
 		sortFieldBttn.setBounds(267, 72, 89, 23);
 		tablesPanel.add(sortFieldBttn);
-		
-	
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(36, 289, 99, 43);

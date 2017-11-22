@@ -116,5 +116,4 @@ public class Table implements Serializable {
 	public void setColumns(DefinitelyNotArrayList<Column> columns) {
 		this.columns = columns;
 	}
-
 }

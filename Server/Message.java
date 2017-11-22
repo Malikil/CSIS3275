@@ -57,8 +57,12 @@ public class Message implements Serializable
 	
 	public Entry getEntry()
 	{
+		if (data instanceof Entry)
+		{
 			return (Entry)data;
-
+		}
+		else
+			return null;
 	}
 	
 	public Comparable[] getAddEntry()

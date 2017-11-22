@@ -66,6 +66,23 @@ public class EditEntryGUI extends JDialog
 		}
 		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
 	}
+	
+	public EditEntryGUI(String[] fields, Client client)
+	{
+		parent = client;
+		initialize();
+		newData = new JTextField[fields.length];
+		for (int i = 0; i < fields.length; i++)
+		{
+			JLabel label = new JLabel(fields[i]);
+			label.setBounds(10, i * 25 + 11, 90, 14);
+			panel.add(label);
+			newData[i] = new JTextField("");
+			newData[i].setBounds(110, i * 25 + 8, 120, 20);
+			panel.add(newData[i]);
+		}
+		panel.setPreferredSize(new Dimension(0, fields.length * 25 + 11));
+	}
 
 	/**
 	 * Initialize the contents of the frame.

@@ -12,7 +12,7 @@ public class Entry implements Comparable<Entry>, Serializable
 	public static int getComparer() { return comparer; }
 	public static void setComparer(int fieldNumber) { comparer = fieldNumber; }
 	
-	public DefinitelyNotArrayList<Comparable> fields; 
+	private DefinitelyNotArrayList<Comparable> fields; 
 	private final int primaryKey;
 	
 	public Entry(int key)
