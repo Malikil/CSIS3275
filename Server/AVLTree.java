@@ -8,6 +8,8 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	private AVLNode<T> base;
 	private int count;
 	
+	public int size() { return count; }
+	
 	/**
 	 * The default constructor, the base will be set to null and no items will be in the tree 
 	 */
@@ -20,19 +22,17 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	/**
 	 * A constructor to set the base of the tree to an initial value
 	 * @param value The initial base value
-	 * @return 
 	 */
-	
-	public AVLNode<T> getBase()
-	{
-		return base;
-	}
-	
 	public AVLTree(T value)
 	{
 		base = new AVLNode<T>(value);
 		count = 1;
 	}
+	
+	/*public AVLNode<T> getBase()
+	{
+		return base;
+	}*/// Why do we need to get the base?
 	
 	/**
 	 * Adds a value to the tree, then makes sure the tree is balanced
@@ -200,7 +200,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		}
 	}
 	
-	private AVLNode<T> find(T value)
+	public AVLNode<T> getNode(T value)
 	{
 		AVLNode<T> current = base;
 		while (current != null)
@@ -213,6 +213,32 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 				return current;
 		}
 		return current;
+	}
+	
+	public Comparable[] toArray()
+	{
+		Comparable[] arr = new Comparable[count];
+		// Don't do this at home, kids
+		count = 0;
+		copyNode(base, arr);
+		return arr;
+	}
+	public <E extends Comparable<E>> E[] toArray(E[] arr)
+	{
+		if (arr.length < count)
+			arr = (E[]) new Comparable[count];
+		count = 0;
+		copyNode(base, arr);
+		return arr;
+	}
+	
+	private void copyNode(AVLNode<T> node, Comparable[] arr)
+	{
+		if (node.getLeft() != null)
+			copyNode(node.getLeft(), arr);
+		arr[count++] = node.getValue();
+		if (node.getRight() != null)
+			copyNode(node.getRight(), arr);
 	}
 	
 	/**
@@ -229,7 +255,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 			printNode(base, "B");
 	}
 	
-	AVLNode<T> minimum()
+	private AVLNode<T> minimum()
 	{
 		AVLNode<T> n = base;
 		while (n.getLeft() != null)
@@ -237,7 +263,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		return n;
 	}
 	
-	AVLNode<T> maximum()
+	private AVLNode<T> maximum()
 	{
 		AVLNode<T> n = base;
 		while (n.getRight() != null)
@@ -298,10 +324,5 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 				break;
 		}
 		 current.set(value);
-	}
-	
-	int getCount()
-	{
-		return count;
 	}
 }

@@ -4,46 +4,34 @@ import java.io.Serializable;
 
 public class Table implements Serializable {
 	private DefinitelyNotArrayList<Column> columns;
-	AVLTree<Entry> entries;
-	int nextPK = 0;
-	DefinitelyNotArrayList<Integer> unusedPKs = new DefinitelyNotArrayList<Integer>(); 
+	AVLTree<Entry> tree;
+	int nextKey = 0;
+	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<Integer>(); 
 	
 		
 	public Table()
 	{
-		 entries = new AVLTree<Entry>();
-		 setColumns(new DefinitelyNotArrayList());
+		 tree = new AVLTree<Entry>();
+		 setColumns(new DefinitelyNotArrayList<>());
 	}	
 	
-	public <T> void addField(Column toAdd)
+	public <T> void addColumn(Column toAdd)
 	{
-		getColumns().add(toAdd);
-		if(nextPK !=0)
-		{
-			AVLNode base = entries.minimum();
-			while(base != null)
-			{
-				Entry entry = (Entry) base.getValue();
-				entry.addField(null);
-				if(base != entries.maximum())
-				{
-					base = base.getNext();
-				}
-				else
-					base = null;
-			}	
-		}
+		columns.add(toAdd);
+		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+		for (Entry e : allEntries)
+			e.addField(null);
 	}
 	
-	public void rmvField(int toRmv)
+	public void removeColumn(int toRmv)
 	{
-		getColumns().remove(toRmv);
-		AVLNode base = entries.minimum();
+		columns.remove(toRmv);
+		AVLNode base = tree.minimum();
 		while(base != null)
 		{
 			Entry entry = (Entry) base.getValue();
 			entry.deleteField(toRmv);
-			if(base != entries.maximum())
+			if(base != tree.maximum())
 			{
 				base = base.getNext();
 			}
@@ -55,13 +43,13 @@ public class Table implements Serializable {
 	public void rmvEntry(int toDelete)
 	{
 		unusedPKs.add(toDelete);
-		entries.delete(new Entry(toDelete));
+		tree.delete(new Entry(toDelete));
 	}
 	
 	public void editEntry(Entry toEdit)
 	{
-		entries.delete(new Entry(toEdit.getKey()));
-		entries.add(toEdit);
+		tree.delete(new Entry(toEdit.getKey()));
+		tree.add(toEdit);
 		
 	}
 	
@@ -69,14 +57,14 @@ public class Table implements Serializable {
 	{
 		if(unusedPKs.get(0) == null){
 			int pkey = nextPK;
-			entries.add(new Entry(pkey,toAdd));
+			tree.add(new Entry(pkey,toAdd));
 			nextPK++;
 		}
 		else
 		{
 			int pkey = unusedPKs.get(0);
 			unusedPKs.remove(0);
-			entries.add(new Entry(pkey,toAdd));
+			tree.add(new Entry(pkey,toAdd));
 			}
 	}
 	
@@ -85,7 +73,7 @@ public class Table implements Serializable {
 		String[] temp = new String[getColumns().size()]; 
 		for(int i = 0; i<getColumns().size();i++)
 		{
-			temp[i] = (getColumns().get(i).name);
+			temp[i] = (getColumns().get(i).getName());
 		}
 		return temp;
 		
@@ -94,11 +82,11 @@ public class Table implements Serializable {
 	public Comparable[][] getEntries()
 	{
 		
-		AVLNode base = entries.minimum();
+		AVLNode base = tree.minimum();
 		Entry entry = (Entry) base.getValue();
-		Comparable[][] entriesArray = new Comparable[entries.getCount()][entry.getFieldSize()+1];
+		Comparable[][] entriesArray = new Comparable[tree.size()][entry.getFieldSize()+1];
 		
-		for(int i = 0; i< entries.getCount(); i++)
+		for(int i = 0; i< tree.size(); i++)
 		{			
 			 entry = (Entry) base.getValue();
 			 entriesArray[i] = entry.getData();

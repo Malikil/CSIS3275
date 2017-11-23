@@ -190,7 +190,7 @@ public class ClientGUI extends JFrame
 				String[] headers = new String[i];
 				for(int j = 0;j<headers.length;j++)
 					headers[j] = fieldsCB.getItemAt(j);
-				parent.addEntry(headers);
+				parent.createEntry(headers);
 			}
 		});
 		tablesPanel.add(addBttn);
@@ -208,7 +208,7 @@ public class ClientGUI extends JFrame
 					else
 					{
 						int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
-						parent.rmvEntry(entryKey);
+						parent.deleteEntry(entryKey);
 					}
 				}
 			});

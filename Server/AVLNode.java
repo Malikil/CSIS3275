@@ -9,6 +9,7 @@ public class AVLNode<T extends Comparable<T>> implements Comparable<AVLNode<T>>,
 	private AVLNode<T> parent;
 	private AVLNode<T> left, right;
 	private int layers;
+	
 	public T getValue() { return value; }
 	public AVLNode<T> getParent() { return parent; }
 	public AVLNode<T> getLeft() { return left; }

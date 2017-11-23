@@ -173,8 +173,8 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			Message send = new Message(Command.GET_DATABASE, database);
-			objOut.writeObject(send); System.out.println("Sent GET_DATABASE to server");
+			objOut.writeObject(new Message(Command.GET_DATABASE, database));
+			System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
 		{
@@ -186,8 +186,8 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			Message send = new Message(Command.GET_TABLE, tablename);
-			objOut.writeObject(send); System.out.println("Sent GET_TABLE to server");
+			objOut.writeObject(new Message(Command.GET_TABLE, tablename));
+			System.out.println("Sent GET_TABLE to server");
 		}
 		catch (IOException ex)
 		{
@@ -206,8 +206,7 @@ public class ClientMain implements Client
 		int i = 1;
 		for(String name: colNames)
 		{
-			newColNames[i] = name;
-			i++;
+			newColNames[i++] = name;
 			gui.fieldsCB.addItem(name);
 		}
 		
@@ -252,9 +251,9 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void editEntry(int entryIndex)
+	public void editEntry(int entryKey)
 	{
-		EditEntryGUI editEnt = new EditEntryGUI(headers, );
-		editEnt.setVisible(true);
+		EditEntryGUI editGUI = new EditEntryGUI((Column[])headers.toArray(), );
+		editGUI.setVisible(true);
 	}
 }
