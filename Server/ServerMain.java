@@ -28,6 +28,9 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
+		
+		server.changePassword("a", "aNew");
+		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
 		try
@@ -290,7 +293,7 @@ public class ServerMain implements Server
 		{
 			
 		}
-		userTrim();
+		trimUserfile();
 	}
 	
 	public void deleteUser(String username)
@@ -333,7 +336,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void userTrim() //trims whitespace and empty lines in user.txt
+	public void trimUserfile() //trims whitespace and empty lines in user.txt
 	{
 		File file = new File("users.txt");
 		try {
@@ -388,6 +391,48 @@ public class ServerMain implements Server
 						newFileContents.append(validList[0]+","+validList[1]);
 						for(int i= 0;i<databases.length;i++)
 							newFileContents.append(","+databases[i]);
+					}
+					else
+						newFileContents.append(nextLine.trim());
+				}
+				lineCount++;
+			}
+			userList.close();
+			PrintWriter overwrite = new PrintWriter(file);
+			overwrite.write(newFileContents.toString());
+			overwrite.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			
+		} 
+		catch (IOException e) 
+		{
+			
+		}
+	}
+	
+	public void changePassword(String username, String newPass)
+	{
+		File file = new File("users.txt");
+		try 
+		{
+			BufferedReader userList = new BufferedReader(new FileReader(file));
+			StringBuilder newFileContents = new StringBuilder();
+			String nextLine = null;
+			int lineCount = 0;
+			while((nextLine = userList.readLine())!=null)
+			{
+				String[] validList = nextLine.trim().split(",");
+				if(validList[0]!=null && !validList[0].isEmpty())
+				{
+					if(lineCount != 0)
+						newFileContents.append(System.getProperty("line.separator"));
+					if(username.toLowerCase().compareTo(validList[0]) == 0) //found user
+					{
+						newFileContents.append(validList[0]+","+newPass);
+						for(int i= 2;i<validList.length;i++)
+							newFileContents.append(","+validList[i]);
 					}
 					else
 						newFileContents.append(nextLine.trim());
