@@ -18,6 +18,7 @@ import javax.swing.table.DefaultTableModel;
 
 import Server.Column;
 import Server.Command;
+import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
 
@@ -28,6 +29,8 @@ import java.awt.Color;
 import javax.swing.JScrollPane;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
+import java.awt.Dimension;
+
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JMenu;
@@ -35,6 +38,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
+import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 
 public class ClientGUI extends JFrame
 {
@@ -45,15 +51,15 @@ public class ClientGUI extends JFrame
 	private Client parent;
 	private DefaultTableModel tableModel;
 	private JTable table;
-	private JTextField itemField;
-	private JTextField fieldField;
 	private JMenu menuItem_DB;
 	private JMenu mnTables;
 	private JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
 	private JScrollPane scroller;
 	private JTextArea chatArea;
-	
+	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
+	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
+	private DefinitelyNotArrayList<JTextField> valueFilter;
 
 	/**
 	 * Create the application.
@@ -245,40 +251,85 @@ public class ClientGUI extends JFrame
 		tablesPanel.add(label_1);
 		
 		JPanel mainPanel = new JPanel();
-		searchTab.addTab("Search", null, mainPanel, null);
-		
+		searchTab.addTab("Filter", null, mainPanel, null);
 		mainPanel.setLayout(null);
 		
+		JScrollPane searchTabScroll = new JScrollPane();
+		searchTabScroll.setBounds(-1, -1, 620, 405);
+		searchTabScroll.setViewportBorder(null);
+		searchTabScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		mainPanel.add(searchTabScroll);
+		
 		JPanel searchPanel = new JPanel();
+		searchTabScroll.setViewportView(searchPanel);
 		searchPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
-		searchPanel.setBounds(0, 0, 617, 399);
-		mainPanel.add(searchPanel);
 		searchPanel.setLayout(null);
-		itemField = new JTextField();
-		itemField.setBackground(SystemColor.control);
-		itemField.setBounds(211, 64, 227, 20);
-		searchPanel.add(itemField);
-		itemField.setColumns(10);
 		
-		fieldField = new JTextField();
-		fieldField.setBackground(SystemColor.control);
-		fieldField.setBounds(211, 99, 227, 20);
-		searchPanel.add(fieldField);
-		fieldField.setColumns(10);
-		
-		JLabel searchItemLbl = new JLabel("Item");
+		JLabel searchItemLbl = new JLabel("Value");
 		searchItemLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
-		searchItemLbl.setBounds(155, 67, 46, 14);
+		searchItemLbl.setBounds(385, 26, 46, 14);
 		searchPanel.add(searchItemLbl);
 		 		
 		JLabel searchFieldLbl = new JLabel("Field ");
 		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
-		searchFieldLbl.setBounds(155, 102, 46, 14);
+		searchFieldLbl.setBounds(159, 26, 46, 14);
 		searchPanel.add(searchFieldLbl);
-
-		JButton searchBttn = new JButton("Search");
-		searchBttn.setBounds(349, 140, 89, 23);
-		searchPanel.add(searchBttn);
+		
+		valueFilter = new DefinitelyNotArrayList<>();
+		valueFilter.add(new JTextField());
+		valueFilter.get(0).setBounds(328, 68, 162, 20);
+		searchPanel.add(valueFilter.get(0));
+		
+		String[] comparisonStrings = {  "<", "<=", "=", ">", ">=" };
+		comparisonTypes = new DefinitelyNotArrayList<>();
+		comparisonTypes.add(new JComboBox<String>(comparisonStrings));
+		comparisonTypes.get(0).setBounds(265, 67, 53, 22);
+		searchPanel.add(comparisonTypes.get(0));
+		
+		fieldFilter = new DefinitelyNotArrayList<>();
+		fieldFilter.add(new JComboBox<String>());
+		fieldFilter.get(0).setBounds(116, 67, 139, 22);
+		searchPanel.add(fieldFilter.get(0));
+		
+		JButton btnAddFilter = new JButton("Add");
+		JButton btnRemoveFilter = new JButton("Remove");
+		JButton btnApplyFilter = new JButton("Apply");
+		
+		btnAddFilter.setBounds(159, 140, 91, 23);
+		btnAddFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// Move buttons down
+				btnAddFilter.setBounds(159, valueFilter.size() * 27 + 117, 91, 23);
+				btnRemoveFilter.setBounds(258, valueFilter.size() * 27 + 117, 91, 23);
+				btnApplyFilter.setBounds(359, valueFilter.size() * 27 + 117, 89, 23);
+				
+				// Add filter row
+				fieldFilter.add(new JComboBox<>(parent.getColumnNames()));
+				fieldFilter.get(fieldFilter.size() - 1).setBounds(116, fieldFilter.size() * 27 + 40, 139, 22);
+				searchPanel.add(fieldFilter.get(fieldFilter.size() - 1));
+				
+				comparisonTypes.add(new JComboBox<>(comparisonStrings));
+				comparisonTypes.get(comparisonTypes.size() - 1).setBounds(265, comparisonTypes.size() * 27 + 40, 53, 22);
+				searchPanel.add(comparisonTypes.get(comparisonTypes.size() - 1));
+				
+				valueFilter.add(new JTextField());
+				valueFilter.get(valueFilter.size() - 1).setBounds(328, valueFilter.size() * 27 + 41, 162, 20);
+				searchPanel.add(valueFilter.get(valueFilter.size() - 1));
+				
+				// Set preferred size of panel
+				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 160));
+				searchPanel.repaint();
+			}
+		});
+		searchPanel.add(btnAddFilter);
+		
+		btnRemoveFilter.setBounds(258, 140, 91, 23);
+		searchPanel.add(btnRemoveFilter);
+		
+		btnApplyFilter.setBounds(359, 140, 89, 23);
+		searchPanel.add(btnApplyFilter);
 	}
 	
 	public void setDatabases(String[] list)

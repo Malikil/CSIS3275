@@ -251,4 +251,13 @@ public class ClientMain implements Client
 				
 			}
 	}
+
+	@Override
+	public String[] getColumnNames()
+	{
+		if (currentTable != null)
+			return currentTable.getColumnNames();
+		else
+			return new String[0];
+	}
 }

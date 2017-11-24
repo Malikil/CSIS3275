@@ -15,4 +15,5 @@ public interface Client
 	public void deleteEntry(int entryKey);
 	public void editEntry(int entryIndex);
 	public void setTable(Table newTable);
+	public String[] getColumnNames();
 }
