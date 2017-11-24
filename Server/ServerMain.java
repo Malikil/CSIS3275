@@ -131,23 +131,21 @@ public class ServerMain implements Server
 			return new String[] { "Database doesn't exist" };
 	}
 
-	public void saveToFile(AVLTree<Entry> tree, String databaseName, String tableName, 
-							String[] fieldNames, FieldType[] fieldTypes)
+	public void saveToFile(Table table, String databaseName, String tableName)
 	{
 		FileOutputStream fOut = null;
 		ObjectOutputStream oStream = null;
 		
-		try {
+		try
+		{
 			File dir = new File(databaseName);
 			if(!dir.isDirectory())
 				dir.mkdir();
-			File saveFile = new File(databaseName+"\\"+tableName+".ser");
+			File saveFile = new File(databaseName + "\\" + tableName + ".eric");
 			
 			fOut = new FileOutputStream(saveFile);
 			oStream = new ObjectOutputStream(fOut);
-			oStream.writeObject(fieldNames);
-			oStream.writeObject(fieldTypes);
-			oStream.writeObject(tree); 
+			oStream.writeObject(table); 
 			oStream.close();
 			fOut.close();
 		} 
@@ -166,29 +164,31 @@ public class ServerMain implements Server
 		return true;
 	}
 	
-	
-	
 	@Override
 	public Table getTable(String dbname, String tableName) {
 		Table tableReq = null;
 		FileInputStream file = null;
-		try {
-			file = new FileInputStream(new File(dbname + "\\"+ tableName +".eric"));
-		} catch (FileNotFoundException e1) {
+		try
+		{
+			file = new FileInputStream(new File(dbname + "\\" + tableName + ".eric"));
+		}
+		catch (FileNotFoundException e1)
+		{
 			
 		}
-		try {
+		try
+		{
 			ObjectInputStream fileObjIn = new ObjectInputStream(file);
-			tableReq = (Table) fileObjIn.readObject();
+			tableReq = (Table)fileObjIn.readObject();
 			file.close();
 			fileObjIn.close();
-		} catch (IOException e) {
-		} catch (ClassNotFoundException e) {
 		}
-		
+		catch (IOException e)
+		{	}
+		catch (ClassNotFoundException e)
+		{	}
 		
 		return tableReq;
-		
 	}
 	
 
