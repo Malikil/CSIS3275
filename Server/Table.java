@@ -1,6 +1,7 @@
 package Server;
 
 import java.io.Serializable;
+import java.io.SyncFailedException;
 
 public class Table implements Serializable
 {
@@ -21,17 +22,23 @@ public class Table implements Serializable
 	public <T> void addColumn(Column col)
 	{
 		columns.add(col);
-		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
-		for (Entry e : allEntries)
-			e.addField(null);
+		if (tree.size() > 0)
+		{
+			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+			for (Entry e : allEntries)
+				e.addField(null);
+		}
 	}
 	
 	public void removeColumn(int index)
 	{
 		columns.remove(index);
-		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
-		for (Entry e : allEntries)
-			e.deleteField(index);
+		if (tree.size() > 0)
+		{
+			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+			for (Entry e : allEntries)
+				e.deleteField(index);
+		}
 	}
 	
 	public void removeEntry(int key)
@@ -54,10 +61,36 @@ public class Table implements Serializable
 	
 	public void addEntry(Comparable[] toAdd)
 	{
+		if (toAdd.length != columns.size())
+			throw new IllegalArgumentException("Passed array is different length than column list");
 		if(unusedKeys.size() == 0)
 			tree.add(new Entry(nextKey++,toAdd));
 		else
 			tree.add(new Entry(unusedKeys.remove(unusedKeys.size() - 1),toAdd));
+	}
+	
+	// TODO Find a better way to indicate when the server's tree and the client's tree don't match
+	public void addEntry(Entry e) throws SyncFailedException
+	{
+		if (e.getKey() == nextKey)
+		{
+			tree.add(e);
+			nextKey++;
+		}
+		else if (e.getKey() < nextKey)
+		{
+			if (unusedKeys.remove(new Integer(e.getKey())))
+				tree.add(e);
+			else
+				throw new SyncFailedException("Key is already in use");
+		}
+		else
+		{
+			for (; nextKey < e.getKey(); nextKey++)
+				unusedKeys.add(nextKey);
+			tree.add(e);
+			nextKey++;
+		}
 	}
 	
 	public String[] getColumnNames()
