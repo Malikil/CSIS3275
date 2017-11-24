@@ -1,5 +1,7 @@
 package Client;
 
+import Server.Table;
+
 public interface Client
 {
 	public void setDatabaseList(String[] list);
@@ -12,4 +14,5 @@ public interface Client
 	public void createEntry(String[] headers);
 	public void deleteEntry(int entryKey);
 	public void editEntry(int entryIndex);
+	public void setTable(Table newTable);
 }

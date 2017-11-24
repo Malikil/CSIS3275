@@ -17,13 +17,13 @@ public class Entry implements Comparable<Entry>, Serializable
 	
 	public Entry(int key)
 	{
-		fields = new DefinitelyNotArrayList<Comparable>(); 
+		fields = new DefinitelyNotArrayList<>(Comparable.class); 
 		primaryKey = key;
 	}
 	
 	public Entry(int key, Comparable[] data)
 	{
-		fields = new DefinitelyNotArrayList<Comparable>(data.length); 
+		fields = new DefinitelyNotArrayList<>(Comparable.class, data.length);
 		for (Comparable d : data)
 			fields.add(d);
 		this.primaryKey = key;
@@ -69,24 +69,9 @@ public class Entry implements Comparable<Entry>, Serializable
 		return fields.get(comparer).compareTo(o.fields.get(comparer));
 	}
 	
-	public int compareTo(Entry o, int comparisonField) 
+	public Comparable[] getData()
 	{
-		if (comparer == -1)
-		{
-			return primaryKey - o.primaryKey;
-		}
-		return fields.get(comparer).compareTo(o.fields.get(comparer));
-	}
-	
-	public Comparable [] getData()
-	{
-		Comparable[] temp = new String[fields.size()+1]; 
-		temp[0] = Integer.toString(primaryKey);
-		for(int i = 1; i<fields.size()+1;i++)
-		{
-			temp[i] = fields.get(i-1);
-		}
-		return temp;
+		return fields.toArray();
 	}
 	
 	int getFieldSize()

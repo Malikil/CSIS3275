@@ -2,106 +2,85 @@ package Server;
 
 import java.io.Serializable;
 
-public class Table implements Serializable {
+public class Table implements Serializable
+{
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
 	int nextKey = 0;
-	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<Integer>(); 
+	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>(Integer.class);
 	
-		
+	public Column[] getColumns() { return columns.toArray(); }
+	public Entry[] asArray() { return tree.toArray(); }
+	
 	public Table()
 	{
 		 tree = new AVLTree<Entry>();
-		 setColumns(new DefinitelyNotArrayList<>());
+		 columns = new DefinitelyNotArrayList<>(Column.class);
 	}	
 	
-	public <T> void addColumn(Column toAdd)
+	public <T> void addColumn(Column col)
 	{
-		columns.add(toAdd);
-		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+		columns.add(col);
+		Entry[] allEntries = tree.toArray();
 		for (Entry e : allEntries)
 			e.addField(null);
 	}
 	
-	public void removeColumn(int toRmv)
+	public void removeColumn(int index)
 	{
-		columns.remove(toRmv);
-		AVLNode base = tree.minimum();
-		while(base != null)
-		{
-			Entry entry = (Entry) base.getValue();
-			entry.deleteField(toRmv);
-			if(base != tree.maximum())
-			{
-				base = base.getNext();
-			}
-			else
-				base = null;
-		}
+		columns.remove(index);
+		Entry[] allEntries = tree.toArray();
+		for (Entry e : allEntries)
+			e.deleteField(index);
 	}
 	
-	public void rmvEntry(int toDelete)
+	public void removeEntry(int key)
 	{
-		unusedPKs.add(toDelete);
-		tree.delete(new Entry(toDelete));
+		unusedKeys.add(key);
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		tree.delete(new Entry(key));
+		Entry.setComparer(temp);
 	}
 	
 	public void editEntry(Entry toEdit)
 	{
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
 		tree.delete(new Entry(toEdit.getKey()));
 		tree.add(toEdit);
-		
+		Entry.setComparer(temp);
 	}
 	
 	public void addEntry(Comparable[] toAdd)
 	{
-		if(unusedPKs.get(0) == null){
-			int pkey = nextPK;
-			tree.add(new Entry(pkey,toAdd));
-			nextPK++;
-		}
+		if(unusedKeys.size() == 0)
+			tree.add(new Entry(nextKey++,toAdd));
 		else
-		{
-			int pkey = unusedPKs.get(0);
-			unusedPKs.remove(0);
-			tree.add(new Entry(pkey,toAdd));
-			}
+			tree.add(new Entry(unusedKeys.remove(unusedKeys.size() - 1),toAdd));
 	}
 	
 	public String[] getColumnNames()
 	{
-		String[] temp = new String[getColumns().size()]; 
-		for(int i = 0; i<getColumns().size();i++)
+		String[] temp = new String[columns.size()]; 
+		for(int i = 0; i < columns.size(); i++)
 		{
-			temp[i] = (getColumns().get(i).getName());
+			temp[i] = (columns.get(i).getName());
 		}
 		return temp;
 		
 	}
 	
-	public Comparable[][] getEntries()
+	public Comparable[][] getTable()
 	{
+		Entry[] entries = tree.toArray();
+		Comparable[][] tableArray = new Comparable[tree.size()][entries[0].getFieldSize()];
 		
-		AVLNode base = tree.minimum();
-		Entry entry = (Entry) base.getValue();
-		Comparable[][] entriesArray = new Comparable[tree.size()][entry.getFieldSize()+1];
-		
-		for(int i = 0; i< tree.size(); i++)
+		for(int i = 0; i < tree.size(); i++)
 		{			
-			 entry = (Entry) base.getValue();
-			 entriesArray[i] = entry.getData();
-				base = base.getNext();
-
+			tableArray[i] = entries[i].getData();
 		}
 		
-		return entriesArray;
-	}
-
-	public DefinitelyNotArrayList<Column> getColumns() {
-		return columns;
-	}
-
-	public void setColumns(DefinitelyNotArrayList<Column> columns) {
-		this.columns = columns;
+		return tableArray;
 	}
 }

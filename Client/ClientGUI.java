@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
+import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -43,14 +44,14 @@ public class ClientGUI extends JFrame
 	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
-	JTable tables = new JTable();
+	private JTable table;
 	private JTextField itemField;
 	private JTextField fieldField;
 	private JMenu menuItem_DB;
 	private JMenu mnTables;
-	JComboBox<String> fieldsCB;
+	private JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
-	private JScrollPane Scroller = new JScrollPane(tables);
+	private JScrollPane scroller;
 	private JTextArea chatArea;
 	
 
@@ -76,8 +77,6 @@ public class ClientGUI extends JFrame
 		setBounds(100, 100, 638, 482);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
-		
-		tableModel = new DefaultTableModel();
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.setForeground(Color.BLACK);
@@ -155,8 +154,15 @@ public class ClientGUI extends JFrame
 		fieldsCB.setBounds(56, 41, 300, 20);
 		tablesPanel.add(fieldsCB);
 		
-		Scroller.setBounds(36, 106, 334, 172);
-		tablesPanel.add(Scroller);
+		tableModel = new DefaultTableModel();
+		table = new JTable(tableModel);
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(false);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setBorder(new LineBorder(new Color(0, 0, 0)));
+		scroller = new JScrollPane(table);
+		scroller.setBounds(36, 106, 334, 172);
+		tablesPanel.add(scroller);
 		
 		JButton addFieldBttn = new JButton("Add");
 		addFieldBttn.setBounds(56, 72, 89, 23);
@@ -200,14 +206,14 @@ public class ClientGUI extends JFrame
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					int entryRow = tables.getSelectedRow();
+					int entryRow = table.getSelectedRow();
 					if (entryRow == -1)
 					{
 						chatArea.append("SELECT SOMETHING DUMBASS");
 					}
 					else
 					{
-						int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
+						int entryKey = Integer.parseInt((String) table.getModel().getValueAt(entryRow, 0));
 						parent.deleteEntry(entryKey);
 					}
 				}
@@ -221,22 +227,8 @@ public class ClientGUI extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				int entryRow = tables.getSelectedRow();
-				int entryKey = Integer.parseInt((String) tables.getModel().getValueAt(entryRow, 0));
-				int colCount =  tables.getModel().getColumnCount()-1; //Because PK is one of the columns
-				Comparable[] entryData = new Comparable[colCount];
-				for(int i = 1; i<colCount+1; i++)
-				{
-					Comparable data = (Comparable) tables.getModel().getValueAt(entryRow, i);
-					entryData[i-1] = data;
-				}
-				
-				int i = fieldsCB.getItemCount();
-				String[] headers = new String[i];
-				for(int j = 0;j<headers.length;j++)
-					headers[j] = fieldsCB.getItemAt(j);
-				
-				parent.editEntry(entryKey,entryData,headers);
+				int entryRow = table.getSelectedRow();
+				parent.editEntry(entryRow);
 			}
 		});
 		tablesPanel.add(editBttn);
@@ -287,10 +279,6 @@ public class ClientGUI extends JFrame
 		JButton searchBttn = new JButton("Search");
 		searchBttn.setBounds(349, 140, 89, 23);
 		searchPanel.add(searchBttn);
-		
-		
-		
-		
 	}
 	
 	public void setDatabases(String[] list)
@@ -310,9 +298,8 @@ public class ClientGUI extends JFrame
 		}
 	}
 	
-	public void setTables(String[] list)
+	public void setTableList(String[] list)
 	{
-		
 		mnTables.removeAll();
 		for (String table : list)
 		{
@@ -326,37 +313,20 @@ public class ClientGUI extends JFrame
 			});
 			mnTables.add(newTable);
 		}
-		
 	}
 	
-	
-	private static void addPopup(Component component, final JPopupMenu popup) {
+	public void setFieldList(String[] fields)
+	{
+		fieldsCB.removeAllItems();
+		for (String s : fields)
+			fieldsCB.addItem(s);
 	}
-
-	public void setTableModel(Object[][] entryList, String[] newColNames) {
-		tablesPanel.remove(Scroller);
-		tables = new JTable(entryList, newColNames){
-			      /**
-			 * 
-			 */
-			private static final long serialVersionUID = 6626198581056258616L;
-
-				public boolean isCellEditable(int row, int column){  
-			        return false;  
-			      }
- 
-		};
-		tables.setBackground(UIManager.getColor("ToolBar.floatingBackground"));
-		tables.setBorder(new LineBorder(new Color(0, 0, 0)));
-		tables.getColumnModel().getColumn(0).setMinWidth(0);
-		tables.getColumnModel().getColumn(0).setMaxWidth(0);
-		tables.setRowSelectionAllowed(true);
-		tables.setColumnSelectionAllowed(false);
-		tables.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		Scroller = new JScrollPane(tables);
-		Scroller.setBounds(36, 106, 334, 172);
-		tablesPanel.add(Scroller);
-		tablesPanel.repaint();
-		
+	
+	public void setTable(Entry[] data, String[] columns)
+	{
+		tableModel.setRowCount(0);
+		tableModel.setColumnIdentifiers(columns);
+		for (Entry e : data)
+			tableModel.addRow(e.getData());
 	}
 }

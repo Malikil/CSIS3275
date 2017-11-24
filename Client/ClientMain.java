@@ -20,6 +20,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private Table currentTable = null;
+	private Entry[] filteredTable;
 	private DefinitelyNotArrayList<Column> headers;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
@@ -110,7 +111,7 @@ public class ClientMain implements Client
 						setTable(currentTable);
 						break;
 					case TABLE_LIST:
-						gui.setTables(received.getTableList());
+						gui.setTableList(received.getTableList());
 						break;
 					case MESSAGE:
 						break;
@@ -178,7 +179,7 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for databases from server");
+			System.out.println("Error asking for tables from server");
 		}
 	}
 	
@@ -191,28 +192,18 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for databases from server");
+			System.out.println("Error asking for table from server");
 		}
 	}
 	
+	@Override
 	public void setTable(Table newTable)
 	{
 		currentTable = newTable;
+		filteredTable = newTable.asArray();
 		String[] colNames =  currentTable.getColumnNames();
-		gui.fieldsCB.removeAllItems();
-		
-		String[] newColNames = new String[colNames.length+1];
-		newColNames[0] = "Primary Key";
-		int i = 1;
-		for(String name: colNames)
-		{
-			newColNames[i++] = name;
-			gui.fieldsCB.addItem(name);
-		}
-		
-		Comparable[][] entryList = currentTable.getEntries();
-		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
-		gui.setTableModel(entryList,newColNames);
+		gui.setFieldList(colNames);
+		gui.setTable(currentTable.asArray(),colNames);
 	}
 
 	@Override
@@ -253,7 +244,16 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry(int entryKey)
 	{
-		EditEntryGUI editGUI = new EditEntryGUI((Column[])headers.toArray(), );
+		EditEntryGUI editGUI = new EditEntryGUI(headers.toArray(), filteredTable[entryKey]);
 		editGUI.setVisible(true);
+		if (editGUI.getEntry() != null)
+			try
+			{
+				objOut.writeObject(new Message(Command.EDIT_ENTRY, editGUI.getEntry()));
+			}
+			catch (IOException ex)
+			{
+				
+			}
 	}
 }

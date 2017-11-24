@@ -1,8 +1,10 @@
 package Server;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.Iterator;
 
-public class AVLTree<T extends Comparable<T>> implements Serializable
+public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<T>
 {
 	private static final long serialVersionUID = -4795806296678293205L;
 	private AVLNode<T> base;
@@ -215,44 +217,22 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		return current;
 	}
 	
-	public Comparable[] toArray()
+	public T[] toArray()
 	{
-		Comparable[] arr = new Comparable[count];
+		T[] arr = (T[])Array.newInstance(base.getValue().getClass(), count);
 		// Don't do this at home, kids
 		count = 0;
 		copyNode(base, arr);
 		return arr;
 	}
-	public <E extends Comparable<E>> E[] toArray(E[] arr)
-	{
-		if (arr.length < count)
-			arr = (E[]) new Comparable[count];
-		count = 0;
-		copyNode(base, arr);
-		return arr;
-	}
 	
-	private void copyNode(AVLNode<T> node, Comparable[] arr)
+	private void copyNode(AVLNode<T> node, T[] arr)
 	{
 		if (node.getLeft() != null)
 			copyNode(node.getLeft(), arr);
 		arr[count++] = node.getValue();
 		if (node.getRight() != null)
 			copyNode(node.getRight(), arr);
-	}
-	
-	/**
-	 * Will print a text representation of this tree to console,
-	 * either with each node on its own line with the path from the base,
-	 * or on a single line with each value separated by a comma
-	 * @param commas True to print on a single line with commas, false to print a multi-line structure
-	 */
-	public void printTree(boolean commas)
-	{
-		if (commas)
-			printCommas(base);
-		else
-			printNode(base, "B");
 	}
 	
 	private AVLNode<T> minimum()
@@ -291,38 +271,28 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		System.out.println("Right value: " + base.getRight() + " on layer " + base.getRight().getLayers());
 		System.out.println("Offset: " + base.getRight().getOffset());
 	}
-	
-	private void printCommas(AVLNode<T> node)
-	{
-		
-		if (node.getLeft() != null)
-			printCommas(node.getLeft());
-		System.out.print(node.toString() + ", ");
-		if (node.getRight() != null)
-			printCommas(node.getRight());
-	}
-	
-	private void printNode(AVLNode<T> node, String pre)
-	{
-		System.out.println(pre + " " + node.toString());
-		if (node.getLeft() != null)
-			printNode(node.getLeft(), pre + ".L");
-		if (node.getRight() != null)
-			printNode(node.getRight(), pre + ".R");
-	}
 
-	void replace(T value, T oldValue) //I WANT SET - Angelo
+	@Override
+	public Iterator<T> iterator()
 	{
-		AVLNode<T> current = base;
-		while (current != null)
+		// Haha, do things linear twice
+		return new Iterator<T>()
 		{
-			if (current.compareTo(oldValue) > 0)
-				current = current.getRight();
-			else if (current.compareTo(oldValue) < 0)
-				current = current.getLeft();
-			else 
-				break;
-		}
-		 current.set(value);
+			private T[] arr = toArray();
+			private int i = 0;
+			
+			@Override
+			public boolean hasNext()
+			{
+				return i < arr.length;
+			}
+
+			@Override
+			public T next()
+			{
+				T value = arr[i++];
+				return value;
+			}
+		};
 	}
 }

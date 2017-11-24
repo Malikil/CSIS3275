@@ -23,6 +23,7 @@ public class EditEntryGUI extends JDialog
 	private JTextField[] newData;
 	
 	public JTextField[] getData() { return newData; }
+	public Entry getEntry() { return edit; }
 
 	/**
 	 * Create the application.
@@ -94,7 +95,11 @@ public class EditEntryGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				// If we do data validation, it'll probably be here
-				
+				if (edit != null)
+				{
+					for (int i = 0; i < newData.length; i++)
+						edit.setfield(i, newData[i].getText());
+				}
 				thisDialog.dispose();
 			}
 		});
@@ -107,6 +112,7 @@ public class EditEntryGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				newData = null;
+				edit = null;
 				thisDialog.dispose();
 			}
 		});
