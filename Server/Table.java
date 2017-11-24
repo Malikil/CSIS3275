@@ -7,21 +7,21 @@ public class Table implements Serializable
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
 	int nextKey = 0;
-	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>(Integer.class);
+	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>();
 	
-	public Column[] getColumns() { return columns.toArray(); }
-	public Entry[] asArray() { return tree.toArray(); }
+	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
+	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
 	
 	public Table()
 	{
 		 tree = new AVLTree<Entry>();
-		 columns = new DefinitelyNotArrayList<>(Column.class);
+		 columns = new DefinitelyNotArrayList<>();
 	}	
 	
 	public <T> void addColumn(Column col)
 	{
 		columns.add(col);
-		Entry[] allEntries = tree.toArray();
+		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
 		for (Entry e : allEntries)
 			e.addField(null);
 	}
@@ -29,7 +29,7 @@ public class Table implements Serializable
 	public void removeColumn(int index)
 	{
 		columns.remove(index);
-		Entry[] allEntries = tree.toArray();
+		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
 		for (Entry e : allEntries)
 			e.deleteField(index);
 	}
@@ -71,9 +71,9 @@ public class Table implements Serializable
 		
 	}
 	
-	public Comparable[][] getTable()
+	/*public Comparable[][] getTable()
 	{
-		Entry[] entries = tree.toArray();
+		Entry[] entries = tree.toArray(new Entry[tree.size()]);
 		Comparable[][] tableArray = new Comparable[tree.size()][entries[0].getFieldSize()];
 		
 		for(int i = 0; i < tree.size(); i++)
@@ -82,5 +82,5 @@ public class Table implements Serializable
 		}
 		
 		return tableArray;
-	}
+	}*/
 }

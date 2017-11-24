@@ -217,12 +217,13 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 		return current;
 	}
 	
-	public T[] toArray()
+	public T[] toArray(T[] arr)
 	{
-		T[] arr = (T[])Array.newInstance(base.getValue().getClass(), count);
 		// Don't do this at home, kids
 		count = 0;
 		copyNode(base, arr);
+		if (arr.length > count)
+			arr[count] = null;
 		return arr;
 	}
 	
@@ -278,7 +279,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 		// Haha, do things linear twice
 		return new Iterator<T>()
 		{
-			private T[] arr = toArray();
+			private T[] arr = toArray((T[])new Object[count]);
 			private int i = 0;
 			
 			@Override

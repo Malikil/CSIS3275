@@ -14,24 +14,25 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 	
 	public int size() { return count; }
 	
-	public DefinitelyNotArrayList(Class<E> c)
+	public DefinitelyNotArrayList()
 	{
-		array = (E[])Array.newInstance(c, 10);
+		array = (E[])new Object[10];
 		count = 0;
 	}
 	
-	public DefinitelyNotArrayList(Class<E> c, int i)
+	public DefinitelyNotArrayList(int i)
 	{
-		array = (E[])Array.newInstance(c, i);
+		array = (E[])new Object[i];
 		count = 0;
 	}
 	
-	public E[] toArray()
+	public E[] toArray(E[] arr)
 	{
-		E[] temp = (E[])Array.newInstance(array[0].getClass(), count);
 		for (int i = 0; i < count; i++)
-			temp[i] = array[i];
-		return temp;
+			arr[i] = array[i];
+		if (arr.length > count)
+			arr[count] = null;
+		return arr;
 	}
 	
 	public E get(int index)
@@ -48,7 +49,7 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 		else
 		{
 			E[] old = array;
-			array = (E[])Array.newInstance(item.getClass(), (int)(array.length * 1.5) + 1);
+			array = (E[])new Object[(int)(array.length * 1.5) + 1];
 			for (int i = 0; i < old.length; i++)
 				array[i] = old[i];
 			array[count++] = item;
@@ -69,7 +70,7 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 		else
 		{
 			E[] old = array;
-			array = (E[])Array.newInstance(item.getClass(), (int)(array.length * 1.5) + 1);
+			array = (E[])new Object[(int)(array.length * 1.5) + 1];
 			for (int i = 0; i < index; i++)
 				array[i] = old[i];
 			array[index] = item; count++;

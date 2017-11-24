@@ -5,11 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import javax.swing.table.DefaultTableModel;
-
-import Server.Column;
 import Server.Command;
-import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
 import Server.Table;
@@ -21,7 +17,6 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private Entry[] filteredTable;
-	private DefinitelyNotArrayList<Column> headers;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -244,7 +239,7 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry(int entryKey)
 	{
-		EditEntryGUI editGUI = new EditEntryGUI(headers.toArray(), filteredTable[entryKey]);
+		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), filteredTable[entryKey]);
 		editGUI.setVisible(true);
 		if (editGUI.getEntry() != null)
 			try
