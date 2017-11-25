@@ -1,7 +1,6 @@
 package Server;
 
 import java.io.Serializable;
-import java.io.SyncFailedException;
 
 public class Table implements Serializable
 {

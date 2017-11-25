@@ -40,7 +40,7 @@ public class ClientHandler implements Runnable
 		try
 		{
 			boolean loggedIn = false;
-			BufferedReader userList = new BufferedReader(new FileReader(new File("Users.txt")));
+			BufferedReader userList = new BufferedReader(new FileReader(new File("users.txt")));
 			do
 			{
 				try
@@ -99,7 +99,8 @@ public class ClientHandler implements Runnable
 				objOut.close();
 				objIn.close();
 			}
-			catch (IOException | ClassNotFoundException e2) { System.out.println("Couldn't close sockets"); } // TODO DEBUG
+			catch (IOException | ClassNotFoundException e2)
+			{ System.out.println("Couldn't close sockets"); }
 			return;
 		}
 		
@@ -119,11 +120,11 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_ENTRY:
-					Comparable[] entrydata = received.getAddEntry();
-					currentTable.addEntry(entrydata);
-					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
-					currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
+					Comparable[] entryData = received.getAddEntry();
+					parent.addEntry(currentDatabaseName, currentTableName, entryData);
+					//parent.saveTable(currentDatabaseName, currentTableName, currentTable);
+					//currentTable = parent.getTable(currentDatabaseName, currentTableName);
+					//objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:
 					currentTable = received.getTable();

@@ -7,4 +7,5 @@ public interface Server
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
 	public void saveTable(String dbName, String tableName, Table table);
+	public void addEntry(String database, String table, Comparable[] data);
 }

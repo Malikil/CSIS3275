@@ -454,6 +454,12 @@ public class ServerMain implements Server
 	
 	public void editEntry() //unfinished
 	{
+		// TODO Eric-generated method stub :thinking:
+	}
+
+	@Override
+	public void addEntry(String database, String table, Comparable[] data) {
+		// TODO Auto-generated method stub
 		
 	}
 }
