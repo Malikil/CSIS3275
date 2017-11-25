@@ -6,6 +6,5 @@ public interface Server
 	public String[] getUserDatabases(String user);
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
-	public void updateTable(String db, String table, Table newTable);
-	public void createTable(String databbase, String tableName);
+	public void saveTable(String dbName, String tableName, Table table);
 }

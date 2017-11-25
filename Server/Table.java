@@ -19,7 +19,14 @@ public class Table implements Serializable
 		 columns = new DefinitelyNotArrayList<>();
 	}	
 	
-	public <T> void addColumn(Column col)
+	public Table(Column firstColumn)
+	{
+		 tree = new AVLTree<Entry>();
+		 columns = new DefinitelyNotArrayList<>();
+		 columns.add(firstColumn);
+	}	
+
+	public void addColumn(Column col)
 	{
 		columns.add(col);
 		if (tree.size() > 0)

@@ -138,12 +138,12 @@ public class ClientMain implements Client
 		gui.setDatabases(list);
 	}
 	
-	@Override
-	public void createTable(String tableName)
+  @Override
+	public void createTable(Table table)
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_TABLE, tableName));
+			objOut.writeObject(new Message(Command.ADD_TABLE, table));
 		}
 		catch (IOException ex)
 		{
