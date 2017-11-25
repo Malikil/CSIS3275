@@ -20,7 +20,7 @@ Program:
   informs client as to the role of the client (User/Admin)
   
   
-Client(User):
+ClientTab(home):
 Help:
   DataBase Dropdown Menu:
     Choose A DataBase to modify and press go to recieve data
@@ -42,13 +42,70 @@ Program:
   shows users the active table graphically
   Maybe: Shows users errors
   
-Client(Admin):
+ClientHeaderTable(AddTable):
+  Help:
+    Input Table Name
+    Input Header Name and field Datatypes
+    "Add" To add textFields for more headers
+  Program:
+    Allows users to create tables with as many columns/headers as needed
+
+ClientHeader(DeleteField):
+  Help:
+    Deletes Current Active Table
+  Program:
+    Allows users to delete active table
+    Confirms user indeed wants to delete table
+      
+Client(AddField):
+  Help:
+    Input Header Name and field Datatypes
+    Finish to proceed
+  program:
+    Allows users to add columns to table
+    
+Client(DeleteField):
+  Help:
+    Select COlumn You Wish To delete
+  Program:
+    Allows user to delete colum form table
+    Confirms Deletion
+    
+Client(Add):
+  Help:
+    enter Values in TextField
+  Program:
+    Allows users to add entries to table
+    Data Validation Occures
+  
+Client(Edit):
+  Help:
+    Replace Current Data FIeld with new Data, Complete to proceed.
+  Program:
+    Allows users to edit selected entry
+    Dynamically Generates Fields according to number of Headers and their Datatypes.
+    
+Client(Delete):
+  Help:
+    Removes Selected Entry In table
+  Program:
+    Reminds user to select entry in table if one is not selected
+    confirms deletion of selected entry
+    
+ClientTab(Search):
 Help:
-  no need, they're admins :P
+  Query:
+    Enter Value to find, Search Button to proceed.
+  Filter:
+    Enter field name, enter operation to implement from dropdown, enter value to base operation on, Search to proceed
+  Sort:
+    Select Column to sort by in dropdown, Search to proceed.
+    
 Program:
-  Allows admins to access server terminal from remote locations
-  shows admins errors performed, and which user performed them
-  admins my process user requests to modify databases or users
+  Allows users to search for values within selected Table
+  Allowes users to filter based on any operation for results
+  Allows users to sort items based on column
+  
   
 Server:
 Help:
@@ -56,8 +113,3 @@ Help:
 Program:
   Admins may use the server the exact same way as the remote admin terminal with added serverside error logging
   
-
-
-Extra:
-clients: Request table delete
-Admin: Process requests remotely
