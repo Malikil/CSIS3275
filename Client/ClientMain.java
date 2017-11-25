@@ -5,8 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import javax.swing.table.DefaultTableModel;
-
+import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -17,8 +16,8 @@ public class ClientMain implements Client
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
-	private static Message received;
 	private Table currentTable = null;
+	private Entry[] filteredTable;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -30,7 +29,7 @@ public class ClientMain implements Client
 	public static void main(String[] args)
 	{
 		LoginGUI login = new LoginGUI();
-		Socket sock;
+		Socket sock = null;
 		ObjectOutputStream out;
 		ObjectInputStream in;
 		
@@ -46,11 +45,16 @@ public class ClientMain implements Client
 				Message loginAttempt = new Message(Command.LOGIN,
 						new String[] { login.getEnteredUser(), login.getEnteredPass() });
 				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
-				received = (Message)in.readObject();
-				Command conf = received.getCommandType(); System.out.println("Response received");
+				loginAttempt = (Message)in.readObject();
+				Command conf = loginAttempt.getCommandType(); System.out.println("Response received");
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
-				if (conf == Command.CONNECTION_SUCCESS)		
-					break;
+				if (conf == Command.CONNECTION_SUCCESS)
+				{
+					ClientMain client = new ClientMain(sock, out, in);
+					client.setDatabaseList(loginAttempt.getDatabaseList());
+					System.out.println("Databases set");
+					client.start();
+				}
 				else
 					login.setMessage(conf);
 						
@@ -58,34 +62,30 @@ public class ClientMain implements Client
 			catch (IOException ex)
 			{
 				System.out.println("Error communicating with server:\t" + ex.getMessage());
+				try
+				{
+					sock.close();
+				}
+				catch (IOException io)
+				{
+					/* Couldn't close socket */
+				}
 			}
 			catch (ClassNotFoundException ex)
 			{
 				ex.printStackTrace();
 			}
 		}
-		
-		try
-		{
-			new ClientMain(sock, out, in).start();
-		}
-		catch (IOException ex)
-		{
-			try	{ sock.close(); }
-			catch (IOException io) { /* Couldn't close socket */ }
-		}
 	}
 
 	public void start()
 	{
 		gui.setVisible(true);
-		gui.setDatabases(received.getDatabaseList());
-		System.out.println("Databases set");
 		try
 		{
 				while (true)
 				{
-					received = (Message)objIn.readObject();
+					Message received = (Message)objIn.readObject();
 					switch (received.getCommandType())
 					{
 					case ADD_COLUMN:
@@ -107,7 +107,7 @@ public class ClientMain implements Client
 						setTable(currentTable);
 						break;
 					case TABLE_LIST:
-						gui.setTables(received.getTableList());
+						gui.setTableList(received.getTableList());
 						break;
 					case MESSAGE:
 						break;
@@ -132,61 +132,49 @@ public class ClientMain implements Client
 			catch (IOException ex) { /* Couldn't close streams */ }
 		}
 	}
-
+	
 	@Override
-	public void sendEdits(Entry e)
+	public void setDatabaseList(String[] list)
 	{
-		try
-		{
-			Message send = new Message(Command.EDIT_ENTRY, e);
-			objOut.writeObject(send);
-		}
-		catch (IOException ex)
-		{
-			// I'm starting to get tired of writing catch blocks for IOException
-		}
+		gui.setDatabases(list);
 	}
 	
-	
-	public void addTable(String tableName, String DBname)
+	public void createTable(Table table)
 	{
 		try
 		{
-			Message send = new Message(Command.ADD_TABLE, tableName);
-			objOut.writeObject(send);
+			objOut.writeObject(new Message(Command.ADD_TABLE, table));
 		}
 		catch (IOException ex)
 		{
-			// I'm starting to get tired of writing catch blocks for IOException
+			// TODO Catch block
 		}
 	}
 	
 	@Override
-	public void deleteTable(String tableName, String DBname)
+	public void deleteTable(String tableName)
 	{
 		try
 		{
-			Message send = new Message(Command.DELETE_TABLE, tableName);
-			objOut.writeObject(send);
+			objOut.writeObject(new Message(Command.DELETE_TABLE, tableName));
 		}
 		catch (IOException ex)
 		{
-			// I'm starting to get tired of writing catch blocks for IOException
+			// TODO Catch block
 		}
 	}
-
 
 	@Override
 	public void getTableNames(String database)
 	{
 		try
 		{
-			Message send = new Message(Command.GET_DATABASE, database);
-			objOut.writeObject(send); System.out.println("Sent GET_DATABASE to server");
+			objOut.writeObject(new Message(Command.GET_DATABASE, database));
+			System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for databases from server");
+			System.out.println("Error asking for tables from server");
 		}
 	}
 	
@@ -194,61 +182,49 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			Message send = new Message(Command.GET_TABLE, tablename);
-			objOut.writeObject(send); System.out.println("Sent GET_TABLE to server");
+			objOut.writeObject(new Message(Command.GET_TABLE, tablename));
+			System.out.println("Sent GET_TABLE to server");
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for databases from server");
+			System.out.println("Error asking for table from server");
 		}
 	}
 	
+	@Override
 	public void setTable(Table newTable)
 	{
 		currentTable = newTable;
+		filteredTable = newTable.asArray();
 		String[] colNames =  currentTable.getColumnNames();
-		gui.fieldsCB.removeAllItems();
-		
-		String[] newColNames = new String[colNames.length+1];
-		newColNames[0] = "Primary Key";
-		int i = 1;
-		for(String name: colNames)
-		{
-			newColNames[i] = name;
-			i++;
-			gui.fieldsCB.addItem(name);
-		}
-		
-		Comparable[][] entryList = currentTable.getEntries();
-		DefaultTableModel tableModel = new DefaultTableModel(entryList, newColNames);
-			gui.setTableModel(entryList,newColNames);
+		gui.setFieldList(colNames);
+		gui.setTable(currentTable.asArray(),colNames);
 	}
 
 	@Override
-	public void deleteColumn(int selectedIndex) {
-		try {
+	public void deleteColumn(int selectedIndex)
+	{
+		try
+		{
 			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex)); //-1 because Primary Key is the first element
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
+			// TODO Catch block
 		} 
 	}
 	
-	public void addEntry(String[] headers) { 
-		EditEntryGUI addEnt = new EditEntryGUI(headers,this);
+	@Override
+	public void createEntry(String[] headers) { 
+		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
 	}
 	
-	public void rmvEntry(int primaryKey)
+	@Override
+	public void deleteEntry(int primaryKey)
 	{
 		try {
 			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
-		} catch (IOException e) {
-		}
-	}
-	
-	public void writeMessage(Message send)
-	{
-		try {
-			objOut.writeObject(send);
 		} catch (IOException e) {
 		}
 	}
@@ -258,5 +234,21 @@ public class ClientMain implements Client
 		AddFieldGUI addCol = new AddFieldGUI(this);
 		addCol.setVisible(true);
 		
+	}
+
+	@Override
+	public void editEntry(int entryKey)
+	{
+		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), filteredTable[entryKey]);
+		editGUI.setVisible(true);
+		if (editGUI.getEntry() != null)
+			try
+			{
+				objOut.writeObject(new Message(Command.EDIT_ENTRY, editGUI.getEntry()));
+			}
+			catch (IOException ex)
+			{
+				
+			}
 	}
 }
