@@ -7,8 +7,6 @@ public class Table implements Serializable
 {
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
-	int nextKey = 0;
-	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>();
 	
 	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
 	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
@@ -17,15 +15,14 @@ public class Table implements Serializable
 	{
 		 tree = new AVLTree<Entry>();
 		 columns = new DefinitelyNotArrayList<>();
-	}	
+	}
 	
-	public Table(Column firstColumn)
+	public Table(Column firstCol)
 	{
-		 tree = new AVLTree<Entry>();
-		 columns = new DefinitelyNotArrayList<>();
-		 columns.add(firstColumn);
-	}	
-
+		this();
+		columns.add(firstCol);
+	}
+	
 	public void addColumn(Column col)
 	{
 		columns.add(col);
@@ -50,7 +47,6 @@ public class Table implements Serializable
 	
 	public void removeEntry(int key)
 	{
-		unusedKeys.add(key);
 		int temp = Entry.getComparer();
 		Entry.setComparer(-1);
 		tree.delete(new Entry(key));
@@ -66,37 +62,19 @@ public class Table implements Serializable
 		Entry.setComparer(temp);
 	}
 	
-	public void addEntry(Comparable[] toAdd)
+	public void addEntry(Entry e)
 	{
-		if (toAdd.length != columns.size())
-			throw new IllegalArgumentException("Passed array is different length than column list");
-		if(unusedKeys.size() == 0)
-			tree.add(new Entry(nextKey++,toAdd));
-		else
-			tree.add(new Entry(unusedKeys.remove(unusedKeys.size() - 1),toAdd));
-	}
-	
-	// TODO Find a better way to indicate when the server's tree and the client's tree don't match
-	public void addEntry(Entry e) throws SyncFailedException
-	{
-		if (e.getKey() == nextKey)
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		if (!tree.contains(e))
 		{
 			tree.add(e);
-			nextKey++;
-		}
-		else if (e.getKey() < nextKey)
-		{
-			if (unusedKeys.remove(new Integer(e.getKey())))
-				tree.add(e);
-			else
-				throw new SyncFailedException("Key is already in use");
+			Entry.setComparer(temp);
 		}
 		else
 		{
-			for (; nextKey < e.getKey(); nextKey++)
-				unusedKeys.add(nextKey);
-			tree.add(e);
-			nextKey++;
+			Entry.setComparer(temp);
+			throw new IllegalArgumentException("Entry is already on tree");
 		}
 	}
 	
@@ -110,17 +88,4 @@ public class Table implements Serializable
 		return temp;
 		
 	}
-	
-	/*public Comparable[][] getTable()
-	{
-		Entry[] entries = tree.toArray(new Entry[tree.size()]);
-		Comparable[][] tableArray = new Comparable[tree.size()][entries[0].getFieldSize()];
-		
-		for(int i = 0; i < tree.size(); i++)
-		{			
-			tableArray[i] = entries[i].getData();
-		}
-		
-		return tableArray;
-	}*/
 }
