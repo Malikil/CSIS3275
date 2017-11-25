@@ -42,7 +42,8 @@ public class ServerMain implements Server
 		}
 		catch (IOException ex)
 		{
-			
+			// Error opening socket
+			// Error accepting connection
 		}
 		finally
 		{
@@ -88,7 +89,7 @@ public class ServerMain implements Server
 		String[] databases = new String[] { "No databases associated with this user" };
 		try
 		{
-			usersFile = new BufferedReader(new FileReader(new File("Users.txt")));
+			usersFile = new BufferedReader(new FileReader(new File("users.txt")));
 			String nextLine;
 			String[] userInfo = null;
 			while ((nextLine = usersFile.readLine()) != null)
@@ -150,21 +151,18 @@ public class ServerMain implements Server
 		try 
 		{
 			ObjectInputStream fileObjIn = new ObjectInputStream(file);
-			tableReq = (Table) fileObjIn.readObject();
+			tableReq = (Table)fileObjIn.readObject();
 			file.close();
 			fileObjIn.close();
 		} 
-		catch (IOException e) 
-		{
-			
-		} 
-		catch (ClassNotFoundException e) 
-		{
-			
-		}
+		catch (IOException e)
+		{	}
+		catch (ClassNotFoundException e)
+		{	}
+    
 		return tableReq;	
 	}
-	
+
 	public void saveTable(String dbName, String tableName, Table table)
 	{
 		File file = new File(dbName+"\\"+tableName+".eric");
@@ -244,16 +242,13 @@ public class ServerMain implements Server
 			while((nextLine = userList.readLine())!=null)
 			{
 				String[] validList = nextLine.split(",");
-				if((username.toLowerCase()).compareTo(validList[0]) == 0)
+				if((username.toLowerCase()).compareTo(validList[0].toLowerCase()) == 0)
 					return;
 			}
 			userList.close();
 			BufferedWriter write = new BufferedWriter(new FileWriter("users.txt", true));
-			userList = new BufferedReader(new FileReader(file));
-			write.newLine();
-			write.write(username+","+password);
+			write.write("\n" + username + "," + password);
 			write.close();
-			userList.close();
 		} 
 		catch (FileNotFoundException e) 
 		{

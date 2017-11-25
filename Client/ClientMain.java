@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -139,6 +138,7 @@ public class ClientMain implements Client
 		gui.setDatabases(list);
 	}
 	
+  @Override
 	public void createTable(Table table)
 	{
 		try

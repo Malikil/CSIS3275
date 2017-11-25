@@ -1,6 +1,5 @@
 package Client;
 
-import Server.Column;
 import Server.Table;
 
 public interface Client

@@ -14,8 +14,6 @@ public class ClientHandler implements Runnable
 {
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
-	private BufferedReader strIn;
-	private PrintWriter strOut;
 	private Server parent;
 	private String currentDatabaseName = null;
 	private String currentTableName = null;
@@ -28,9 +26,7 @@ public class ClientHandler implements Runnable
 		try
 		{
 			objOut = new ObjectOutputStream(connection.getOutputStream());
-			objIn = new ObjectInputStream(connection.getInputStream());	
-			strOut = new PrintWriter(connection.getOutputStream(), true);
-			strIn = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+			objIn = new ObjectInputStream(connection.getInputStream());
 		}
 		catch (IOException ex)
 		{
@@ -59,6 +55,7 @@ public class ClientHandler implements Runnable
 						// Make username from file lowercase to avoid case sensitivity
 						userInfo[0] = userInfo[0].toLowerCase();
 						if (userInfo[0].equals(userPass[0]))
+							
 							if (userInfo[1].equals(userPass[1]))
 							{
 								// Send success to client
@@ -75,17 +72,18 @@ public class ClientHandler implements Runnable
 								break;
 							}
 					}
-					if (!loggedIn)
+					if (!loggedIn && nextLine == null)
 						objOut.writeObject(new Message(Command.INCORRECT_USER, null));
 					
 				}
 				catch (IOException ex)
 				{
 					// Error receiving user/pass from client
+					// Error sending response to client
 				}
 				catch (ClassNotFoundException ex)
 				{
-					ex.printStackTrace();
+					ex.printStackTrace(); // Oops
 					break;
 				}
 			} while (!loggedIn);
@@ -100,8 +98,6 @@ public class ClientHandler implements Runnable
 				objOut.writeObject(Command.MESSAGE);
 				objOut.close();
 				objIn.close();
-				strOut.close();
-				strIn.close();
 			}
 			catch (IOException | ClassNotFoundException e2) { System.out.println("Couldn't close sockets"); } // TODO DEBUG
 			return;
@@ -175,7 +171,7 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
-					parent.messageReceived(strIn.readLine());
+					parent.messageReceived(received.getMessage());
 					break;
 				case CONNECTION_SUCCESS:
 					break;
@@ -200,8 +196,7 @@ public class ClientHandler implements Runnable
 	{
 		try
 		{
-			objOut.writeObject(Command.MESSAGE);
-			strOut.println(message);
+			objOut.writeObject(new Message(Command.MESSAGE, message));
 		}
 		catch (IOException ex)
 		{

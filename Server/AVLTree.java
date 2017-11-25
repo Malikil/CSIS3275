@@ -1,8 +1,10 @@
 package Server;
 
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.Iterator;
 
-public class AVLTree<T extends Comparable<T>> implements Serializable
+public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<T>
 {
 	private static final long serialVersionUID = -4795806296678293205L;
 	private AVLNode<T> base;
@@ -22,19 +24,17 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	/**
 	 * A constructor to set the base of the tree to an initial value
 	 * @param value The initial base value
-	 * @return 
 	 */
-	
-	public AVLNode<T> getBase()
-	{
-		return base;
-	}
-	
 	public AVLTree(T value)
 	{
 		base = new AVLNode<T>(value);
 		count = 1;
 	}
+	
+	/*public AVLNode<T> getBase()
+	{
+		return base;
+	}*/// Why do we need to get the base?
 	
 	/**
 	 * Adds a value to the tree, then makes sure the tree is balanced
@@ -202,7 +202,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		}
 	}
 	
-	private AVLNode<T> find(T value)
+	public AVLNode<T> getNode(T value)
 	{
 		AVLNode<T> current = base;
 		while (current != null)
@@ -217,21 +217,26 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		return current;
 	}
 	
-	/**
-	 * Will print a text representation of this tree to console,
-	 * either with each node on its own line with the path from the base,
-	 * or on a single line with each value separated by a comma
-	 * @param commas True to print on a single line with commas, false to print a multi-line structure
-	 */
-	public void printTree(boolean commas)
+	public T[] toArray(T[] arr)
 	{
-		if (commas)
-			printCommas(base);
-		else
-			printNode(base, "B");
+		// Don't do this at home, kids
+		count = 0;
+		copyNode(base, arr);
+		if (arr.length > count)
+			arr[count] = null;
+		return arr;
 	}
 	
-	AVLNode<T> minimum()
+	private void copyNode(AVLNode<T> node, T[] arr)
+	{
+		if (node.getLeft() != null)
+			copyNode(node.getLeft(), arr);
+		arr[count++] = node.getValue();
+		if (node.getRight() != null)
+			copyNode(node.getRight(), arr);
+	}
+	
+	private AVLNode<T> minimum()
 	{
 		AVLNode<T> n = base;
 		while (n.getLeft() != null)
@@ -239,7 +244,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		return n;
 	}
 	
-	AVLNode<T> maximum()
+	private AVLNode<T> maximum()
 	{
 		AVLNode<T> n = base;
 		while (n.getRight() != null)
@@ -267,43 +272,28 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		System.out.println("Right value: " + base.getRight() + " on layer " + base.getRight().getLayers());
 		System.out.println("Offset: " + base.getRight().getOffset());
 	}
-	
-	private void printCommas(AVLNode<T> node)
-	{
-		
-		if (node.getLeft() != null)
-			printCommas(node.getLeft());
-		System.out.print(node.toString() + ", ");
-		if (node.getRight() != null)
-			printCommas(node.getRight());
-	}
-	
-	private void printNode(AVLNode<T> node, String pre)
-	{
-		System.out.println(pre + " " + node.toString());
-		if (node.getLeft() != null)
-			printNode(node.getLeft(), pre + ".L");
-		if (node.getRight() != null)
-			printNode(node.getRight(), pre + ".R");
-	}
 
-	void replace(T value) //I WANT SET - Angelo
+	@Override
+	public Iterator<T> iterator()
 	{
-		AVLNode<T> current = base;
-		while (current != null)
+		// Haha, do things linear twice
+		return new Iterator<T>()
 		{
-			if (current.compareTo(value) > 0)
-				current = current.getRight();
-			else if (current.compareTo(value) < 0)
-				current = current.getLeft();
-			else 
-				break;
-		}
-		 current.set(value);
-	}
-	
-	int getCount()
-	{
-		return count;
+			private T[] arr = toArray((T[])new Object[count]);
+			private int i = 0;
+			
+			@Override
+			public boolean hasNext()
+			{
+				return i < arr.length;
+			}
+
+			@Override
+			public T next()
+			{
+				T value = arr[i++];
+				return value;
+			}
+		};
 	}
 }
