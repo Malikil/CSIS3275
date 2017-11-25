@@ -117,32 +117,33 @@ public class ClientHandler implements Runnable
 				{
 				case ADD_COLUMN:
 					Column toAdd = received.getColToAdd();
-					currentTable.addField(toAdd);
-					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable.addColumn(toAdd);
+					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_ENTRY:
 					Comparable[] entrydata = received.getAddEntry();
 					currentTable.addEntry(entrydata);
-					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:
-					parent.createTable(currentDatabaseName,received.getTableName());
+					currentTable = received.getTable();
+					parent.saveTable(currentDatabaseName,received.getTableName(),currentTable);
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();
-					currentTable.rmvField(ToRmv);
-					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable.removeColumn(ToRmv);
+					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_ENTRY:
 					int entryToRmv = received.getDelEntry();
-					currentTable.rmvEntry(entryToRmv);
-					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable.removeEntry(entryToRmv);
+					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
@@ -156,7 +157,8 @@ public class ClientHandler implements Runnable
 				case EDIT_ENTRY:
 					Entry entryToEdit = received.getEntry();
 					currentTable.editEntry(entryToEdit);
-					parent.updateTable(currentDatabaseName, currentTableName, currentTable);
+					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
+					currentTable = parent.getTable(currentDatabaseName, currentTableName);					
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case GET_TABLE:

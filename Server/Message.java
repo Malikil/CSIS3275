@@ -33,8 +33,6 @@ public class Message implements Serializable
 		case DELETE_ENTRY:
 			break;
 		case EDIT_ENTRY:
-			if (!(messageData instanceof Entry))
-				throw new IllegalArgumentException("messageData must be of type Entry for messageType " + messageType);
 			break;
 		case LOGIN:
 		case DATABASE_LIST:

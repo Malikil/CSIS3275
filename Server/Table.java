@@ -2,124 +2,92 @@ package Server;
 
 import java.io.Serializable;
 
-public class Table implements Serializable {
+public class Table implements Serializable
+{
 	private DefinitelyNotArrayList<Column> columns;
-	AVLTree<Entry> entries;
-	int nextPK = 0;
-	DefinitelyNotArrayList<Integer> unusedPKs = new DefinitelyNotArrayList<Integer>(); 
+	AVLTree<Entry> tree;
+	int nextKey = 0;
+	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>();
+	
+	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
+	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
 	
 	public Table()
 	{
-		 entries = new AVLTree<Entry>();
-		 setColumns(new DefinitelyNotArrayList());
+		 tree = new AVLTree<Entry>();
+		 columns = new DefinitelyNotArrayList<>();
+	}	
+	
+	public Table(Column firstColumn)
+	{
+		 tree = new AVLTree<Entry>();
+		 columns = new DefinitelyNotArrayList<>();
+		 columns.add(firstColumn);
+	}	
+	
+	public <T> void addColumn(Column col)
+	{
+		columns.add(col);
+		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+		for (Entry e : allEntries)
+			e.addField(null);
 	}
 	
-	public Table(Column newColumn)
+	public void removeColumn(int index)
 	{
-		entries = new AVLTree<Entry>();
-		this.addField(newColumn);
-		setColumns(new DefinitelyNotArrayList());
+		columns.remove(index);
+		Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+		for (Entry e : allEntries)
+			e.deleteField(index);
 	}
 	
-	public <T> void addField(Column toAdd)
+	public void removeEntry(int key)
 	{
-		getColumns().add(toAdd);
-		if(nextPK !=0)
-		{
-			AVLNode base = entries.minimum();
-			while(base != null)
-			{
-				Entry entry = (Entry) base.getValue();
-				entry.addField(null);
-				if(base != entries.maximum())
-				{
-					base = base.getNext();
-				}
-				else
-					base = null;
-			}	
-		}
-	}
-	
-	public void rmvField(int toRmv)
-	{
-		getColumns().remove(toRmv);
-		AVLNode base = entries.minimum();
-		while(base != null)
-		{
-			Entry entry = (Entry) base.getValue();
-			entry.deleteField(toRmv);
-			if(base != entries.maximum())
-			{
-				base = base.getNext();
-			}
-			else
-				base = null;
-		}
-	}
-	
-	public void rmvEntry(int toDelete)
-	{
-		unusedPKs.add(toDelete);
-		entries.delete(new Entry(toDelete));
+		unusedKeys.add(key);
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		tree.delete(new Entry(key));
+		Entry.setComparer(temp);
 	}
 	
 	public void editEntry(Entry toEdit)
 	{
-		entries.delete(new Entry(toEdit.getKey()));
-		entries.add(toEdit);
-		
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		tree.delete(new Entry(toEdit.getKey()));
+		tree.add(toEdit);
+		Entry.setComparer(temp);
 	}
 	
 	public void addEntry(Comparable[] toAdd)
 	{
-		if(unusedPKs.get(0) == null){
-			int pkey = nextPK;
-			entries.add(new Entry(pkey,toAdd));
-			nextPK++;
-		}
+		if(unusedKeys.size() == 0)
+			tree.add(new Entry(nextKey++,toAdd));
 		else
-		{
-			int pkey = unusedPKs.get(0);
-			unusedPKs.remove(0);
-			entries.add(new Entry(pkey,toAdd));
-			}
+			tree.add(new Entry(unusedKeys.remove(unusedKeys.size() - 1),toAdd));
 	}
 	
 	public String[] getColumnNames()
 	{
-		String[] temp = new String[getColumns().size()]; 
-		for(int i = 0; i<getColumns().size();i++)
+		String[] temp = new String[columns.size()]; 
+		for(int i = 0; i < columns.size(); i++)
 		{
-			temp[i] = (getColumns().get(i).name);
+			temp[i] = (columns.get(i).getName());
 		}
 		return temp;
 		
 	}
 	
-	public Comparable[][] getEntries()
+	/*public Comparable[][] getTable()
 	{
+		Entry[] entries = tree.toArray(new Entry[tree.size()]);
+		Comparable[][] tableArray = new Comparable[tree.size()][entries[0].getFieldSize()];
 		
-		AVLNode base = entries.minimum();
-		Entry entry = (Entry) base.getValue();
-		Comparable[][] entriesArray = new Comparable[entries.getCount()][entry.getFieldSize()+1];
-		
-		for(int i = 0; i< entries.getCount(); i++)
+		for(int i = 0; i < tree.size(); i++)
 		{			
-			 entry = (Entry) base.getValue();
-			 entriesArray[i] = entry.getData();
-				base = base.getNext();
-
+			tableArray[i] = entries[i].getData();
 		}
 		
-		return entriesArray;
-	}
-
-	public DefinitelyNotArrayList<Column> getColumns() {
-		return columns;
-	}
-
-	public void setColumns(DefinitelyNotArrayList<Column> columns) {
-		this.columns = columns;
-	}
+		return tableArray;
+	}*/
 }

@@ -29,8 +29,6 @@ public class ServerMain implements Server
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		
-		server.changePassword("a", "aNew");
-		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
 		try
@@ -167,62 +165,34 @@ public class ServerMain implements Server
 		return tableReq;	
 	}
 	
-	@Override
-	public void createTable(String database, String tableName) {
-		File newFile = new File(database + "\\" + tableName + ".eric");
-		try 
-		{
-			newFile.createNewFile();
-		} 
-		catch (IOException e2) 
-		{
-			
-		}
-		FileOutputStream file = null;
-		try 
-		{
-			file = new FileOutputStream(new File(database + "\\" + tableName + ".eric"));
-		} 
-		catch (FileNotFoundException e1) 
-		{
-			
-		}
-		try 
-		{
-			ObjectOutputStream fileObjOut = new ObjectOutputStream(file);
-			fileObjOut.writeObject(null);
-			fileObjOut.close();
-			file.close();
-		} 
-		catch (IOException e) 
-		{
-			
-		}
-	}
-	
-	@Override
-	public void updateTable(String db, String table, Table newTable)
+	public void saveTable(String dbName, String tableName, Table table)
 	{
-		FileOutputStream file = null;
-		try 
+		File file = new File(dbName+"\\"+tableName+".eric");
+		if(!file.exists())
 		{
-			file = new FileOutputStream(new File(db + "\\" + table + ".eric"));
-		} 
-		catch (FileNotFoundException e1) 
-		{
-			
+			try 
+			{
+				file.createNewFile();
+			} 
+			catch (IOException e) 
+			{
+			}
 		}
 		try 
 		{
-			ObjectOutputStream fileObjOut = new ObjectOutputStream(file);
-			fileObjOut.writeObject(newTable);
-			fileObjOut.close();
-			file.close();
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(table);
+			oOut.close();
+			fOut.close();
+		} 
+		catch (FileNotFoundException e)
+		{
 		} 
 		catch (IOException e) 
 		{
-			
 		}
+		
 	}
 	
 	public void saveDatabase(String databaseName)
@@ -452,5 +422,43 @@ public class ServerMain implements Server
 		{
 			
 		}
+	}
+	
+	public String[] getUserlist()
+	{
+		File file = new File("users.txt");
+		System.out.println(file.getAbsolutePath());
+		String[] listOfUsers = null;
+		try 
+		{
+			BufferedReader userList = new BufferedReader(new FileReader(file));
+			String nextLine = null;
+			DefinitelyNotArrayList<String> usersArrayList = new DefinitelyNotArrayList<>();
+			while((nextLine = userList.readLine())!=null)
+			{
+				String[] validList = nextLine.trim().split(",");
+				if(validList[0]!=null && !validList[0].isEmpty())
+				{
+					usersArrayList.add(validList[0]);
+				}
+			}
+			userList.close();
+			listOfUsers = new String[usersArrayList.size()];
+			listOfUsers = (String[]) usersArrayList.toArray(listOfUsers);
+		} 
+		catch (FileNotFoundException e) 
+		{
+			System.out.println(e.getMessage());
+		} 
+		catch (IOException e) 
+		{
+			System.out.println("catch2");
+		}
+		return listOfUsers;
+	}
+	
+	public void editEntry() //unfinished
+	{
+		
 	}
 }
