@@ -1,118 +1,119 @@
 package Server;
 
 import java.io.Serializable;
+import java.io.SyncFailedException;
 
-public class Table implements Serializable {
+public class Table implements Serializable
+{
 	private DefinitelyNotArrayList<Column> columns;
-	AVLTree<Entry> entries;
-	int nextPK = 0;
-	DefinitelyNotArrayList<Integer> unusedPKs = new DefinitelyNotArrayList<Integer>(); 
+	AVLTree<Entry> tree;
+	int nextKey = 0;
+	DefinitelyNotArrayList<Integer> unusedKeys = new DefinitelyNotArrayList<>();
 	
-		
+	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
+	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
+	
 	public Table()
 	{
-		 entries = new AVLTree<Entry>();
-		 setColumns(new DefinitelyNotArrayList());
+		 tree = new AVLTree<Entry>();
+		 columns = new DefinitelyNotArrayList<>();
 	}	
 	
-	public <T> void addField(Column toAdd)
+	public <T> void addColumn(Column col)
 	{
-		getColumns().add(toAdd);
-		if(nextPK !=0)
+		columns.add(col);
+		if (tree.size() > 0)
 		{
-			AVLNode base = entries.minimum();
-			while(base != null)
-			{
-				Entry entry = (Entry) base.getValue();
-				entry.addField(null);
-				if(base != entries.maximum())
-				{
-					base = base.getNext();
-				}
-				else
-					base = null;
-			}	
+			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+			for (Entry e : allEntries)
+				e.addField(null);
 		}
 	}
 	
-	public void rmvField(int toRmv)
+	public void removeColumn(int index)
 	{
-		getColumns().remove(toRmv);
-		AVLNode base = entries.minimum();
-		while(base != null)
+		columns.remove(index);
+		if (tree.size() > 0)
 		{
-			Entry entry = (Entry) base.getValue();
-			entry.deleteField(toRmv);
-			if(base != entries.maximum())
-			{
-				base = base.getNext();
-			}
-			else
-				base = null;
+			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
+			for (Entry e : allEntries)
+				e.deleteField(index);
 		}
 	}
 	
-	public void rmvEntry(int toDelete)
+	public void removeEntry(int key)
 	{
-		unusedPKs.add(toDelete);
-		entries.delete(new Entry(toDelete));
+		unusedKeys.add(key);
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		tree.delete(new Entry(key));
+		Entry.setComparer(temp);
 	}
 	
 	public void editEntry(Entry toEdit)
 	{
-		entries.replace(toEdit);
-		
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		tree.delete(new Entry(toEdit.getKey()));
+		tree.add(toEdit);
+		Entry.setComparer(temp);
 	}
 	
 	public void addEntry(Comparable[] toAdd)
 	{
-		if(unusedPKs.get(0) == null){
-			int pkey = nextPK;
-			entries.add(new Entry(pkey,toAdd));
-			nextPK++;
+		if (toAdd.length != columns.size())
+			throw new IllegalArgumentException("Passed array is different length than column list");
+		if(unusedKeys.size() == 0)
+			tree.add(new Entry(nextKey++,toAdd));
+		else
+			tree.add(new Entry(unusedKeys.remove(unusedKeys.size() - 1),toAdd));
+	}
+	
+	// TODO Find a better way to indicate when the server's tree and the client's tree don't match
+	public void addEntry(Entry e) throws SyncFailedException
+	{
+		if (e.getKey() == nextKey)
+		{
+			tree.add(e);
+			nextKey++;
+		}
+		else if (e.getKey() < nextKey)
+		{
+			if (unusedKeys.remove(new Integer(e.getKey())))
+				tree.add(e);
+			else
+				throw new SyncFailedException("Key is already in use");
 		}
 		else
 		{
-			int pkey = unusedPKs.get(0);
-			unusedPKs.remove(0);
-			entries.add(new Entry(pkey,toAdd));
-			}
+			for (; nextKey < e.getKey(); nextKey++)
+				unusedKeys.add(nextKey);
+			tree.add(e);
+			nextKey++;
+		}
 	}
 	
 	public String[] getColumnNames()
 	{
-		String[] temp = new String[getColumns().size()]; 
-		for(int i = 0; i<getColumns().size();i++)
+		String[] temp = new String[columns.size()]; 
+		for(int i = 0; i < columns.size(); i++)
 		{
-			temp[i] = (getColumns().get(i).name);
+			temp[i] = (columns.get(i).getName());
 		}
 		return temp;
 		
 	}
 	
-	public Comparable[][] getEntries()
+	/*public Comparable[][] getTable()
 	{
+		Entry[] entries = tree.toArray(new Entry[tree.size()]);
+		Comparable[][] tableArray = new Comparable[tree.size()][entries[0].getFieldSize()];
 		
-		AVLNode base = entries.minimum();
-		Entry entry = (Entry) base.getValue();
-		Comparable[][] entriesArray = new Comparable[entries.getCount()][entry.getFieldSize()+1];
-		
-		for(int i = 0; i< entries.getCount(); i++)
+		for(int i = 0; i < tree.size(); i++)
 		{			
-			 entry = (Entry) base.getValue();
-			 entriesArray[i] = entry.getData();
-				base = base.getNext();
-
+			tableArray[i] = entries[i].getData();
 		}
 		
-		return entriesArray;
-	}
-
-	public DefinitelyNotArrayList<Column> getColumns() {
-		return columns;
-	}
-
-	public void setColumns(DefinitelyNotArrayList<Column> columns) {
-		this.columns = columns;
-	}
+		return tableArray;
+	}*/
 }

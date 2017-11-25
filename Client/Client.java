@@ -1,17 +1,18 @@
 package Client;
 
-import Server.Entry;
-import Server.Message;
+import Server.Table;
 
 public interface Client
 {
-	public void sendEdits(Entry e);
+	public void setDatabaseList(String[] list);
 	public void getTableNames(String database);
-	public void deleteTable(String table, String database);
-	public void getTable(String database);
-	public void deleteColumn(int selectedIndex);
-	public void addEntry(String[] headers);
-	public void writeMessage(Message send);
+	public void createTable(String table);
+	public void deleteTable(String table);
+	public void getTable(String tableName);
 	public void addColumn();
-	public void rmvEntry(int entryKey);
+	public void deleteColumn(int selectedIndex);
+	public void createEntry(String[] headers);
+	public void deleteEntry(int entryKey);
+	public void editEntry(int entryIndex);
+	public void setTable(Table newTable);
 }
