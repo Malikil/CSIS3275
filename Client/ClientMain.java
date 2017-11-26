@@ -102,12 +102,12 @@ public class ClientMain implements Client
 						break;
 					case EDIT_ENTRY:
 						break;
-					case GET_TABLE:
+					case GET_ACTUAL_TABLE:
 						currentTable = received.getTable();
 						setTable(currentTable);
 						break;
-					case TABLE_LIST:
-						gui.setTableList(received.getTableList());
+					case GET_TABLE_NAMES:
+						gui.setTableList(received.getTableNames());
 						break;
 					case MESSAGE:
 						break;
@@ -164,12 +164,6 @@ public class ClientMain implements Client
 			// TODO Catch block
 		}
 	}
-	
-	@Override
-	public void setCurrentTableName(String tableName)
-	{
-		currentTableName = tableName;
-	}
 
 	@Override
 	public void getTableNames(String database)
@@ -185,17 +179,18 @@ public class ClientMain implements Client
 		}
 	}
 	
-	public void getTable(String tablename)
+	public void getTable(String tableName)
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.GET_TABLE, tablename));
+			objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, tableName));
 			System.out.println("Sent GET_TABLE to server");
 		}
 		catch (IOException ex)
 		{
 			System.out.println("Error asking for table from server");
 		}
+		currentTableName = tableName;
 	}
 	
 	@Override

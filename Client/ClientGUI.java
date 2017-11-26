@@ -419,7 +419,6 @@ public class ClientGUI extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					parent.getTable(table);
-					parent.setCurrentTableName(table);
 				}
 			});
 			mnTables.add(newTable);
