@@ -211,12 +211,6 @@ public class ServerMain implements Server
 		dir.delete();
 	}
 	
-	public void deleteTable(String databaseName, String tableName)
-	{
-		File table = new File(databaseName+"\\"+tableName+".eric");
-		table.delete();
-	}
-	
 	public void addUser(String username, String password)//small issue with newlines being created
 	{
 		File file = new File("users.txt");
@@ -448,11 +442,6 @@ public class ServerMain implements Server
 		}
 		return listOfUsers;
 	}
-	
-	public void editEntry() //unfinished
-	{
-		// TODO Eric-generated method stub :thinking:
-	}
 
 	private void saveKey(int key)
 	{
@@ -528,7 +517,59 @@ public class ServerMain implements Server
 		Table newTable = getTable(databaseName,tableName);
 		newTable.addEntry(newEntry);
 		saveTable(databaseName, tableName, newTable);
-		Message message = new Message(Command.ADD_ENTRY, newEntry);
-		sendObjectToAll(message,databaseName,tableName);
+		sendObjectToAll(new Message(Command.ADD_ENTRY, newEntry),databaseName,tableName);
+	}
+
+	@Override
+	public void addColumns(String databaseName, String tableName, Column[] columnList) //always sending an array of columns to add
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		for(int i = 0 ; i < columnList.length ; i++)
+			currentTable.addColumn(columnList[i]);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.ADD_COLUMNS, columnList),databaseName,tableName);
+	}
+	
+	@Override
+	public void addTable(String databaseName, String tableName)
+	{
+		Table newTable = new Table();
+		saveTable(databaseName, tableName, newTable);
+		sendObjectToAll(new Message(Command.ADD_TABLE, newTable),databaseName,tableName);
+	}
+	
+	@Override
+	public void editEntry(String databaseName, String tableName, Entry newEntry)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.editEntry(newEntry);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.EDIT_ENTRY, newEntry),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteEntry(String databaseName, String tableName, Entry entryToDelete)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.removeEntry(entryToDelete.getKey());
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.DELETE_ENTRY,entryToDelete),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteColumn(String databaseName, String tableName, Integer index)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.removeColumn(index);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.DELETE_COLUMN,index),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteTable(String databaseName, String tableName)
+	{
+		File table = new File(databaseName+"\\"+tableName+".eric");
+		table.delete();
+		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
 	}
 }

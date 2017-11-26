@@ -6,6 +6,7 @@ public class Table implements Serializable
 {
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
+	
 	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
 	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
 	
@@ -32,9 +33,9 @@ public class Table implements Serializable
 		}
 	}
 	
-	public void removeColumn(int index)
+	public void removeColumn(Integer index)
 	{
-		columns.remove(index);
+		columns.remove(index.intValue());
 		if (tree.size() > 0)
 		{
 			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);

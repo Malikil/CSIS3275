@@ -12,36 +12,6 @@ public class Message implements Serializable
 	public Message(Command messageType, Object messageData)
 	{
 		type = messageType;
-		switch (messageType)
-		{
-		case MESSAGE:
-		case ADD_TABLE:
-		case DELETE_TABLE:
-		case GET_TABLE:
-		case GET_DATABASE:
-			break;
-		case ADD_COLUMN:
-			if (!(messageData instanceof Column))
-				throw new IllegalArgumentException("messageData must be of type Column for messageType " + messageType);
-			break;
-		case DELETE_COLUMN:
-			if (!(messageData instanceof Integer))
-				throw new IllegalArgumentException("messageData must be of type Integer for messageType " + messageType);
-			break;
-		case ADD_ENTRY:
-			break;
-		case DELETE_ENTRY:
-			break;
-		case EDIT_ENTRY:
-			break;
-		case LOGIN:
-		case DATABASE_LIST:
-		case TABLE_LIST:
-		case COLUMN_LIST:
-			if (!(messageData instanceof String[]))
-				throw new IllegalArgumentException("messageData must be of type String[] for messageType " + messageType.toString());
-			break;
-		}
 		data = messageData;
 	}
 	
@@ -57,22 +27,12 @@ public class Message implements Serializable
 	
 	public Entry getEntry()
 	{
-		if (data instanceof Entry)
-		{
-			return (Entry)data;
-		}
-		else
-			return null;
+		return (Entry)data;
 	}
 	
-	public Comparable[] getAddEntry()
+	public Comparable[] getNewEntry()
 	{
 		return (Comparable[]) data;
-	}
-	
-	public int getDelEntry()
-	{
-		return (int) data;
 	}
 	
 	public String getTableName()
@@ -82,9 +42,7 @@ public class Message implements Serializable
 	
 	public Table getTable()
 	{
-
 			return (Table)data;
-
 	}
 
 	
@@ -114,14 +72,13 @@ public class Message implements Serializable
 			return null;
 	}
 	
-	public int getColToRmv() 
+	public Column[] getColumns()
 	{
-			return (Integer)data;
+		return (Column[])data;
 	}
 	
-	public Column getColToAdd() 
+	public Integer getColumnIndex()
 	{
-			return (Column)data;
+		return (Integer)data;
 	}
-	
 }
