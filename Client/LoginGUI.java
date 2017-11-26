@@ -29,7 +29,7 @@ public class LoginGUI extends JDialog
 	 */
 	public LoginGUI()
 	{
-		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
+		getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 		setTitle("Login Page");
 		enteredUser = "";
 		enteredPass = "";
