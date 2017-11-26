@@ -224,9 +224,11 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void createEntry(String[] headers) { 
-		EditEntryGUI addEnt = new EditEntryGUI(headers);
-		addEnt.setVisible(true);
+	public void createEntry(Comparable[] entryData) { 
+		try {
+			objOut.writeObject(new Message(Command.ADD_ENTRY, entryData));
+		} catch (IOException e) {
+		}
 	}
 	
 	@Override

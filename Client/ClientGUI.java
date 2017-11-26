@@ -215,6 +215,9 @@ public class ClientGUI extends JFrame
 				for(int j = 0;j<headers.length;j++)
 					headers[j] = fieldsCB.getItemAt(j);
 				parent.createEntry(headers);
+				EditEntryGUI addEnt = new EditEntryGUI(headers);
+				addEnt.setVisible(true);
+				
 			}
 		});
 		tablesPanel.add(addBttn);

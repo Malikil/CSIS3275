@@ -12,7 +12,7 @@ public interface Client
 	public void getTable(String tableName);
 	public void addColumn(String string, int i);
 	public void deleteColumn(int selectedIndex);
-	public void createEntry(String[] headers);
+	public void createEntry(Comparable[] entryData);
 	public void deleteEntry(int entryKey);
 	public void editEntry(int entryIndex);
 	public void setTable(Table newTable);
