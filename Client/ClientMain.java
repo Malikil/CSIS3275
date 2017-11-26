@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -17,6 +18,7 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private Entry[] filteredTable;
+	private String currentTableName;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -67,7 +69,7 @@ public class ClientMain implements Client
 				}
 				catch (IOException io)
 				{
-					/* Couldn't close socket */
+					// Couldn't close socket
 				}
 			}
 			catch (ClassNotFoundException ex)
@@ -139,7 +141,7 @@ public class ClientMain implements Client
 	}
 	
   @Override
-	public void createTable(Table table)
+	public void createTable(String table)
 	{
 		try
 		{
@@ -152,16 +154,22 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void deleteTable(String tableName)
+	public void deleteCurrentTable()
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_TABLE, tableName));
+			objOut.writeObject(new Message(Command.DELETE_TABLE, currentTableName));
 		}
 		catch (IOException ex)
 		{
 			// TODO Catch block
 		}
+	}
+	
+	@Override
+	public void setCurrentTableName(String tableName)
+	{
+		currentTableName = tableName;
 	}
 
 	@Override
@@ -230,9 +238,15 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void addColumn() {
-		AddFieldGUI addCol = new AddFieldGUI(this);
-		addCol.setVisible(true);
+	public void addColumn(String columnName, int colType) {
+		try
+		{
+			objOut.writeObject(new Message(Command.ADD_COLUMN, new Column(columnName,colType)));
+		}
+		catch (IOException ex)
+		{
+			
+		}
 		
 	}
 

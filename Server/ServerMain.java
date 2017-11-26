@@ -18,6 +18,7 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
+	static private int nextKey;
 	
 	public ServerMain()
 	{
@@ -28,6 +29,8 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
+		
+		server.saveDatabase("db1");
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -190,7 +193,6 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{
 		}
-		
 	}
 	
 	public void saveDatabase(String databaseName)
@@ -457,9 +459,39 @@ public class ServerMain implements Server
 		// TODO Eric-generated method stub :thinking:
 	}
 
+	private void saveKey(int nextKey)
+	{
+		File file = new File("key");
+		if(!file.exists())
+		{
+			try 
+			{
+				file.createNewFile();
+				System.out.println("key file created");
+			} 
+			catch (IOException e) 
+			{
+			}
+		}
+		try 
+		{
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(nextKey);
+			oOut.close();
+			fOut.close();
+		} 
+		catch (FileNotFoundException e)
+		{
+		} 
+		catch (IOException e) 
+		{
+		}
+	}
+	
 	@Override
-	public void addEntry(String database, String table, Comparable[] data) {
-		// TODO Auto-generated method stub
+	public void addEntry(String database, String table, Comparable[] data) 
+	{
 		
 	}
 }

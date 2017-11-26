@@ -127,8 +127,10 @@ public class ClientHandler implements Runnable
 					//objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:
-					currentTable = received.getTable();
-					parent.saveTable(currentDatabaseName,received.getTableName(),currentTable);
+					Table newbie = new Table();
+					currentTableName = received.getTableName();
+					parent.saveTable(currentDatabaseName,currentTableName,newbie);
+					currentTable = newbie;
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();

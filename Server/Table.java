@@ -6,7 +6,6 @@ public class Table implements Serializable
 {
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
-	
 	public Column[] getColumns() { return columns.toArray(new Column[columns.size()]); }
 	public Entry[] asArray() { return tree.toArray(new Entry[tree.size()]); }
 	

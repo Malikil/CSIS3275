@@ -221,7 +221,8 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 	{
 		// Don't do this at home, kids
 		count = 0;
-		copyNode(base, arr);
+		if(base != null)
+			copyNode(base, arr);
 		if (arr.length > count)
 			arr[count] = null;
 		return arr;
