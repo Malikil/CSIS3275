@@ -19,6 +19,7 @@ public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
 	private int entryKey;
+	//private int userKey; TODO
 	public ServerMain()
 	{
 		clientList = new ArrayList<>();
@@ -30,7 +31,20 @@ public class ServerMain implements Server
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		
-		//server.saveDatabase("db1"); for testing //TODO
+		/*
+		//FORTESTING TODO
+		server.saveDatabase("db1");
+		String[] testDBs = new String[1];
+		testDBs[0]= "db1";
+		server.addUser("a", "a", testDBs);
+		server.addTable("db1", "table1");
+		Column[] testCols = new Column[1];
+		Column testCol = new Column("col1=string",0);
+		testCols[0] = testCol;
+		server.addColumns("db1", "table1", testCols);
+		//server.getTable("db1", "table1").getColumns().
+		//FORTESTING TODO
+		*/
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -189,7 +203,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void saveDatabase(String databaseName, String[] userList)
+	public void saveDatabase(String databaseName) //String[] userList)
 	{
 		File dir = new File(databaseName);
 		if(!dir.isDirectory())
@@ -444,7 +458,7 @@ public class ServerMain implements Server
 
 	private void saveKey(int key)
 	{
-		File file = new File("key.config");
+		File file = new File("key.ini");
 		if(!file.exists())
 		{
 			key = 0;

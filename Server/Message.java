@@ -59,7 +59,7 @@ public class Message implements Serializable
 			return null;
 	}
 	
-	public String[] getTableList()
+	public String[] getTableNames()
 	{
 			return (String[])data;
 	}
