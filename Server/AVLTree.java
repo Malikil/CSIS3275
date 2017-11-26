@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Iterator;
 
-public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<T>
+public class AVLTree<T extends Comparable<T>> implements Serializable
 {
 	private static final long serialVersionUID = -4795806296678293205L;
 	private AVLNode<T> base;
@@ -202,7 +202,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 		}
 	}
 	
-	public AVLNode<T> getNode(T value)
+	public T get(T value)
 	{
 		AVLNode<T> current = base;
 		while (current != null)
@@ -212,9 +212,9 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 			else if (current.compareTo(value) < 0)
 				current = current.getLeft();
 			else
-				return current;
+				return current.getValue();
 		}
-		return current;
+		return null;
 	}
 	
 	public T[] toArray(T[] arr)
@@ -236,64 +236,88 @@ public class AVLTree<T extends Comparable<T>> implements Serializable, Iterable<
 			copyNode(node.getRight(), arr);
 	}
 	
-	private AVLNode<T> minimum()
+	public AVLTree<T> reconstructTree()
 	{
-		AVLNode<T> n = base;
-		while (n.getLeft() != null)
-			n = n.getLeft();
-		return n;
+		AVLTree<T> temp = new AVLTree<>();
+		reconstructNode(base, temp);
+		return temp;
 	}
 	
-	private AVLNode<T> maximum()
+	private void reconstructNode(AVLNode<T> node, AVLTree<T> newTree)
 	{
-		AVLNode<T> n = base;
-		while (n.getRight() != null)
-			n = n.getRight();
-		return n;
+		newTree.add(node.getValue());
+		if (node.getLeft() != null)
+			reconstructNode(node.getLeft(), newTree);
+		if (node.getRight() != null)
+			reconstructNode(node.getRight(), newTree);
 	}
 	
-	/**
-	 * Prints basic information about the tree to console, including:
-	 * <ul>
-	 * <li>The number of items on the tree and the smallest and largest values</li>
-	 * <li>The value of the root of the tree</li>
-	 * <li>The highest number of layers on the tree</li>
-	 * <li>The values of the left and right items from the base and which layer they're on</li>
-	 * <li>The offset of the left and right nodes (the difference in layers on the left and right sides)</li>
-	 * </ul>
-	 */
-	public void printBasics()
+	public AVLTree<T> getRange(T value, String mode)
 	{
-		System.out.println(count + " elements, ranging from " + minimum() + " to " + maximum());
-		System.out.println("Base value: " + base);
-		System.out.println("Layers: " + base.getLayers());
-		System.out.println("Left value: " + base.getLeft() + " on layer " + base.getLeft().getLayers());
-		System.out.println("Offset: " + base.getLeft().getOffset());
-		System.out.println("Right value: " + base.getRight() + " on layer " + base.getRight().getLayers());
-		System.out.println("Offset: " + base.getRight().getOffset());
-	}
-
-	@Override
-	public Iterator<T> iterator()
-	{
-		// Haha, do things linear twice
-		return new Iterator<T>()
+		AVLTree<T> temp = new AVLTree<T>();
+		switch (mode)
 		{
-			private T[] arr = toArray((T[])new Object[count]);
-			private int i = 0;
+		case "<":
+			lessThanNode(base, value, temp);
+			break;
+		case "<=":
+			lessThanNode(base, value, temp);
+			equalToNode(base, value, temp);
+			break;
+		case "=":
+			equalToNode(base, value, temp);
+			break;
+		case ">=":
+			greaterThanNode(base, value, temp);
+			equalToNode(base, value, temp);
+			break;
+		case ">":
+			greaterThanNode(base, value, temp);
+			break;
+		}
+		return temp;
+	}
+	
+	private void lessThanNode(AVLNode<T> current, T value, AVLTree<T> newTree)
+	{
+		if (current.compareTo(value) <= 0)
+		{
+			if (current.compareTo(value) < 0)
+				newTree.add(current.getValue());
+			if (current.getRight() != null)
+				lessThanNode(current.getRight(), value, newTree);
+		}
+		if (current.getLeft() != null)
+			lessThanNode(current.getLeft(), value, newTree);
+	}
+	
+	private void greaterThanNode(AVLNode<T> current, T value, AVLTree<T> newTree)
+	{
+		if (current.compareTo(value) >= 0)
+		{
+			if (current.compareTo(value) > 0)
+				newTree.add(current.getValue());
+			if (current.getLeft() != null)
+				lessThanNode(current.getLeft(), value, newTree);
+		}
+		if (current.getRight() != null)
+			lessThanNode(current.getRight(), value, newTree);
+	}
+	
+	private void equalToNode(AVLNode<T> current, T value, AVLTree<T> newTree)
+	{
+		if (current.compareTo(value) > 0)
+		{
+			if (current.getLeft() != null)
+				equalToNode(current.getLeft(), value, newTree);
+		}
+		else if (current.compareTo(value) < 0)
+		{
+			if (current.getRight() != null)
+				equalToNode(current.getRight(), value, newTree);
+		}
+		else
+			newTree.add(current.getValue());
 			
-			@Override
-			public boolean hasNext()
-			{
-				return i < arr.length;
-			}
-
-			@Override
-			public T next()
-			{
-				T value = arr[i++];
-				return value;
-			}
-		};
 	}
 }
