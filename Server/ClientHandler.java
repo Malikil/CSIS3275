@@ -127,11 +127,8 @@ public class ClientHandler implements Runnable
 					//objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case ADD_TABLE:
-					Table newbie = new Table();
-					currentTableName = received.getTableName();
-					parent.saveTable(currentDatabaseName,currentTableName,newbie);
-					currentTable = newbie;
-					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
+					currentTable = received.getTable();
+					parent.saveTable(currentDatabaseName,received.getTableName(),currentTable);
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();
@@ -148,12 +145,11 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_TABLE:
-					File deleteFile = new File(currentDatabaseName + "\\" +currentTableName + ".eric");
+					String database2 = received.getDatabase();
+					File db = new File(database2);
+					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
 					deleteFile.delete();
-					objOut.writeObject(new Message(Command.DELETE_TABLE, "Useless"));
-					currentTable = null;
-					currentTableName = null;
-					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName)));
+					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
 					break;
 				case EDIT_ENTRY:
 					Entry entryToEdit = received.getEntry();
@@ -176,7 +172,6 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				case MESSAGE:
-					parent.messageReceived(received.getMessage());
 					break;
 				case CONNECTION_SUCCESS:
 					break;
@@ -197,15 +192,23 @@ public class ClientHandler implements Runnable
 		}
 	}
 	
-	public void sendMessage(String message)
+	public void sendObject(Message message)
 	{
-		try
-		{
-			objOut.writeObject(new Message(Command.MESSAGE, message));
-		}
-		catch (IOException ex)
-		{
-			
-		}
+			try
+			{
+				objOut.writeObject(message);
+			}
+			catch (IOException ex)
+			{
+			}
+	}
+	public String getCurrentTableName()
+	{
+		return currentTableName;
+	}
+	
+	public String getCurrentDatabaseName()
+	{
+		return currentDatabaseName;
 	}
 }
