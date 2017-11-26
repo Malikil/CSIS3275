@@ -320,6 +320,7 @@ public class ClientGUI extends JFrame
 				
 				// Set preferred size of panel
 				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 160));
+				searchPanel.revalidate();
 				searchPanel.repaint();
 			}
 		});
