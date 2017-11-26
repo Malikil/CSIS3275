@@ -131,6 +131,7 @@ public class ClientHandler implements Runnable
 					currentTableName = received.getTableName();
 					parent.saveTable(currentDatabaseName,currentTableName,newbie);
 					currentTable = newbie;
+					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				case DELETE_COLUMN:
 					int ToRmv = received.getColToRmv();
@@ -147,11 +148,12 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
 				case DELETE_TABLE:
-					String database2 = received.getDatabase();
-					File db = new File(database2);
-					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
+					File deleteFile = new File(currentDatabaseName + "\\" +currentTableName + ".eric");
 					deleteFile.delete();
-					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
+					objOut.writeObject(new Message(Command.DELETE_TABLE, "Useless"));
+					currentTable = null;
+					currentTableName = null;
+					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName)));
 					break;
 				case EDIT_ENTRY:
 					Entry entryToEdit = received.getEntry();

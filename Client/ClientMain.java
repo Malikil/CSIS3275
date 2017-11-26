@@ -100,6 +100,7 @@ public class ClientMain implements Client
 					case DELETE_ENTRY:
 						break;
 					case DELETE_TABLE:
+						setTable(new Table());
 						break;
 					case EDIT_ENTRY:
 						break;
