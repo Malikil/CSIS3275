@@ -18,12 +18,11 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
-	private int nextKey;
-	
+	private int entryKey;
 	public ServerMain()
 	{
 		clientList = new ArrayList<>();
-		nextKey = this.getKey();
+		entryKey = this.getKey();
 	}	
 	
 	public static void main(String[] args)
@@ -31,7 +30,7 @@ public class ServerMain implements Server
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		
-		server.saveDatabase("db1");
+		//server.saveDatabase("db1"); for testing //TODO
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -190,19 +189,15 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void saveDatabase(String databaseName)
+	public void saveDatabase(String databaseName, String[] userList)
 	{
 		File dir = new File(databaseName);
-		if(dir.isDirectory())
-		{
-			return;
-		}
 		if(!dir.isDirectory())
 		{
 			dir.mkdir();
 			return;
-		}	
-		return;
+		}
+		//TODO //changeUserDatabases();
 	}
 	
 	public void deleteDatabase(String databaseName)
@@ -211,7 +206,7 @@ public class ServerMain implements Server
 		dir.delete();
 	}
 	
-	public void addUser(String username, String password)//small issue with newlines being created
+	public void addUser(String username, String password, String[] databaseList)
 	{
 		File file = new File("users.txt");
 		if(!file.exists())
@@ -223,7 +218,6 @@ public class ServerMain implements Server
 			} 
 			catch (IOException e) 
 			{
-			
 			}
 		}
 		try 
@@ -237,17 +231,19 @@ public class ServerMain implements Server
 					return;
 			}
 			userList.close();
-			BufferedWriter write = new BufferedWriter(new FileWriter("users.txt", true));
-			write.write("\n" + username + "," + password);
-			write.close();
+			BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true));
+			writer.write("\n" + username + "," + password);
+			for(int i = 0; i < databaseList.length; i++)
+			{
+				writer.write("," + databaseList[i]);
+			}
+			writer.close();
 		} 
 		catch (FileNotFoundException e) 
 		{
-			
 		} 
 		catch (IOException e) 
-		{
-			
+		{	
 		}
 		trimUserfile();
 	}
@@ -283,12 +279,10 @@ public class ServerMain implements Server
 			overwrite.close();
 		} 
 		catch (FileNotFoundException e) 
-		{
-			
+		{	
 		} 
 		catch (IOException e) 
 		{
-			
 		}
 	}
 	
@@ -326,7 +320,12 @@ public class ServerMain implements Server
 		}
 	}
 
-	public void changeUserDatabases(String username, String[] databases) //unfinished
+	public void changeDatabaseUsers(String databaseName, String usernames[])
+	{
+		
+	}
+	
+	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
 		File file = new File("users.txt");
 		try 
@@ -474,7 +473,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public int getKey()
+	private int getKey() //TODO its private right now
 	{
 		int key;
 		File file = new File("key.config");
@@ -512,8 +511,8 @@ public class ServerMain implements Server
 	@Override
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
 	{
-		Entry newEntry = new Entry(++nextKey, data);
-		saveKey(nextKey);
+		Entry newEntry = new Entry(++entryKey, data);
+		saveKey(entryKey);
 		Table newTable = getTable(databaseName,tableName);
 		newTable.addEntry(newEntry);
 		saveTable(databaseName, tableName, newTable);
@@ -572,4 +571,38 @@ public class ServerMain implements Server
 		table.delete();
 		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
 	}
+	
+	/*
+	// 	TODO //THIS USES USER AND CONFIG CLASSES
+	public void saveConfig(int entryKey, int userKey, User[] userList)
+	{
+		File file = new File("config.albert");
+		if(!file.exists())
+		{
+			try 
+			{
+				file.createNewFile();
+				System.out.println("config file created");
+			} 
+			catch (IOException e) 
+			{
+			}
+		}
+		try 
+		{
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(userList);
+			oOut.writeObject(entryKey);
+			oOut.writeObject(userKey);
+			oOut.close();
+			fOut.close();
+		} 
+		catch (FileNotFoundException e)
+		{
+		} 
+		catch (IOException e) 
+		{
+		}
+	} */
 }

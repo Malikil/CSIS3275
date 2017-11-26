@@ -16,12 +16,6 @@ public class Table implements Serializable
 		 columns = new DefinitelyNotArrayList<>();
 	}
 	
-	public Table(Column firstCol)
-	{
-		this();
-		columns.add(firstCol);
-	}
-	
 	public void addColumn(Column col)
 	{
 		columns.add(col);
