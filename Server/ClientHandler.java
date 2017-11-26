@@ -130,10 +130,10 @@ public class ClientHandler implements Runnable
 				case EDIT_ENTRY:
 					parent.editEntry(currentDatabaseName, currentTableName,received.getEntry());
 					break;
-				case GET_TABLE:
+				case GET_ACTUAL_TABLE:
 					currentTableName = received.getTableName();
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
+					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, currentTable));
 					break;
 				case GET_TABLE_NAMES:
 					currentDatabaseName  = received.getDatabase();
