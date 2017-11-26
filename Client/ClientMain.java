@@ -237,10 +237,8 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void addColumn() {
-		AddFieldGUI addCol = new AddFieldGUI(this);
-		addCol.setVisible(true);
-		
+	public void addColumn() 
+	{
 	}
 
 	@Override

@@ -105,8 +105,6 @@ public class ClientGUI extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
-				CreateTableGUI a = new CreateTableGUI(parent);
-				a.setVisible(true);
 			}	
 		});
 		
