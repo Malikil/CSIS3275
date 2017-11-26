@@ -98,10 +98,27 @@ public class ServerGUI extends JFrame implements Runnable
 		fileMenu.add(separator);
 		
 		JMenuItem addTable = new JMenuItem("Add Table");
+		addTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				//parent.saveTable(dbName, tableName, table);
+			}
+			
+		});
 		fileMenu.add(addTable);
 		
 		JMenuItem deleteTable = new JMenuItem("Delete Table");
 		fileMenu.add(deleteTable);
+		deleteTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				//parent.saveTable(dbName, tableName, table);
+			}
+		});
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setBackground(new Color(153, 204, 255));

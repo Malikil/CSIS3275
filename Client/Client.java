@@ -7,7 +7,8 @@ public interface Client
 	public void setDatabaseList(String[] list);
 	public void getTableNames(String database);
 	public void createTable(Table table);
-	public void deleteTable(String table);
+	public void deleteCurrentTable();
+	public void setCurrentTableName(String tableName);
 	public void getTable(String tableName);
 	public void addColumn();
 	public void deleteColumn(int selectedIndex);

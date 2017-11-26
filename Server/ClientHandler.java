@@ -73,18 +73,13 @@ public class ClientHandler implements Runnable
 							}
 					}
 					if (!loggedIn && nextLine == null)
-						objOut.writeObject(new Message(Command.INCORRECT_USER, null));
-					
+						objOut.writeObject(new Message(Command.INCORRECT_USER, null));		
 				}
 				catch (IOException ex)
 				{
-					// Error receiving user/pass from client
-					// Error sending response to client
 				}
 				catch (ClassNotFoundException ex)
 				{
-					ex.printStackTrace(); // Oops
-					break;
 				}
 			} while (!loggedIn);
 			userList.close();
@@ -112,96 +107,66 @@ public class ClientHandler implements Runnable
 				Message received = (Message) objIn.readObject();
 				switch (received.getCommandType())
 				{
-				case ADD_COLUMN:
-					Column toAdd = received.getColToAdd();
-					currentTable.addColumn(toAdd);
-					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
-					currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
+				case ADD_COLUMNS:
+					parent.addColumns(currentDatabaseName, currentTableName, received.getColumns());
 					break;
 				case ADD_ENTRY:
-					Comparable[] entryData = received.getAddEntry();
-					parent.addEntry(currentDatabaseName, currentTableName, entryData);
-					//parent.saveTable(currentDatabaseName, currentTableName, currentTable);
-					//currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					//objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
+					parent.addEntry(currentDatabaseName, currentTableName, received.getNewEntry());
 					break;
 				case ADD_TABLE:
-					currentTable = received.getTable();
-					parent.saveTable(currentDatabaseName,received.getTableName(),currentTable);
+					currentTableName = received.getTableName();
+					parent.addTable(currentDatabaseName,currentTableName);
 					break;
 				case DELETE_COLUMN:
-					int ToRmv = received.getColToRmv();
-					currentTable.removeColumn(ToRmv);
-					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
-					currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
+					parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());
 					break;
 				case DELETE_ENTRY:
-					int entryToRmv = received.getDelEntry();
-					currentTable.removeEntry(entryToRmv);
-					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
+					parent.deleteEntry(currentDatabaseName, currentTableName, received.getEntry());
+					break;
+				case DELETE_TABLE:
+					parent.deleteTable(currentDatabaseName, received.getTableName());
+					currentTableName = null;
+					break;
+				case EDIT_ENTRY:
+					parent.editEntry(currentDatabaseName, currentTableName,received.getEntry());
+					break;
+				case GET_TABLE:
+					currentTableName = received.getTableName();
 					currentTable = parent.getTable(currentDatabaseName, currentTableName);
 					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
 					break;
-				case DELETE_TABLE:
-					String database2 = received.getDatabase();
-					File db = new File(database2);
-					File deleteFile = new File(db + "\\" + /*received.getTable()*/ "test.txt");
-					deleteFile.delete();
-					objOut.writeObject(new Message(Command.DELETE_TABLE, parent.getTableList(database2)));
-					break;
-				case EDIT_ENTRY:
-					Entry entryToEdit = received.getEntry();
-					currentTable.editEntry(entryToEdit);
-					parent.saveTable(currentDatabaseName, currentTableName, currentTable);
-					currentTable = parent.getTable(currentDatabaseName, currentTableName);					
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable));
-					break;
-				case GET_TABLE:
-					System.out.println("Received GET_TABLE from client");
-					System.out.println(currentDatabaseName);
-					currentTableName = received.getTableName();
-					System.out.println(currentTableName);
-				    currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_TABLE, currentTable)); System.out.println("Sent table to client");
-					break;
-				case GET_DATABASE:
-					System.out.println("Received GET_DATABASE from client");
-					currentDatabaseName  = received.getDatabase(); System.out.println("Received database name from client");
-					objOut.writeObject(new Message(Command.TABLE_LIST, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
-					break;
-				case MESSAGE:
-					parent.messageReceived(received.getMessage());
-					break;
-				case CONNECTION_SUCCESS:
-					break;
-				case INCORRECT_PASSWORD:
-					break;
-				case INCORRECT_USER:
-					break;
-				case LOGIN:
+				case GET_TABLE_NAMES:
+					currentDatabaseName  = received.getDatabase();
+					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				default:
+					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
 					break;
 				}
 			}
 			catch (ClassNotFoundException | IOException ex)
 			{
-				
 			}
 		}
 	}
 	
-	public void sendMessage(String message)
+	public void sendObject(Message message)
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.MESSAGE, message));
+			objOut.writeObject(message);
 		}
 		catch (IOException ex)
 		{
-			
 		}
+	}
+	public String getCurrentTableName()
+	{
+		return currentTableName;
+	}
+	
+	public String getCurrentDatabaseName()
+	{
+		return currentDatabaseName;
 	}
 }

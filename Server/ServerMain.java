@@ -18,16 +18,19 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
-	
+	private int entryKey;
 	public ServerMain()
 	{
 		clientList = new ArrayList<>();
+		entryKey = this.getKey();
 	}	
 	
 	public static void main(String[] args)
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
+		
+		//server.saveDatabase("db1"); for testing //TODO
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -67,17 +70,11 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
-	public void sendToAll(String message)
+	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
 	{
 		for (ClientHandler client : clientList)
-			client.sendMessage(message);
-	}
-
-	@Override
-	public void messageReceived(String message)
-	{
-		for (ClientHandler client : clientList)
-			client.sendMessage(message);
+			if(client.getCurrentTableName().equals(activeTable) && client.getCurrentDatabaseName().equals(activeDatabase))
+				client.sendObject(messageToSend);
 	}
 
 	@Override
@@ -190,22 +187,17 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{
 		}
-		
 	}
 	
-	public void saveDatabase(String databaseName)
+	public void saveDatabase(String databaseName, String[] userList)
 	{
 		File dir = new File(databaseName);
-		if(dir.isDirectory())
-		{
-			return;
-		}
 		if(!dir.isDirectory())
 		{
 			dir.mkdir();
 			return;
-		}	
-		return;
+		}
+		//TODO //changeUserDatabases();
 	}
 	
 	public void deleteDatabase(String databaseName)
@@ -214,13 +206,7 @@ public class ServerMain implements Server
 		dir.delete();
 	}
 	
-	public void deleteTable(String databaseName, String tableName)
-	{
-		File table = new File(databaseName+"\\"+tableName+".eric");
-		table.delete();
-	}
-	
-	public void addUser(String username, String password)//small issue with newlines being created
+	public void addUser(String username, String password, String[] databaseList)
 	{
 		File file = new File("users.txt");
 		if(!file.exists())
@@ -232,7 +218,6 @@ public class ServerMain implements Server
 			} 
 			catch (IOException e) 
 			{
-			
 			}
 		}
 		try 
@@ -246,17 +231,19 @@ public class ServerMain implements Server
 					return;
 			}
 			userList.close();
-			BufferedWriter write = new BufferedWriter(new FileWriter("users.txt", true));
-			write.write("\n" + username + "," + password);
-			write.close();
+			BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true));
+			writer.write("\n" + username + "," + password);
+			for(int i = 0; i < databaseList.length; i++)
+			{
+				writer.write("," + databaseList[i]);
+			}
+			writer.close();
 		} 
 		catch (FileNotFoundException e) 
 		{
-			
 		} 
 		catch (IOException e) 
-		{
-			
+		{	
 		}
 		trimUserfile();
 	}
@@ -292,12 +279,10 @@ public class ServerMain implements Server
 			overwrite.close();
 		} 
 		catch (FileNotFoundException e) 
-		{
-			
+		{	
 		} 
 		catch (IOException e) 
 		{
-			
 		}
 	}
 	
@@ -335,7 +320,12 @@ public class ServerMain implements Server
 		}
 	}
 
-	public void changeUserDatabases(String username, String[] databases) //unfinished
+	public void changeDatabaseUsers(String databaseName, String usernames[])
+	{
+		
+	}
+	
+	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
 		File file = new File("users.txt");
 		try 
@@ -451,15 +441,168 @@ public class ServerMain implements Server
 		}
 		return listOfUsers;
 	}
-	
-	public void editEntry() //unfinished
+
+	private void saveKey(int key)
 	{
-		// TODO Eric-generated method stub :thinking:
+		File file = new File("key.config");
+		if(!file.exists())
+		{
+			key = 0;
+			try 
+			{
+				file.createNewFile();
+				System.out.println("key file created");
+			} 
+			catch (IOException e) 
+			{
+			}
+		}
+		try 
+		{
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(key);
+			oOut.close();
+			fOut.close();
+		} 
+		catch (FileNotFoundException e)
+		{
+		} 
+		catch (IOException e) 
+		{
+		}
+	}
+	
+	private int getKey() //TODO its private right now
+	{
+		int key;
+		File file = new File("key.config");
+		if(!file.exists())
+		{
+			saveKey(0);
+			return 0;
+		}
+		else try 
+		{
+			FileInputStream fIn = new FileInputStream(file);
+			ObjectInputStream oIn = new ObjectInputStream(fIn);
+			key = (int)oIn.readObject();
+			fIn.close();
+			oIn.close();
+			return key;
+		}
+		catch (FileNotFoundException e1) 
+		{
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+		catch (IOException e)
+		{	
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+		catch (ClassNotFoundException e)
+		{	
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+	}
+	
+	@Override
+	public void addEntry(String databaseName, String tableName, Comparable[] data) 
+	{
+		Entry newEntry = new Entry(++entryKey, data);
+		saveKey(entryKey);
+		Table newTable = getTable(databaseName,tableName);
+		newTable.addEntry(newEntry);
+		saveTable(databaseName, tableName, newTable);
+		sendObjectToAll(new Message(Command.ADD_ENTRY, newEntry),databaseName,tableName);
 	}
 
 	@Override
-	public void addEntry(String database, String table, Comparable[] data) {
-		// TODO Auto-generated method stub
-		
+	public void addColumns(String databaseName, String tableName, Column[] columnList) //always sending an array of columns to add
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		for(int i = 0 ; i < columnList.length ; i++)
+			currentTable.addColumn(columnList[i]);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.ADD_COLUMNS, columnList),databaseName,tableName);
 	}
+	
+	@Override
+	public void addTable(String databaseName, String tableName)
+	{
+		Table newTable = new Table();
+		saveTable(databaseName, tableName, newTable);
+		sendObjectToAll(new Message(Command.ADD_TABLE, newTable),databaseName,tableName);
+	}
+	
+	@Override
+	public void editEntry(String databaseName, String tableName, Entry newEntry)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.editEntry(newEntry);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.EDIT_ENTRY, newEntry),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteEntry(String databaseName, String tableName, Entry entryToDelete)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.removeEntry(entryToDelete.getKey());
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.DELETE_ENTRY,entryToDelete),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteColumn(String databaseName, String tableName, Integer index)
+	{
+		Table currentTable = getTable(databaseName,tableName);
+		currentTable.removeColumn(index);
+		saveTable(databaseName, tableName, currentTable);
+		sendObjectToAll(new Message(Command.DELETE_COLUMN,index),databaseName,tableName);
+	}
+	
+	@Override
+	public void deleteTable(String databaseName, String tableName)
+	{
+		File table = new File(databaseName+"\\"+tableName+".eric");
+		table.delete();
+		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
+	}
+	
+	/*
+	// 	TODO //THIS USES USER AND CONFIG CLASSES
+	public void saveConfig(int entryKey, int userKey, User[] userList)
+	{
+		File file = new File("config.albert");
+		if(!file.exists())
+		{
+			try 
+			{
+				file.createNewFile();
+				System.out.println("config file created");
+			} 
+			catch (IOException e) 
+			{
+			}
+		}
+		try 
+		{
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			oOut.writeObject(userList);
+			oOut.writeObject(entryKey);
+			oOut.writeObject(userKey);
+			oOut.close();
+			fOut.close();
+		} 
+		catch (FileNotFoundException e)
+		{
+		} 
+		catch (IOException e) 
+		{
+		}
+	} */
 }

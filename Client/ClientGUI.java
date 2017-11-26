@@ -106,9 +106,24 @@ public class ClientGUI extends JFrame
 		
 		JMenuItem mntmAddTable = new JMenuItem("Add Table");
 		fileMenu.add(mntmAddTable);
+		mntmAddTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+			}	
+		});
 		
 		JMenuItem mntmDeleteTable = new JMenuItem("Delete Table");
 		fileMenu.add(mntmDeleteTable);
+		mntmDeleteTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				parent.deleteCurrentTable();
+			}
+		});
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setBackground(new Color(102, 204, 255));
@@ -404,6 +419,7 @@ public class ClientGUI extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					parent.getTable(table);
+					parent.setCurrentTableName(table);
 				}
 			});
 			mnTables.add(newTable);

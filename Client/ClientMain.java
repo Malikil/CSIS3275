@@ -17,6 +17,7 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private Entry[] filteredTable;
+	private String currentTableName;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -67,7 +68,7 @@ public class ClientMain implements Client
 				}
 				catch (IOException io)
 				{
-					/* Couldn't close socket */
+					// Couldn't close socket
 				}
 			}
 			catch (ClassNotFoundException ex)
@@ -87,7 +88,7 @@ public class ClientMain implements Client
 					Message received = (Message)objIn.readObject();
 					switch (received.getCommandType())
 					{
-					case ADD_COLUMN:
+					case ADD_COLUMNS:
 						break;
 					case ADD_ENTRY:
 						break;
@@ -152,16 +153,22 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void deleteTable(String tableName)
+	public void deleteCurrentTable()
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_TABLE, tableName));
+			objOut.writeObject(new Message(Command.DELETE_TABLE, currentTableName));
 		}
 		catch (IOException ex)
 		{
 			// TODO Catch block
 		}
+	}
+	
+	@Override
+	public void setCurrentTableName(String tableName)
+	{
+		currentTableName = tableName;
 	}
 
 	@Override
@@ -169,7 +176,7 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.GET_DATABASE, database));
+			objOut.writeObject(new Message(Command.GET_TABLE_NAMES, database));
 			System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
@@ -230,10 +237,8 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void addColumn() {
-		AddFieldGUI addCol = new AddFieldGUI(this);
-		addCol.setVisible(true);
-		
+	public void addColumn() 
+	{
 	}
 
 	@Override

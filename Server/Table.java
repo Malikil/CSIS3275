@@ -16,12 +16,6 @@ public class Table implements Serializable
 		 columns = new DefinitelyNotArrayList<>();
 	}
 	
-	public Table(Column firstCol)
-	{
-		this();
-		columns.add(firstCol);
-	}
-	
 	public void addColumn(Column col)
 	{
 		columns.add(col);
@@ -33,9 +27,9 @@ public class Table implements Serializable
 		}
 	}
 	
-	public void removeColumn(int index)
+	public void removeColumn(Integer index)
 	{
-		columns.remove(index);
+		columns.remove(index.intValue());
 		if (tree.size() > 0)
 		{
 			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);

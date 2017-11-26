@@ -22,7 +22,7 @@ public class LoginGUI extends JDialog
 	private String enteredPass;
 	private String enteredIP;
 	private boolean cancelled;
-	private Command message = Command.ADD_COLUMN;
+	private Command message = Command.LOGIN; //default value
 
 	/**
 	 * Create the application.
