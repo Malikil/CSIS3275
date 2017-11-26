@@ -18,11 +18,12 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
-	static private int nextKey;
+	private int nextKey;
 	
 	public ServerMain()
 	{
 		clientList = new ArrayList<>();
+		nextKey = this.getKey();
 	}	
 	
 	public static void main(String[] args)
@@ -70,17 +71,11 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
-	public void sendToAll(String message)
+	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
 	{
 		for (ClientHandler client : clientList)
-			client.sendMessage(message);
-	}
-
-	@Override
-	public void messageReceived(String message)
-	{
-		for (ClientHandler client : clientList)
-			client.sendMessage(message);
+			if(client.getCurrentTableName().equals(activeTable) && client.getCurrentDatabaseName().equals(activeDatabase))
+				client.sendObject(messageToSend);
 	}
 
 	@Override
@@ -459,11 +454,12 @@ public class ServerMain implements Server
 		// TODO Eric-generated method stub :thinking:
 	}
 
-	private void saveKey(int nextKey)
+	private void saveKey(int key)
 	{
-		File file = new File("key");
+		File file = new File("key.config");
 		if(!file.exists())
 		{
+			key = 0;
 			try 
 			{
 				file.createNewFile();
@@ -477,7 +473,7 @@ public class ServerMain implements Server
 		{
 			FileOutputStream fOut = new FileOutputStream(file);
 			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
-			oOut.writeObject(nextKey);
+			oOut.writeObject(key);
 			oOut.close();
 			fOut.close();
 		} 
@@ -489,9 +485,50 @@ public class ServerMain implements Server
 		}
 	}
 	
-	@Override
-	public void addEntry(String database, String table, Comparable[] data) 
+	public int getKey()
 	{
-		
+		int key;
+		File file = new File("key.config");
+		if(!file.exists())
+		{
+			saveKey(0);
+			return 0;
+		}
+		else try 
+		{
+			FileInputStream fIn = new FileInputStream(file);
+			ObjectInputStream oIn = new ObjectInputStream(fIn);
+			key = (int)oIn.readObject();
+			fIn.close();
+			oIn.close();
+			return key;
+		}
+		catch (FileNotFoundException e1) 
+		{
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+		catch (IOException e)
+		{	
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+		catch (ClassNotFoundException e)
+		{	
+			System.out.println("getKey failed, abort");
+			return -1;
+		}
+	}
+	
+	@Override
+	public void addEntry(String databaseName, String tableName, Comparable[] data) 
+	{
+		Entry newEntry = new Entry(++nextKey, data);
+		saveKey(nextKey);
+		Table newTable = getTable(databaseName,tableName);
+		newTable.addEntry(newEntry);
+		saveTable(databaseName, tableName, newTable);
+		Message message = new Message(Command.ADD_ENTRY, newEntry);
+		sendObjectToAll(message,databaseName,tableName);
 	}
 }
