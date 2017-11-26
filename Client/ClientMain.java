@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -89,7 +88,7 @@ public class ClientMain implements Client
 					Message received = (Message)objIn.readObject();
 					switch (received.getCommandType())
 					{
-					case ADD_COLUMN:
+					case ADD_COLUMNS:
 						break;
 					case ADD_ENTRY:
 						break;
@@ -100,7 +99,6 @@ public class ClientMain implements Client
 					case DELETE_ENTRY:
 						break;
 					case DELETE_TABLE:
-						setTable(new Table());
 						break;
 					case EDIT_ENTRY:
 						break;
@@ -142,7 +140,7 @@ public class ClientMain implements Client
 	}
 	
   @Override
-	public void createTable(String table)
+	public void createTable(Table table)
 	{
 		try
 		{
@@ -178,7 +176,7 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.GET_DATABASE, database));
+			objOut.writeObject(new Message(Command.GET_TABLE_NAMES, database));
 			System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
@@ -224,11 +222,9 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void createEntry(Comparable[] entryData) { 
-		try {
-			objOut.writeObject(new Message(Command.ADD_ENTRY, entryData));
-		} catch (IOException e) {
-		}
+	public void createEntry(String[] headers) { 
+		EditEntryGUI addEnt = new EditEntryGUI(headers);
+		addEnt.setVisible(true);
 	}
 	
 	@Override
@@ -241,15 +237,9 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void addColumn(String columnName, int colType) {
-		try
-		{
-			objOut.writeObject(new Message(Command.ADD_COLUMN, new Column(columnName,colType)));
-		}
-		catch (IOException ex)
-		{
-			
-		}
+	public void addColumn() {
+		AddFieldGUI addCol = new AddFieldGUI(this);
+		addCol.setVisible(true);
 		
 	}
 

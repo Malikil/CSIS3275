@@ -185,8 +185,7 @@ public class ClientGUI extends JFrame
 		addFieldBttn.setBounds(56, 72, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CreateTableGUI addCol = new CreateTableGUI(parent);
-				addCol.setVisible(true);
+				parent.addColumn();
 			}
 		});
 		tablesPanel.add(addFieldBttn);
@@ -215,9 +214,6 @@ public class ClientGUI extends JFrame
 				for(int j = 0;j<headers.length;j++)
 					headers[j] = fieldsCB.getItemAt(j);
 				parent.createEntry(headers);
-				EditEntryGUI addEnt = new EditEntryGUI(headers);
-				addEnt.setVisible(true);
-				
 			}
 		});
 		tablesPanel.add(addBttn);
