@@ -16,4 +16,5 @@ public interface Client
 	public void editEntry(int entryIndex);
 	public void setTable(Table newTable);
 	public String[] getColumnNames();
+	public void applySearch(String[] values, String[] comparisons, int[] fields);
 }

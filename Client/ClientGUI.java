@@ -280,7 +280,7 @@ public class ClientGUI extends JFrame
 		valueFilter.get(0).setBounds(328, 68, 162, 20);
 		searchPanel.add(valueFilter.get(0));
 		
-		String[] comparisonStrings = {  "<", "<=", "=", ">", ">=" };
+		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
 		comparisonTypes = new DefinitelyNotArrayList<>();
 		comparisonTypes.add(new JComboBox<String>(comparisonStrings));
 		comparisonTypes.get(0).setBounds(265, 67, 53, 22);
@@ -327,9 +327,52 @@ public class ClientGUI extends JFrame
 		searchPanel.add(btnAddFilter);
 		
 		btnRemoveFilter.setBounds(258, 140, 91, 23);
+		btnRemoveFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// Remove row
+				searchPanel.remove(fieldFilter.get(fieldFilter.size() - 1));
+				fieldFilter.remove(fieldFilter.size() - 1);
+				
+				searchPanel.remove(valueFilter.get(valueFilter.size() - 1));
+				valueFilter.remove(valueFilter.size() - 1);
+				
+				searchPanel.remove(comparisonTypes.get(comparisonTypes.size() - 1));
+				comparisonTypes.remove(comparisonTypes.size() - 1);
+				
+				// Move buttons up
+				btnAddFilter.setBounds(159, valueFilter.size() * 27 + 117, 91, 23);
+				btnRemoveFilter.setBounds(258, valueFilter.size() * 27 + 117, 91, 23);
+				btnApplyFilter.setBounds(359, valueFilter.size() * 27 + 117, 89, 23);
+				
+				// Repaint
+				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 160));
+				searchPanel.revalidate();
+				searchPanel.repaint();
+			}
+		});
 		searchPanel.add(btnRemoveFilter);
 		
 		btnApplyFilter.setBounds(359, 140, 89, 23);
+		btnApplyFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String[] values = new String[valueFilter.size()],
+						 comps = new String[comparisonTypes.size()];
+				int[] fields = new int[fieldFilter.size()];
+				
+				for (int i = 0; i < values.length; i++)
+				{
+					values[i] = valueFilter.get(i).getText();
+					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
+					fields[i] = fieldFilter.get(i).getSelectedIndex();
+				}
+				
+				parent.applySearch(values, comps, fields);
+			}
+		});
 		searchPanel.add(btnApplyFilter);
 	}
 	
