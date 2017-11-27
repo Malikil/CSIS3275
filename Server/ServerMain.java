@@ -154,13 +154,13 @@ public class ServerMain implements Server
 			*/
 	}
 	
-	/* public void sendDeleteUser(Message message, String username)
+	public void sendDeleteUser(Message message, String username)
 	{
 		for (ClientHandler client : clientList)
 			if(client.getUsername().equals(username))
 					client.sendObject(message);
 	}
-   */
+	
 	@Override
 	public String[] getUserDatabases(String user)
 	{
@@ -273,7 +273,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-	/*public void saveDatabase(String databaseName) //String[] userList)
+	public void saveDatabase(String databaseName) //String[] userList)
 	{
 		AddDatabaseGUI adg = new AddDatabaseGUI();
 		adg.setVisible(true);
@@ -285,9 +285,9 @@ public class ServerMain implements Server
 			return;
 		}
 		//TODO //changeUserDatabases();
-	}*/
+	}
 	
-	/*public void deleteDatabase(String databaseName)
+	public void deleteDatabase(String databaseName)
 	{
 		File dir = new File(databaseName);
 		dir.delete();
@@ -375,7 +375,7 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{
 		}
-	} */
+	}
 	
 	public void trimUserfile() //trims whitespace and empty lines in user.txt
 	{
