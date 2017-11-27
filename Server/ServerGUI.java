@@ -91,13 +91,58 @@ public class ServerGUI extends JFrame implements Runnable
 		JMenu dbMenu = new JMenu("Databases");
 		fileMenu.add(dbMenu);
 		
+		JSeparator separator_2 = new JSeparator();
+		dbMenu.add(separator_2);
+		
+		JMenuItem mntmCreateDatabase = new JMenuItem("Create Database");
+		mntmCreateDatabase.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				parent.createDatabase();
+			}
+		});
+		dbMenu.add(mntmCreateDatabase);
+		
+		JMenuItem mntmDeleteDatabase = new JMenuItem("Delete Database");
+		mntmCreateDatabase.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				
+			}
+		});
+		dbMenu.add(mntmDeleteDatabase);
+		
 		JMenu tablesMenu = new JMenu("Tables");
 		fileMenu.add(tablesMenu);
 		
-		JSeparator separator = new JSeparator();
-		fileMenu.add(separator);
+		JSeparator separator_1 = new JSeparator();
+		tablesMenu.add(separator_1);
 		
 		JMenuItem addTable = new JMenuItem("Add Table");
+		addTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				//TODO parent.AddTable(database, tableName);
+			}
+		});
+		tablesMenu.add(addTable);
+		
+		JMenuItem deleteTable = new JMenuItem("Delete Table");
+		tablesMenu.add(deleteTable);
+		deleteTable.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				//parent.saveTable(dbName, tableName, table);
+			}
+		});
 		addTable.addActionListener(new ActionListener()
 		{
 			@Override
@@ -106,18 +151,6 @@ public class ServerGUI extends JFrame implements Runnable
 				//parent.saveTable(dbName, tableName, table);
 			}
 			
-		});
-		fileMenu.add(addTable);
-		
-		JMenuItem deleteTable = new JMenuItem("Delete Table");
-		fileMenu.add(deleteTable);
-		deleteTable.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
-				//parent.saveTable(dbName, tableName, table);
-			}
 		});
 		
 		JMenu helpMenu = new JMenu("Help");
@@ -153,7 +186,7 @@ public class ServerGUI extends JFrame implements Runnable
 		});
 		helpMenu.add(details);
 		
-		JLabel fieldsLbl = new JLabel("Fields");
+		JLabel fieldsLbl = new JLabel("Columns");
 		fieldsLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldsLbl.setFont(new Font("Tahoma", Font.BOLD, 14));
 		fieldsLbl.setBounds(195, 409, 80, 19);
@@ -218,7 +251,7 @@ public class ServerGUI extends JFrame implements Runnable
 		deleteUserBttn.setBounds(300, 103, 107, 23);
 		getContentPane().add(deleteUserBttn);
 		
-		JList userlistList = new JList();
+		JList<?> userlistList = new JList<>();
 		getContentPane().add(userlistList);
 		userlistList.setBackground(UIManager.getColor("Viewport.background"));
 		userlistList.setBounds(69, 145, 336, 253);
@@ -229,4 +262,6 @@ public class ServerGUI extends JFrame implements Runnable
 	{
 		this.setVisible(true);
 	}
+	
+	
 }
