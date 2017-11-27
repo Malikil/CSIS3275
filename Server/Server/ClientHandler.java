@@ -109,13 +109,14 @@ public class ClientHandler implements Runnable
 				{
 				case ADD_COLUMNS:
 					parent.addColumns(currentDatabaseName, currentTableName, received.getColumns());
-					break;	//when client receives message, need to refresh GUI table
+					break;
 				case ADD_ENTRY:
 					parent.addEntry(currentDatabaseName, currentTableName, received.getNewEntry());
-					break;	//when client receives message, need to refresh GUI table
+					break;
 				case ADD_TABLE:
 					currentTableName = received.getTableName();
 					parent.addTable(currentDatabaseName,currentTableName);
+					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName)));
 					break;
 				case DELETE_COLUMN:
 					parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());
@@ -154,8 +155,6 @@ public class ClientHandler implements Runnable
 	{
 		try
 		{
-			if(message.getCommandType() == Command.DELETE_TABLE && currentTableName.compareTo(message.getTableName())==0)
-				currentTableName = null;
 			objOut.writeObject(message);
 		}
 		catch (IOException ex)

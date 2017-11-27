@@ -47,6 +47,7 @@ public class ClientGUI extends JFrame
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
 	private JTable table;
@@ -55,11 +56,10 @@ public class ClientGUI extends JFrame
 	private JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
 	private JScrollPane scroller;
+	private JTextArea chatArea;
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
-	private int[] tableKeys;
-	private JTextField textField;
 
 	/**
 	 * Create the application.
@@ -80,7 +80,7 @@ public class ClientGUI extends JFrame
 	{
 		JFrame thisFrame = this;
 		new JFrame();
-		setBounds(100, 100, 482, 482);
+		setBounds(100, 100, 638, 482);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
@@ -158,10 +158,8 @@ public class ClientGUI extends JFrame
 		
 		JTabbedPane searchTab = new JTabbedPane(JTabbedPane.TOP);
 		searchTab.setBackground(UIManager.getColor("Tree.selectionBackground"));
-		searchTab.setBounds(0, 21, 465, 427);
+		searchTab.setBounds(0, 21, 622, 427);
 		getContentPane().add(searchTab);
-		
-		tableModel = new DefaultTableModel();
 		
 		tablesPanel = new JPanel();
 		tablesPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
@@ -171,23 +169,25 @@ public class ClientGUI extends JFrame
 		JLabel fieldLabel = new JLabel("Fields");
 		fieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		fieldLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-		fieldLabel.setBounds(178, 13, 109, 19);
+		fieldLabel.setBounds(152, 11, 109, 19);
 		tablesPanel.add(fieldLabel);
 		
 		fieldsCB = new JComboBox<String>();
-		fieldsCB.setBounds(82, 43, 300, 20);
+		fieldsCB.setBounds(56, 41, 300, 20);
 		tablesPanel.add(fieldsCB);
+		
+		tableModel = new DefaultTableModel();
 		table = new JTable(tableModel);
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setBorder(new LineBorder(new Color(0, 0, 0)));
 		scroller = new JScrollPane(table);
-		scroller.setBounds(62, 108, 334, 172);
+		scroller.setBounds(36, 106, 334, 172);
 		tablesPanel.add(scroller);
 		
 		JButton addFieldBttn = new JButton("Add");
-		addFieldBttn.setBounds(82, 74, 89, 23);
+		addFieldBttn.setBounds(56, 72, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parent.addColumn();
@@ -201,15 +201,15 @@ public class ClientGUI extends JFrame
 				parent.deleteColumn(fieldsCB.getSelectedIndex());
 			}
 		});
-		deleteFieldBttn.setBounds(188, 74, 89, 23);
+		deleteFieldBttn.setBounds(162, 72, 89, 23);
 		tablesPanel.add(deleteFieldBttn);
 		
 		JButton sortFieldBttn = new JButton("Sort");
-		sortFieldBttn.setBounds(293, 74, 89, 23);
+		sortFieldBttn.setBounds(267, 72, 89, 23);
 		tablesPanel.add(sortFieldBttn);
 		
 		JButton addBttn = new JButton("Add Entry");
-		addBttn.setBounds(62, 291, 99, 43);
+		addBttn.setBounds(36, 289, 99, 43);
 		addBttn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -230,16 +230,21 @@ public class ClientGUI extends JFrame
 				{
 					int entryRow = table.getSelectedRow();
 					if (entryRow == -1)
-						JOptionPane.showMessageDialog(thisFrame, "Please select an entry to delete");
+					{
+						chatArea.append("SELECT SOMETHING DUMBASS");
+					}
 					else
-						parent.deleteEntry(tableKeys[entryRow]);
+					{
+						int entryKey = Integer.parseInt((String) table.getModel().getValueAt(entryRow, 0));
+						parent.deleteEntry(entryKey);
+					}
 				}
 			});
-		deleteBttn.setBounds(171, 291, 106, 43);
+		deleteBttn.setBounds(145, 289, 106, 43);
 		tablesPanel.add(deleteBttn);
 		
 		JButton editBttn = new JButton("Edit Entry");
-		editBttn.setBounds(287, 291, 109, 43);
+		editBttn.setBounds(261, 289, 109, 43);
 		editBttn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -250,39 +255,26 @@ public class ClientGUI extends JFrame
 		});
 		tablesPanel.add(editBttn);
 		
+		chatArea = new JTextArea();
+		chatArea.setEditable(false);
+		JScrollPane scrollPane = new JScrollPane(chatArea);
+		scrollPane.setBounds(398, 38, 150, 294);
+		tablesPanel.add(scrollPane);
+		
+		JLabel label_1 = new JLabel("Error Log");
+		label_1.setFont(new Font("Tahoma", Font.BOLD, 14));
+		label_1.setBounds(439, 11, 80, 19);
+		tablesPanel.add(label_1);
+		
 		JPanel mainPanel = new JPanel();
 		searchTab.addTab("Filter", null, mainPanel, null);
 		mainPanel.setLayout(null);
 		
-		valueFilter = new DefinitelyNotArrayList<>();
-		valueFilter.add(new JTextField());
-		valueFilter.get(0).setBounds(249, 53, 146, 22);
-		
-		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
-		comparisonTypes = new DefinitelyNotArrayList<>();
-		comparisonTypes.add(new JComboBox<>(comparisonStrings));
-		comparisonTypes.get(0).setBounds(186, 53, 51, 22);
-		
-		fieldFilter = new DefinitelyNotArrayList<>();
-		fieldFilter.add(new JComboBox<String>(parent.getColumnNames()));
-		fieldFilter.get(0).setBounds(71, 53, 103, 22);
-		
-		JPanel filterButtonPanel = new JPanel();
-		filterButtonPanel.setBounds(0, 0, 461, 398);
-		mainPanel.add(filterButtonPanel);
-		filterButtonPanel.setLayout(null);
-		JButton btnRemoveFilter = new JButton("Remove");
-		btnRemoveFilter.setBounds(184, 350, 91, 23);
-		filterButtonPanel.add(btnRemoveFilter);
-		JButton btnApplyFilter = new JButton("Apply");
-		btnApplyFilter.setBounds(287, 350, 89, 23);
-		filterButtonPanel.add(btnApplyFilter);
-		
 		JScrollPane searchTabScroll = new JScrollPane();
-		searchTabScroll.setBounds(0, 0, 461, 335);
-		filterButtonPanel.add(searchTabScroll);
+		searchTabScroll.setBounds(-1, -1, 620, 405);
 		searchTabScroll.setViewportBorder(null);
 		searchTabScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		mainPanel.add(searchTabScroll);
 		
 		JPanel searchPanel = new JPanel();
 		searchTabScroll.setViewportView(searchPanel);
@@ -291,43 +283,94 @@ public class ClientGUI extends JFrame
 		
 		JLabel searchItemLbl = new JLabel("Value");
 		searchItemLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
-		searchItemLbl.setBounds(301, 26, 46, 14);
+		searchItemLbl.setBounds(385, 26, 46, 14);
 		searchPanel.add(searchItemLbl);
-		
+		 		
 		JLabel searchFieldLbl = new JLabel("Field ");
 		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
-		searchFieldLbl.setBounds(102, 26, 46, 14);
+		searchFieldLbl.setBounds(159, 26, 46, 14);
 		searchPanel.add(searchFieldLbl);
+		
+		valueFilter = new DefinitelyNotArrayList<>();
+		valueFilter.add(new JTextField());
+		valueFilter.get(0).setBounds(328, 68, 162, 20);
 		searchPanel.add(valueFilter.get(0));
+		
+		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
+		comparisonTypes = new DefinitelyNotArrayList<>();
+		comparisonTypes.add(new JComboBox<String>(comparisonStrings));
+		comparisonTypes.get(0).setBounds(265, 67, 53, 22);
 		searchPanel.add(comparisonTypes.get(0));
+		
+		fieldFilter = new DefinitelyNotArrayList<>();
+		fieldFilter.add(new JComboBox<String>());
+		fieldFilter.get(0).setBounds(116, 67, 139, 22);
 		searchPanel.add(fieldFilter.get(0));
 		
 		JButton btnAddFilter = new JButton("Add");
-		btnAddFilter.setBounds(81, 350, 91, 23);
-		filterButtonPanel.add(btnAddFilter);
+		JButton btnRemoveFilter = new JButton("Remove");
+		JButton btnApplyFilter = new JButton("Apply");
+		
+		btnAddFilter.setBounds(159, 140, 91, 23);
 		btnAddFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				// Move buttons down
+				btnAddFilter.setBounds(159, valueFilter.size() * 27 + 117, 91, 23);
+				btnRemoveFilter.setBounds(258, valueFilter.size() * 27 + 117, 91, 23);
+				btnApplyFilter.setBounds(359, valueFilter.size() * 27 + 117, 89, 23);
+				
 				// Add filter row
 				fieldFilter.add(new JComboBox<>(parent.getColumnNames()));
-				fieldFilter.get(fieldFilter.size() - 1).setBounds(71, fieldFilter.size() * 27 + 26, 103, 22);
+				fieldFilter.get(fieldFilter.size() - 1).setBounds(116, fieldFilter.size() * 27 + 40, 139, 22);
 				searchPanel.add(fieldFilter.get(fieldFilter.size() - 1));
 				
 				comparisonTypes.add(new JComboBox<>(comparisonStrings));
-				comparisonTypes.get(comparisonTypes.size() - 1).setBounds(186, comparisonTypes.size() * 27 + 26, 51, 22);
+				comparisonTypes.get(comparisonTypes.size() - 1).setBounds(265, comparisonTypes.size() * 27 + 40, 53, 22);
 				searchPanel.add(comparisonTypes.get(comparisonTypes.size() - 1));
 				
 				valueFilter.add(new JTextField());
-				valueFilter.get(valueFilter.size() - 1).setBounds(249, valueFilter.size() * 27 + 26, 146, 22);
+				valueFilter.get(valueFilter.size() - 1).setBounds(328, valueFilter.size() * 27 + 41, 162, 20);
 				searchPanel.add(valueFilter.get(valueFilter.size() - 1));
 				
 				// Set preferred size of panel
-				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 60));
+				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 160));
 				searchPanel.revalidate();
 				searchPanel.repaint();
 			}
 		});
+		searchPanel.add(btnAddFilter);
+		
+		btnRemoveFilter.setBounds(258, 140, 91, 23);
+		btnRemoveFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				// Remove row
+				searchPanel.remove(fieldFilter.get(fieldFilter.size() - 1));
+				fieldFilter.remove(fieldFilter.size() - 1);
+				
+				searchPanel.remove(valueFilter.get(valueFilter.size() - 1));
+				valueFilter.remove(valueFilter.size() - 1);
+				
+				searchPanel.remove(comparisonTypes.get(comparisonTypes.size() - 1));
+				comparisonTypes.remove(comparisonTypes.size() - 1);
+				
+				// Move buttons up
+				btnAddFilter.setBounds(159, valueFilter.size() * 27 + 117, 91, 23);
+				btnRemoveFilter.setBounds(258, valueFilter.size() * 27 + 117, 91, 23);
+				btnApplyFilter.setBounds(359, valueFilter.size() * 27 + 117, 89, 23);
+				
+				// Repaint
+				searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 160));
+				searchPanel.revalidate();
+				searchPanel.repaint();
+			}
+		});
+		searchPanel.add(btnRemoveFilter);
+		
+		btnApplyFilter.setBounds(359, 140, 89, 23);
 		btnApplyFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -342,39 +385,11 @@ public class ClientGUI extends JFrame
 					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
-				try
-				{
-					parent.applySearch(values, comps, fields);
-				}
-				catch (NumberFormatException ex)
-				{
-					JOptionPane.showMessageDialog(thisFrame, "Error parsing numbers\n" + ex.getMessage());
-				}
+				
+				parent.applySearch(values, comps, fields);
 			}
 		});
-		btnRemoveFilter.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				if (valueFilter.size() > 0)
-				{
-					// Remove row
-					searchPanel.remove(fieldFilter.get(fieldFilter.size() - 1));
-					fieldFilter.remove(fieldFilter.size() - 1);
-					
-					searchPanel.remove(valueFilter.get(valueFilter.size() - 1));
-					valueFilter.remove(valueFilter.size() - 1);
-					
-					searchPanel.remove(comparisonTypes.get(comparisonTypes.size() - 1));
-					comparisonTypes.remove(comparisonTypes.size() - 1);
-					
-					// Repaint
-					searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 60));
-					searchPanel.revalidate();
-					searchPanel.repaint();
-				}
-			}
-		});
+		searchPanel.add(btnApplyFilter);
 	}
 	
 	public void setDatabases(String[] list)
@@ -414,30 +429,23 @@ public class ClientGUI extends JFrame
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
+		if(fields != null)
 		for (String s : fields)
 			fieldsCB.addItem(s);
+	}
+	
+	public void removeColumn(int colIn)
+	{
+		//fieldsCB.remove(colIn);
 	}
 	
 	public void setTable(Entry[] data, String[] columns)
 	{
 		tableModel.setRowCount(0);
 		tableModel.setColumnIdentifiers(columns);
-		tableKeys = new int[data.length];
-		for (int i = 0; i < data.length; i++)
-		{
-			tableModel.addRow(data[i].getData());
-			tableKeys[i] = data[i].getKey();
+		if(data != null) {
+			for (Entry e : data)
+			tableModel.addRow(e.getData());
 		}
-	}
-	
-	public Entry getSelectedEntry()
-	{
-		int row = table.getSelectedRow();
-		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
-		for (int i = 0; i < data.length; i++)
-		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
-		}
-		return new Entry(tableKeys[row], data);
 	}
 }
