@@ -198,6 +198,11 @@ public class ClientGUI extends JFrame
 		
 		JButton btnCreateDatabase = new JButton("Create Database");
 		btnCreateDatabase.setBounds(67, 307, 97, 25);
+		btnCreateDatabase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parent.createDatabase();
+			}
+		});
 		adminPanel.add(btnCreateDatabase);
 		
 		JButton btnDeleteDatabase = new JButton("Delete Databasee");
@@ -483,6 +488,7 @@ public class ClientGUI extends JFrame
 			tableModel.addRow(data[i].getData());
 			tableKeys[i] = data[i].getKey();
 		}
+
 	}
 	
 	public Entry getSelectedEntry()
@@ -495,4 +501,6 @@ public class ClientGUI extends JFrame
 		}
 		return new Entry(tableKeys[row], data);
 	}
+
+	
 }

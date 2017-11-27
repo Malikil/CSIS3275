@@ -1,9 +1,12 @@
 package Client;
 
+import java.awt.HeadlessException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+
+import javax.swing.JOptionPane;
 
 import Server.AVLTree;
 import Server.Column;
@@ -109,17 +112,12 @@ public class ClientMain implements Client
 						currentTable.removeEntry(received.getKey());
 						setTable(currentTable);
 						break;
-					case DELETE_TABLE:
-						currentTable = null;
-						setTable(null);
-						break;
 					case EDIT_ENTRY:
 						currentTable.editEntry(received.getEntry());
 						setTable(currentTable);
 						break;
 					case GET_ACTUAL_TABLE:
-						currentTable = received.getTable();
-						setTable(currentTable);
+						setTable(received.getTable());
 						break;
 					case GET_TABLE_NAMES:
 						gui.setTableList(received.getTableNames());
@@ -210,10 +208,19 @@ public class ClientMain implements Client
 	
 	public void setTable(Table newTable)
 	{
-		currentTable = newTable;
-		String[] colNames =  currentTable.getColumnNames();
-		gui.setFieldList(colNames);
-		gui.setTable(currentTable.asArray(),colNames);
+		if(newTable == null)
+		{
+			currentTable = null;
+			gui.setFieldList(null);
+			gui.setTable(null,null);
+		}
+		else
+		{
+			currentTable = newTable;
+			String[] colNames =  currentTable.getColumnNames();
+			gui.setFieldList(colNames);
+			gui.setTable(currentTable.asArray(),colNames);
+		}
 	}
 
 	@Override
@@ -327,5 +334,13 @@ public class ClientMain implements Client
 		}
 		// Display table
 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
+	}
+
+	@Override
+	public void createDatabase() {	
+		try {
+			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database")));
+		} catch (HeadlessException | IOException e) {
+		}
 	}
 }
