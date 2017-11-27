@@ -302,7 +302,7 @@ public class ServerMain implements Server
 	{
 		Table newTable = new Table();
 		saveTable(databaseName, tableName, newTable);
-		sendObjectToAll(new Message(Command.ADD_TABLE, newTable),databaseName,tableName);
+		sendObjectToAll(new Message(Command.ADD_TABLE, tableName),databaseName,tableName);
 	}
 	
 	@Override
@@ -337,7 +337,7 @@ public class ServerMain implements Server
 	{
 		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
 		table.delete();
-		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
+		sendObjectToAll(new Message(Command.GET_TABLE_NAMES,getTableList(databaseName)),databaseName,tableName);
 	}
 
 	@Override
