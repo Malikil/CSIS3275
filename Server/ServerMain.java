@@ -21,12 +21,15 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private ArrayList<ClientHandler> clientList;
+	private ServerGUI gui;
 	private int entryKey;
-	//private int userKey; TODO
+	private DefinitelyNotArrayList<String> userList;
 	public ServerMain()
 	{
 		clientList = new ArrayList<>();
 		entryKey = this.getKey();
+		gui = new ServerGUI(this);
+		populateUserList();
 	}	
 	
 	public static void main(String[] args)
@@ -48,8 +51,7 @@ public class ServerMain implements Server
 		//server.getTable("db1", "table1").getColumns().
 		//FORTESTING TODO
 		*/
-		
-		new Thread(new ServerGUI(server)).start();
+
 		ServerSocket socket = null;
 		try
 		{
@@ -62,8 +64,6 @@ public class ServerMain implements Server
 		}
 		catch (IOException ex)
 		{
-			// Error opening socket
-			// Error accepting connection
 		}
 		finally
 		{
@@ -87,15 +87,82 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
+	public String[] getUserList()
+	{
+		return userList.toArray(new String[userList.size()]);
+	}
+	
+	public void populateUserList()
+	{
+		DefinitelyNotArrayList<String> newUserList = new DefinitelyNotArrayList<String>();
+		File file = new File("users.txt");
+		if(!file.exists())
+		{
+			try 
+			{
+				file.createNewFile();
+				System.out.println("new user file created");
+			} 
+			catch (IOException e) 
+			{
+			}
+		}
+		try 
+		{
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String nextLine = null;
+			while((nextLine = reader.readLine())!=null)
+			{
+				String[] validList = nextLine.split(",");
+				newUserList.add(validList[0]);
+			}
+			reader.close();
+			userList = newUserList;
+		} 
+		catch (FileNotFoundException e) 
+		{
+		} 
+		catch (IOException e) 
+		{	
+		}
+	}
+	
 	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
 			if(client.getCurrentDatabaseName().equals(database))
 				if(message.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(table))
 					client.sendObject(message);
+		/*if(gui.getCurrentDatabase().equals(database)) TODO
+			if(gui.getTableName().equals(table))
+			{
+				switch(message.getCommandType())
+				{
+				case ADD_COLUMNS:
+					
+					break;	
+				case ADD_ENTRY:
+					break;
+				case ADD_TABLE:
+					break;
+				case DELETE_COLUMN:
+					break;
+				case DELETE_ENTRY:
+					break;
+				case DELETE_TABLE:
+					break;
+				case EDIT_ENTRY:
+					break;
+				}
+			*/
 	}
-
 	
+	public void sendDeleteUser(Message message, String username)
+	{
+		for (ClientHandler client : clientList)
+			if(client.getUsername().equals(username))
+					client.sendObject(message);
+	}
 	
 	@Override
 	public String[] getUserDatabases(String user)
@@ -140,7 +207,7 @@ public class ServerMain implements Server
 	@Override
 	public String[] getTableList(String database) 
 	{
-		File db = new File(database);
+		File db = new File("databases\\" + database);
 		if (db.exists())
 		{
 			String[] fileList = db.list();
@@ -159,7 +226,7 @@ public class ServerMain implements Server
 		FileInputStream file = null;
 		try 
 		{
-			file = new FileInputStream(new File(dbname + "\\"+ tableName +".eric"));
+			file = new FileInputStream(new File("databases\\" + dbname + "\\"+ tableName +".eric"));
 		} 
 		catch (FileNotFoundException e1) 
 		{
@@ -182,7 +249,7 @@ public class ServerMain implements Server
 	
 	public void saveTable(String dbName, String tableName, Table table)
 	{
-		File file = new File(dbName+"\\"+tableName+".eric");
+		File file = new File("databases\\" + dbName+"\\"+tableName+".eric");
 		if(!file.exists())
 		{
 			try 
@@ -214,7 +281,7 @@ public class ServerMain implements Server
 	{
 		AddDatabaseGUI adg = new AddDatabaseGUI();
 		adg.setVisible(true);
-		File dir = new File(adg.getDatabaseName());
+		File dir = new File("databases\\" + adg.getDatabaseName());
 		if(!dir.isDirectory())
 		{
 			dir.mkdir();
@@ -281,7 +348,11 @@ public class ServerMain implements Server
 				if(validList[0]!=null && !validList[0].isEmpty())
 				{
 					if(username.toLowerCase().compareTo(validList[0])==0)
+					{
+						sendDeleteUser(new Message(Command.INCORRECT_USER,
+						"Your user profile has been deleted. Please request a new profile from an Admin."), username);
 						continue;
+					}
 					else
 					{
 						if(lineCount!=0)
@@ -589,20 +660,16 @@ public class ServerMain implements Server
 	@Override
 	public void deleteTable(String databaseName, String tableName)
 	{
-		File table = new File(databaseName+"\\"+tableName+".eric");
+		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
 		table.delete();
 		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
 	}
-
-	
-
-	}
 	
 	/*
-	// 	TODO //THIS USES USER AND CONFIG CLASSES
+	//TODO //THIS USES USER AND CONFIG CLASSES
 	public void saveConfig(int entryKey, int userKey, User[] userList)
 	{
-		File file = new File("config.albert");
+		File file = new File("config.ini");
 		if(!file.exists())
 		{
 			try 
@@ -630,6 +697,6 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{
 		}
-	} */
-
+	}*/
+}
 
