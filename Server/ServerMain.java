@@ -17,7 +17,7 @@ import java.io.BufferedWriter;
 
 public class ServerMain implements Server
 {
-	private DefinitelyNotArrayList<ClientHandler> clientList = null;
+	private DefinitelyNotArrayList<ClientHandler> clientList;
 	private int entryKey;
 	private AVLTree<User> userList;
 	public ServerMain()
@@ -102,7 +102,7 @@ public class ServerMain implements Server
 		File file = new File("config.albert");
 		if(!file.exists())
 		{
-			userList = new AVLTree<User>(new User("admin", "New Admin", new String[0], true));
+			userList = new AVLTree<User>(new User("admin", "NewAdmin", new String[0], true));
 			entryKey = 0;
 			saveConfig();
 		}
@@ -336,6 +336,11 @@ public class ServerMain implements Server
 		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
 		table.delete();
 		sendObjectToAll(new Message(Command.GET_TABLE_NAMES,getTableList(databaseName)),databaseName,tableName);
+	}
+	
+	public User getUser(String username)
+	{
+		return userList.get(new User(username));
 	}
 
 	@Override

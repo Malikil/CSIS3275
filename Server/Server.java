@@ -15,4 +15,5 @@ public interface Server
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase(String databaseName);
 	public User[] getUserList();
+	public User getUser(String username);
 }
