@@ -47,7 +47,6 @@ public class ClientGUI extends JFrame
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
 	private JTable table;
@@ -384,8 +383,14 @@ public class ClientGUI extends JFrame
 					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
-				
-				parent.applySearch(values, comps, fields);
+				try
+				{
+					parent.applySearch(values, comps, fields);
+				}
+				catch (NumberFormatException ex)
+				{
+					JOptionPane.showMessageDialog(thisFrame, "Error parsing numbers\n" + ex.getMessage());
+				}
 			}
 		});
 		searchPanel.add(btnApplyFilter);
@@ -438,5 +443,16 @@ public class ClientGUI extends JFrame
 		tableModel.setColumnIdentifiers(columns);
 		for (Entry e : data)
 			tableModel.addRow(e.getData());
+	}
+	
+	public Entry getSelectedEntry()
+	{
+		int row = table.getSelectedRow();
+		Comparable[] data = new Comparable[table.getModel().getColumnCount() - 1];
+		for (int i = 0; i < data.length; i++)
+		{
+			data[i] = (Comparable)table.getModel().getValueAt(row, i + 1); // TODO Unchecked
+		}
+		return new Entry(Integer.parseInt((String)table.getModel().getValueAt(row, 0)), data); // TODO Ew
 	}
 }
