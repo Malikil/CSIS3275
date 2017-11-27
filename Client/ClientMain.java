@@ -141,12 +141,15 @@ public class ClientMain implements Client
 		gui.setDatabases(list);
 	}
 	
-  @Override
-	public void createTable(Table table)
+	@Override
+	public void createTable()
 	{
+	  	AddColumnGUI tableGUI = new AddColumnGUI(true); //true for create table, false for create column
+	  	tableGUI.setVisible(true);
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_TABLE, table));
+			objOut.writeObject(new Message(Command.ADD_TABLE, tableGUI.getTableName()));
+			objOut.writeObject(new Message(Command.ADD_COLUMNS, tableGUI.getColumns()));
 		}
 		catch (IOException ex)
 		{

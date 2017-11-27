@@ -86,13 +86,16 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
-	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
+	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
-			if(client.getCurrentTableName().equals(activeTable) && client.getCurrentDatabaseName().equals(activeDatabase))
-				client.sendObject(messageToSend);
+			if(client.getCurrentDatabaseName().equals(database))
+				if(message.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(table))
+					client.sendObject(message);
 	}
 
+	
+	
 	@Override
 	public String[] getUserDatabases(String user)
 	{
@@ -175,7 +178,7 @@ public class ServerMain implements Server
     
 		return tableReq;	
 	}
-
+	
 	public void saveTable(String dbName, String tableName, Table table)
 	{
 		File file = new File(dbName+"\\"+tableName+".eric");
@@ -205,10 +208,9 @@ public class ServerMain implements Server
 		}
 	}
 	
-	@Override
+  @Override
 	public void createDatabase() //String[] userList)
 	{
-		
 		AddDatabaseGUI adg = new AddDatabaseGUI();
 		adg.setVisible(true);
 		File dir = new File(adg.getDatabaseName());
@@ -335,10 +337,12 @@ public class ServerMain implements Server
 		}
 	}
 
+	/* TODO
 	public void changeDatabaseUsers(String databaseName, String usernames[])
 	{
 		
 	}
+	*/
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
