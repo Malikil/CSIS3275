@@ -6,7 +6,7 @@ public interface Client
 {
 	public void setDatabaseList(String[] list);
 	public void getTableNames(String database);
-	public void createTable(Table table);
+	public void createTable();
 	public void deleteCurrentTable();
 	public void getTable(String tableName);
 	public void addColumn();

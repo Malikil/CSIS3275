@@ -111,6 +111,7 @@ public class ClientGUI extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
+				parent.createTable();
 			}	
 		});
 		
