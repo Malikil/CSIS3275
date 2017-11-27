@@ -114,6 +114,9 @@ public class ClientHandler implements Runnable
 					currentDatabaseName  = received.getDatabase();
 					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
+				case DELETE_DATABASE:
+					parent.deleteDatabase(received.getDatabase());
+					currentDatabaseName = null;
 				default:
 					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
 					break;
