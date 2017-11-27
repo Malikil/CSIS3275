@@ -343,9 +343,11 @@ public class ClientMain implements Client
 
 	@Override
 	public void createDatabase() {	
-		try {
+		try
+		{
 			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database")));
-		} catch (HeadlessException | IOException e) {
 		}
+		catch (HeadlessException | IOException e)
+		{	}
 	}
 }

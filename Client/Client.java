@@ -17,4 +17,5 @@ public interface Client
 	public String[] getColumnNames();
 	public void applySearch(String[] values, String[] comparisons, int[] fields);
 	public void createTable();
+	public void createDatabase();
 }
