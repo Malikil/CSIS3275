@@ -343,4 +343,10 @@ public class ServerMain implements Server
 	{
 		// TODO
 	}
+	/* TODO use for Admins
+	@Override
+	public String[] getAllDatabases()
+	{
+		return new File("databases").list();
+	}*/
 }
