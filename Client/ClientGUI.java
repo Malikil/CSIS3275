@@ -41,6 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.ScrollPaneConstants;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import javax.swing.JList;
 
 public class ClientGUI extends JFrame
 {
@@ -163,6 +164,46 @@ public class ClientGUI extends JFrame
 		
 		tableModel = new DefaultTableModel();
 		
+		JPanel adminPanel = new JPanel();
+		searchTab.addTab("Admin", null, adminPanel, null);
+		adminPanel.setLayout(null);
+		
+		JButton selectUserButton = new JButton("Select User");
+		selectUserButton.setBounds(0, 0, 107, 23);
+		adminPanel.add(selectUserButton);
+		
+		JComboBox<String> selectUserDropdown = new JComboBox<String>();
+		selectUserDropdown.setBounds(0, 0, 338, 20);
+		adminPanel.add(selectUserDropdown);
+		
+		JLabel userlistLabel = new JLabel("Userlist");
+		userlistLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		userlistLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		userlistLabel.setBounds(0, 0, 80, 14);
+		adminPanel.add(userlistLabel);
+		
+		JButton addUserButton = new JButton("Add User");
+		addUserButton.setBounds(0, 0, 107, 23);
+		adminPanel.add(addUserButton);
+		
+		JButton deleteUserButton = new JButton("Delete User");
+		deleteUserButton.setBounds(0, 0, 107, 23);
+		adminPanel.add(deleteUserButton);
+		
+		JList databaseList = new JList();
+		JScrollPane uerListScroller = new JScrollPane(databaseList);
+		uerListScroller.setBorder(new LineBorder(new Color(0, 0, 0)));
+		uerListScroller.setBounds(67, 41, 338, 253);
+		adminPanel.add(uerListScroller);
+		
+		JButton btnCreateDatabase = new JButton("Create Database");
+		btnCreateDatabase.setBounds(67, 307, 97, 25);
+		adminPanel.add(btnCreateDatabase);
+		
+		JButton btnDeleteDatabase = new JButton("Delete Databasee");
+		btnDeleteDatabase.setBounds(241, 307, 97, 25);
+		adminPanel.add(btnDeleteDatabase);
+		
 		tablesPanel = new JPanel();
 		tablesPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		searchTab.addTab("Tables", null, tablesPanel, null);
@@ -260,11 +301,11 @@ public class ClientGUI extends JFrame
 		
 		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
 		comparisonTypes = new DefinitelyNotArrayList<>();
-		comparisonTypes.add(new JComboBox<>(comparisonStrings));
+		comparisonTypes.add(new JComboBox/*<>*/(comparisonStrings));
 		comparisonTypes.get(0).setBounds(186, 53, 51, 22);
 		
 		fieldFilter = new DefinitelyNotArrayList<>();
-		fieldFilter.add(new JComboBox<String>(parent.getColumnNames()));
+		fieldFilter.add(new JComboBox/*<>*/(parent.getColumnNames()));
 		fieldFilter.get(0).setBounds(71, 53, 103, 22);
 		
 		JPanel filterButtonPanel = new JPanel();
