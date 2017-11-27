@@ -31,7 +31,7 @@ public class ServerMain implements Server
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		
-		
+		/*
 		//FORTESTING TODO
 		server.createDatabase("db1");
 		String[] testDBs = new String[1];
@@ -44,7 +44,7 @@ public class ServerMain implements Server
 		server.addColumns("db1", "table1", testCols);
 		//server.getTable("db1", "table1").getColumns().
 		//FORTESTING TODO
-		
+		*/
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -331,10 +331,12 @@ public class ServerMain implements Server
 		}
 	}
 
+	/* TODO
 	public void changeDatabaseUsers(String databaseName, String usernames[])
 	{
 		
 	}
+	*/
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
