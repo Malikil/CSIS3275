@@ -127,6 +127,9 @@ public class ClientMain implements Client
 					case GET_TABLE_NAMES:
 						gui.setTableList(received.getTableNames());
 						break;
+					case DATABASE_LIST:
+						setDatabaseList(received.getDatabaseList());
+						break;
 					default:
 						throw new IOException("Unexpected server command");
 					}

@@ -30,20 +30,6 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
-		
-		/*
-		//FORTESTING TODO
-		server.saveDatabase("db1");
-		String[] testDBs = new String[1];
-		testDBs[0]= "db1";
-		server.addTable("db1", "table1");
-		Column[] testCols = new Column[1];
-		Column testCol = new Column("col1=string",0);
-		testCols[0] = testCol;
-		server.addColumns("db1", "table1", testCols);
-		//server.getTable("db1", "table1").getColumns().
-		//FORTESTING TODO
-		*/
 
 		ServerSocket socket = null;
 		try
@@ -142,11 +128,26 @@ public class ServerMain implements Server
 	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
+		{
 			if(client.getCurrentDatabaseName().equals(database))
 				if(message.getCommandType()==Command.DELETE_TABLE 
 				|| message.getCommandType()==Command.ADD_TABLE
 				|| client.getCurrentTableName().equals(table))
 					client.sendObject(message);
+				//else if (client.getUser().compareTo)
+		}
+		
+	}
+	
+	private void sendObjecttoUser(String username, Message message) {
+		for (ClientHandler client : clientList)
+		{
+			if(client.getUsername().equals(username))
+			{
+				client.sendObject(message);
+			}
+		}
+		
 	}
 	
 	public void sendDeleteUser(Message message, String username)
@@ -231,48 +232,6 @@ public class ServerMain implements Server
 		{
 		}
 	}
-	
-	public void deleteDatabase(String databaseName)
-	{
-		File dir = new File("databases\\" + databaseName);
-		//TODO NEED TO DELETE ALL TABLES INSIDE BEFORE .DELETE()
-		
-		dir.delete();
-		User[] users = userList.toArray(new User[userList.size()]);
-		for (User u : users)
-			u.deleteDatabase(databaseName);
-	}
-	
-	public void addUser(String username, String password, String[] databaseList)
-	{
-		userList.add(new User(username, password, databaseList));
-		saveConfig();
-	}
-	
-	
-	public void deleteUser(String username)
-	{
-		userList.delete(new User(username));
-		saveConfig();
-	}
-	
-	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,databases);
-		userList.add(newUser);
-		saveConfig();
-	}
-	
-	public void changePassword(String username, String newPass)
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,newPass);
-		userList.add(newUser);
-		saveConfig();
-	}
 		
 	@Override
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
@@ -341,6 +300,93 @@ public class ServerMain implements Server
 	@Override
 	public void createDatabase(String databaseName)
 	{
-		// TODO
+		File db = new File("databases\\" + databaseName);
+		if (!db.exists())
+		{
+			db.mkdir();
+			User[] users = userList.toArray(new User[userList.size()]);
+			String[] newDB = {databaseName};
+			for (User u : users)
+			{
+				if(u.isAdmin())
+					u.addDatabases(newDB);
+			}
+				
+		}
+		else
+		{
+			// TODO Message if fail
+		}
 	}
+	
+	@Override
+	public boolean deleteDatabase(String databaseName)
+	{
+		File dir = new File("databases\\" + databaseName);
+		if (dir.list().length == 0)
+		{
+			dir.delete();
+			User[] users = userList.toArray(new User[userList.size()]);
+			for (User u : users)
+				if(u.deleteDatabase(databaseName))
+				{
+					sendObjecttoUser(u.getUsername(), new Message(Command.DATABASE_LIST, u.getDatabases()));
+				}
+			return true;
+		}
+		else return false;
+	}
+	
+
+
+	@Override
+	public void createUser(User user)
+	{
+		userList.add(user);
+		saveConfig();
+	}
+
+	@Override
+	public void editUser(User user) {
+		if(userList.delete(user))
+			userList.add(user);
+		
+		
+		User[] users = userList.toArray(new User[userList.size()]);
+		for (User u : users)
+			if(u.isAdmin())
+			{
+				sendObjecttoUser(u.getUsername(), new Message(Command.DATABASE_LIST, userList));
+			}
+	}
+	
+	
+	@Override
+	public void deleteUser(String username)
+	{
+		userList.delete(new User(username));
+		for (ClientHandler c : clientList)
+			if (c.getUsername().equals(username))
+				c.sendObject(new Message(Command.DELETE_USER, null));
+		saveConfig();
+	}
+	
+	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,databases);
+		userList.add(newUser);
+		saveConfig();
+	}
+	
+	public void changePassword(String username, String newPass)
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,newPass);
+		userList.add(newUser);
+		saveConfig();
+	}
+	
 }
