@@ -1,6 +1,8 @@
 package Server;
 
-public class User implements Comparable<User>
+import java.io.Serializable;
+
+public class User implements Comparable<User>, Serializable
 {
 	private String username;
 	private String password;

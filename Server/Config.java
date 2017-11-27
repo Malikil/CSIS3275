@@ -1,6 +1,9 @@
 package Server;
 
-public class Config {
+import java.io.Serializable;
+
+public class Config implements Serializable
+{
 	private AVLTree<User> userList;
 	private int entryKey;
 	
