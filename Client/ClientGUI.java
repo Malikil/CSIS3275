@@ -47,6 +47,7 @@ public class ClientGUI extends JFrame
 	/**
 	 * 
 	 */
+	private static final long serialVersionUID = -4439578214704065287L;
 	private Client parent;
 	private DefaultTableModel tableModel;
 	private JTable table;
@@ -59,7 +60,6 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
-	private int[] tableKeys;
 
 	/**
 	 * Create the application.
@@ -235,8 +235,7 @@ public class ClientGUI extends JFrame
 					}
 					else
 					{
-						int entryKey = Integer.parseInt((String) table.getModel().getValueAt(entryRow, 0));
-						parent.deleteEntry(entryKey);
+						parent.deleteEntry(entryRow);
 					}
 				}
 			});
@@ -385,14 +384,8 @@ public class ClientGUI extends JFrame
 					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
-				try
-				{
-					parent.applySearch(values, comps, fields);
-				}
-				catch (NumberFormatException ex)
-				{
-					JOptionPane.showMessageDialog(thisFrame, "Error parsing numbers\n" + ex.getMessage());
-				}
+				
+				parent.applySearch(values, comps, fields);
 			}
 		});
 		searchPanel.add(btnApplyFilter);
@@ -435,30 +428,23 @@ public class ClientGUI extends JFrame
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
+		if(fields != null)
 		for (String s : fields)
 			fieldsCB.addItem(s);
+	}
+	
+	public void removeColumn(int colIn)
+	{
+		//fieldsCB.remove(colIn);
 	}
 	
 	public void setTable(Entry[] data, String[] columns)
 	{
 		tableModel.setRowCount(0);
 		tableModel.setColumnIdentifiers(columns);
-		tableKeys = new int[data.length];
-		for (int i = 0; i < data.length; i++)
-		{
-			tableModel.addRow(data[i].getData());
-			tableKeys[i] = data[i].getKey();
+		if(data != null) {
+			for (Entry e : data)
+			tableModel.addRow(e.getData());
 		}
-	}
-	
-	public Entry getSelectedEntry()
-	{
-		int row = table.getSelectedRow();
-		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
-		for (int i = 0; i < data.length; i++)
-		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
-		}
-		return new Entry(tableKeys[row], data);
 	}
 }

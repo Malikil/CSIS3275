@@ -10,9 +10,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-
-import Client.AddColumnGUI;
-
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
@@ -36,7 +33,7 @@ public class ServerMain implements Server
 		
 		/*
 		//FORTESTING TODO
-		server.createDatabase("db1");
+		server.saveDatabase("db1");
 		String[] testDBs = new String[1];
 		testDBs[0]= "db1";
 		server.addUser("a", "a", testDBs);
@@ -87,16 +84,15 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
-	public void sendObjectToAll(Message message, String database, String table)
+	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
 	{
-		for (ClientHandler client : clientList)
-			if(client.getCurrentDatabaseName().equals(database))
-				if(message.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(table))
-					client.sendObject(message);
+		
+			for (ClientHandler client : clientList)
+				if(client.getCurrentDatabaseName().equals(activeDatabase))
+					if(messageToSend.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(activeTable))
+						client.sendObject(messageToSend);
 	}
 
-	
-	
 	@Override
 	public String[] getUserDatabases(String user)
 	{
@@ -179,7 +175,7 @@ public class ServerMain implements Server
     
 		return tableReq;	
 	}
-	
+
 	public void saveTable(String dbName, String tableName, Table table)
 	{
 		File file = new File(dbName+"\\"+tableName+".eric");
@@ -209,21 +205,23 @@ public class ServerMain implements Server
 		}
 	}
 	
-	@Override
-	public void createDatabase() //String[] userList)
+	public void saveDatabase(String databaseName) //String[] userList)
 	{
-		AddDatabaseGUI adg = new AddDatabaseGUI();
-		adg.setVisible(true);
-		File dir = new File(adg.getDatabaseName());
+		File dir = new File(databaseName);
 		if(!dir.isDirectory())
 		{
 			dir.mkdir();
 			return;
 		}
-		
 		//TODO //changeUserDatabases();
 	}
-
+	
+	public void deleteDatabase(String databaseName)
+	{
+		File dir = new File(databaseName);
+		dir.delete();
+	}
+	
 	public void addUser(String username, String password, String[] databaseList)
 	{
 		File file = new File("users.txt");
@@ -338,12 +336,10 @@ public class ServerMain implements Server
 		}
 	}
 
-	/* TODO
 	public void changeDatabaseUsers(String databaseName, String usernames[])
 	{
 		
 	}
-	*/
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
@@ -552,8 +548,6 @@ public class ServerMain implements Server
 	@Override
 	public void addTable(String databaseName, String tableName)
 	{
-		AddColumnGUI ac = new AddColumnGUI(true);
-		ac.setVisible(true);
 		Table newTable = new Table();
 		saveTable(databaseName, tableName, newTable);
 		sendObjectToAll(new Message(Command.ADD_TABLE, newTable),databaseName,tableName);
@@ -593,10 +587,6 @@ public class ServerMain implements Server
 		table.delete();
 		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
 	}
-
-	
-
-	}
 	
 	/*
 	// 	TODO //THIS USES USER AND CONFIG CLASSES
@@ -631,5 +621,4 @@ public class ServerMain implements Server
 		{
 		}
 	} */
-
-
+}
