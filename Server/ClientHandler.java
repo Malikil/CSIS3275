@@ -116,6 +116,7 @@ public class ClientHandler implements Runnable
 				case ADD_TABLE:
 					currentTableName = received.getTableName();
 					parent.addTable(currentDatabaseName,currentTableName);
+					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName)));
 					break;
 				case DELETE_COLUMN:
 					parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());

@@ -21,9 +21,10 @@ public class EditEntryGUI extends JDialog
 	
 	private Entry edit;
 	private JTextField[] newData;
-	
+	private Comparable[] data;
 	public JTextField[] getData() { return newData; }
 	public Entry getEntry() { return edit; }
+	public Comparable[] getNewEntry() { return data;}
 
 	/**
 	 * Create the application.
@@ -99,6 +100,13 @@ public class EditEntryGUI extends JDialog
 				{
 					for (int i = 0; i < newData.length; i++)
 						edit.setfield(i, newData[i].getText());
+				}
+				else
+				{
+					data = new Comparable[newData.length];
+					for (int i = 0; i < newData.length; i++)
+						data[i] = newData[i].getText();
+					
 				}
 				thisDialog.dispose();
 			}

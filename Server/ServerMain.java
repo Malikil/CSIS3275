@@ -86,9 +86,11 @@ public class ServerMain implements Server
 	
 	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
 	{
-		for (ClientHandler client : clientList)
-			if(client.getCurrentTableName().equals(activeTable) && client.getCurrentDatabaseName().equals(activeDatabase))
-				client.sendObject(messageToSend);
+		
+			for (ClientHandler client : clientList)
+				if(client.getCurrentDatabaseName().equals(activeDatabase))
+					if(messageToSend.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(activeTable))
+						client.sendObject(messageToSend);
 	}
 
 	@Override

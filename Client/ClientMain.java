@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Server.Column;
 import Server.Command;
 import Server.Entry;
 import Server.Message;
@@ -89,18 +90,34 @@ public class ClientMain implements Client
 					switch (received.getCommandType())
 					{
 					case ADD_COLUMNS:
+						Column[] columnList = received.getColumns();
+						for(int i = 0 ; i < columnList.length ; i++)
+							currentTable.addColumn(columnList[i]);
+						setTable(currentTable);
 						break;
 					case ADD_ENTRY:
+						 currentTable.addEntry(received.getEntry());
+						 setTable(currentTable);
 						break;
 					case ADD_TABLE:
+						currentTable = received.getTable();
+						setTable(currentTable);
 						break;
 					case DELETE_COLUMN:
+						currentTable.removeColumn(received.getColumnIndex());
+						setTable(currentTable);
 						break;
 					case DELETE_ENTRY:
+						currentTable.removeEntry(received.getEntry().getKey());
+						setTable(currentTable);
 						break;
 					case DELETE_TABLE:
+						currentTable = null;
+						setTable(null);
 						break;
 					case EDIT_ENTRY:
+						currentTable.editEntry(received.getEntry());
+						setTable(currentTable);
 						break;
 					case GET_ACTUAL_TABLE:
 						currentTable = received.getTable();
@@ -140,16 +157,32 @@ public class ClientMain implements Client
 	}
 	
   @Override
-	public void createTable(Table table)
+	public void createTable()
 	{
+	  
+	  AddColumnGUI newTable = new AddColumnGUI(true);
+	  newTable.setVisible(true);
+	  String tableName = newTable.getTableName();
+	  Column[] addedColumns = newTable.getColumns();
+	  
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_TABLE, table));
+			objOut.writeObject(new Message(Command.ADD_TABLE, tableName));
 		}
 		catch (IOException ex)
 		{
-			// TODO Catch block
 		}
+		
+
+			try
+			{
+				objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
+			}
+			catch (IOException ex)
+			{
+			}
+
+
 	}
 	
 	@Override
@@ -161,7 +194,6 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			// TODO Catch block
 		}
 	}
 
@@ -196,11 +228,20 @@ public class ClientMain implements Client
 	@Override
 	public void setTable(Table newTable)
 	{
-		currentTable = newTable;
-		filteredTable = newTable.asArray();
-		String[] colNames =  currentTable.getColumnNames();
-		gui.setFieldList(colNames);
-		gui.setTable(currentTable.asArray(),colNames);
+		if(newTable == null)
+		{
+			currentTable = null;
+			gui.setFieldList(null);
+			gui.setTable(null,null);
+		}
+		else
+		{
+			currentTable = newTable;
+			filteredTable = newTable.asArray();
+			String[] colNames =  currentTable.getColumnNames();
+			gui.setFieldList(colNames);
+			gui.setTable(currentTable.asArray(),colNames);
+		}
 	}
 
 	@Override
@@ -220,20 +261,45 @@ public class ClientMain implements Client
 	public void createEntry(String[] headers) { 
 		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
+		Comparable[] newEntry = addEnt.getNewEntry();
+		try
+		{
+			objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry)); 
+		}
+		catch (IOException e)
+		{
+			// TODO Catch block
+		} 
+		
 	}
 	
 	@Override
 	public void deleteEntry(int primaryKey)
 	{
-		try {
-			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
-		} catch (IOException e) {
-		}
+				try
+				{
+					objOut.writeObject(new Message(Command.DELETE_ENTRY, filteredTable[primaryKey]));
+				}
+				catch (IOException ex)
+				{
+					
+				}
+		
 	}
 
 	@Override
 	public void addColumn() 
 	{
+		AddColumnGUI newCols = new AddColumnGUI(false);
+		newCols.setVisible(true);
+		Column[] addedColumns = newCols.getColumns();
+		try
+		{
+			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
+		}
+		catch (IOException ex)
+		{
+		}  		
 	}
 
 	@Override

@@ -60,7 +60,6 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
-	private int[] tableKeys;
 
 	/**
 	 * Create the application.
@@ -112,6 +111,7 @@ public class ClientGUI extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
+				parent.createTable();
 			}	
 		});
 		
@@ -235,8 +235,7 @@ public class ClientGUI extends JFrame
 					}
 					else
 					{
-						int entryKey = Integer.parseInt((String) table.getModel().getValueAt(entryRow, 0));
-						parent.deleteEntry(entryKey);
+						parent.deleteEntry(entryRow);
 					}
 				}
 			});
@@ -429,19 +428,23 @@ public class ClientGUI extends JFrame
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
+		if(fields != null)
 		for (String s : fields)
 			fieldsCB.addItem(s);
+	}
+	
+	public void removeColumn(int colIn)
+	{
+		//fieldsCB.remove(colIn);
 	}
 	
 	public void setTable(Entry[] data, String[] columns)
 	{
 		tableModel.setRowCount(0);
 		tableModel.setColumnIdentifiers(columns);
-		tableKeys = new int[data.length];
-		for (int i = 0; i < data.length; i++)
-		{
+		if(data != null) {
+			for (Entry e : data)
 			tableModel.addRow(e.getData());
-			tableKeys[i] = data[i].getKey();
 		}
 	}
 }
