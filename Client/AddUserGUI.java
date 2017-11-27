@@ -29,28 +29,15 @@ public class AddUserGUI extends JDialog {
 	private JTextField addUserField;
 	private JTextField addPasswordField;
 	private JCheckBox isAdmin;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddUserGUI window = new AddUserGUI();
-					window.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private JList<String> databaseList;
 
 	/**
 	 * Create the application.
 	 */
-	public AddUserGUI() {
+	public AddUserGUI(String[] databases)
+	{
 		initialize();
+		databaseList.setModel(new DefaultListModel(databases));
 	}
 
 	/**
@@ -80,7 +67,7 @@ public class AddUserGUI extends JDialog {
 		addUserField.setBounds(183, 11, 130, 26);
 		getContentPane().add(addUserField);
 		
-		JList<?> databaseList = new JList<>();
+		databaseList = new JList<>();
 		databaseList.setBounds(114, 88, 154, 141);
 		JScrollPane sp = new JScrollPane(databaseList);
 		sp.setBounds(114, 100, 154, 141);

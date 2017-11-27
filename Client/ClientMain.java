@@ -22,6 +22,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private Table currentTable = null;
+	private String[] databaseList;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -57,7 +58,6 @@ public class ClientMain implements Client
 				{
 					User user = loginAttempt.getUser();
 					ClientMain client = new ClientMain(sock, out, in, user.isAdmin());
-					
 					
 					client.setDatabaseList(user.getDatabases());
 					System.out.println("Databases set");
@@ -152,6 +152,7 @@ public class ClientMain implements Client
 	@Override
 	public void setDatabaseList(String[] list)
 	{
+		databaseList = list;
 		gui.setDatabases(list);
 	}
 	
@@ -378,7 +379,7 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_USER, null)); //TODO sending User object
+			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser())); //TODO sending User object
 		}
 		catch (HeadlessException | IOException e)
 		{	}
