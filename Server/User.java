@@ -1,18 +1,34 @@
 package Server;
 
-public class User implements Comparable<User>{
-
+public class User implements Comparable<User>
+{
 	private String username;
 	private String password;
+	private boolean admin;
 	private AVLTree<String> databases;
 	
-	public User(String uName, String pWord, String[] dBases)
+	public String getUsername() { return username; }
+	public String getPassword() { return password; }
+	public String[] getDatabases() {
+		return databases.toArray(databases.toArray(new String[databases.size()]));
+	}
+	
+	public void setPassword(String newPass) { password = newPass; }
+	public boolean isAdmin() { return admin; }
+	
+	public User(String uName, String pWord, String[] dBases, boolean admin)
 	{
 		username = uName;
 		password = pWord;
 		databases = new AVLTree<String>();
 		for(int i = 0; i < dBases.length ; i++)
 			databases.add(dBases[i]);
+		this.admin = admin;
+	}
+	
+	public User(String uName, String pWord, String[] databases)
+	{
+		this(uName, pWord, databases, false);
 	}
 	
 	public User(String uName)
@@ -28,31 +44,6 @@ public class User implements Comparable<User>{
 	public User(User newUser, String pWord)
 	{
 		this(newUser.getUsername(),pWord,newUser.getDatabases());
-	}
-	
-	public String getPassword()
-	{
-		return password;
-	}
-	
-	public String getUsername()
-	{
-		return username;
-	}
-	
-	public String[] getDatabases()
-	{
-		return databases.toArray(databases.toArray(new String[databases.size()]));
-	}
-	
-	public void changePassword(String newPass)
-	{
-		password = newPass;
-	}
-	
-	public void changeUsername(String newUsername)
-	{
-		password = newUsername;
 	}
 	
 	public void addDatabases(String[] newDBList)
