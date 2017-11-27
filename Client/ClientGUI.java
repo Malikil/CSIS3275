@@ -446,7 +446,7 @@ public class ClientGUI extends JFrame
 		tableKeys = new int[data.length];
 		for (int i = 0; i < data.length; i++)
 		{
-			tableModel.addRow(e.getData());
+			tableModel.addRow(data[i].getData());
 			tableKeys[i] = data[i].getKey();
 		}
 	}

@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
+import Client.AddColumnGUI;
 
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -208,7 +209,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-  @Override
+	@Override
 	public void createDatabase() //String[] userList)
 	{
 		AddDatabaseGUI adg = new AddDatabaseGUI();
