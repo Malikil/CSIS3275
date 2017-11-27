@@ -17,16 +17,13 @@ import java.io.BufferedWriter;
 
 public class ServerMain implements Server
 {
-	private ArrayList<ClientHandler> clientList;
-	private ServerGUI gui;
-	private int entryKey;
-	private DefinitelyNotArrayList<String> userList;
+	private DefinitelyNotArrayList<ClientHandler> clientList = null;
+	private int entryKey = 0;
+	private AVLTree<User> userList = new AVLTree<User>();
 	public ServerMain()
 	{
-		clientList = new ArrayList<>();
-		entryKey = this.getKey();
-		gui = new ServerGUI(this);
-		populateUserList();
+		clientList = new DefinitelyNotArrayList<ClientHandler>();
+		initializeFromConfig();
 	}	
 	
 	public static void main(String[] args)
@@ -39,7 +36,6 @@ public class ServerMain implements Server
 		server.saveDatabase("db1");
 		String[] testDBs = new String[1];
 		testDBs[0]= "db1";
-		server.addUser("a", "a", testDBs);
 		server.addTable("db1", "table1");
 		Column[] testCols = new Column[1];
 		Column testCol = new Column("col1=string",0);
@@ -83,75 +79,76 @@ public class ServerMain implements Server
 		new Thread(client).start();
 		clientList.add(client);
 	}
-	
-	public String[] getUserList()
+
+	public User[] getUserList()
 	{
-		return userList.toArray(new String[userList.size()]);
+		return userList.toArray(new User[userList.size()]);
 	}
 	
-	public void populateUserList()
+	public String[] getUsernameStrings()
 	{
-		DefinitelyNotArrayList<String> newUserList = new DefinitelyNotArrayList<String>();
-		File file = new File("users.txt");
+		int size = userList.size();
+		String[] uList = new String[size];
+		User[] newUList = userList.toArray(new User[size]);
+		for(int i = 0 ; i < size ; i++)
+		{
+			uList[i] = newUList[i].getUsername();
+		}
+		return uList;
+	}
+	
+	public void initializeFromConfig()
+	{
+		File file = new File("config.albert");
 		if(!file.exists())
 		{
-			try 
-			{
-				file.createNewFile();
-				System.out.println("new user file created");
-			} 
-			catch (IOException e) 
-			{
-			}
+			saveConfig();
 		}
+		try
+		{
+			FileInputStream fIn = new FileInputStream(file);
+			ObjectInputStream oIn = new ObjectInputStream(fIn);
+			Config config = (Config)oIn.readObject();
+			fIn.close();
+			oIn.close();
+			userList = config.getUserList();
+			entryKey = config.getEntryKey();	
+		}
+		catch (IOException ex)
+		{
+		} 
+		catch (ClassNotFoundException e) 
+		{
+		}
+	}
+	
+	public void saveConfig()
+	{
+		File file = new File("config.albert");
 		try 
 		{
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String nextLine = null;
-			while((nextLine = reader.readLine())!=null)
-			{
-				String[] validList = nextLine.split(",");
-				newUserList.add(validList[0]);
-			}
-			reader.close();
-			userList = newUserList;
+			FileOutputStream fOut = new FileOutputStream(file);
+			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+			Config config = new Config(userList, entryKey);
+			oOut.writeObject(config);
+			oOut.close();
+			fOut.close();
 		} 
-		catch (FileNotFoundException e) 
+		catch (FileNotFoundException e)
 		{
 		} 
 		catch (IOException e) 
-		{	
+		{
 		}
 	}
-	
 	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
 			if(client.getCurrentDatabaseName().equals(database))
-				if(message.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(table))
+				if(message.getCommandType()==Command.DELETE_TABLE 
+				|| message.getCommandType()==Command.ADD_TABLE
+				|| client.getCurrentTableName().equals(table))
 					client.sendObject(message);
-		/*if(gui.getCurrentDatabase().equals(database)) TODO
-			if(gui.getTableName().equals(table))
-			{
-				switch(message.getCommandType())
-				{
-				case ADD_COLUMNS:
-					
-					break;	
-				case ADD_ENTRY:
-					break;
-				case ADD_TABLE:
-					break;
-				case DELETE_COLUMN:
-					break;
-				case DELETE_ENTRY:
-					break;
-				case DELETE_TABLE:
-					break;
-				case EDIT_ENTRY:
-					break;
-				}
-			*/
 	}
 	
 	public void sendDeleteUser(Message message, String username)
@@ -164,41 +161,7 @@ public class ServerMain implements Server
 	@Override
 	public String[] getUserDatabases(String user)
 	{
-		// Avoid case sensitivity
-		user = user.toLowerCase();
-		BufferedReader usersFile = null;
-		String[] databases = new String[] { "No databases associated with this user" };
-		try
-		{
-			usersFile = new BufferedReader(new FileReader(new File("users.txt")));
-			String nextLine;
-			String[] userInfo = null;
-			while ((nextLine = usersFile.readLine()) != null)
-			{
-				userInfo = nextLine.split(",");
-				// Avoid case sensitivity
-				if (userInfo[0].toLowerCase().equals(user))
-					break;
-			}
-			if (nextLine != null)
-			{
-				databases = new String[userInfo.length - 2]; 
-				for (int i = 2; i < userInfo.length; i++)
-					databases[i - 2] = userInfo[i];
-			}
-		}
-		catch (IOException ex)
-		{
-			databases = new String[] { "Could not read Users file" };
-		}
-		finally
-		{
-			if (usersFile != null)
-				try { usersFile.close(); }
-				catch (IOException ex) { /* Fail Silently */ }
-		}
-		
-		return databases;
+		return userList.get(new User(user)).getDatabases();
 	}
 
 	@Override
@@ -226,8 +189,7 @@ public class ServerMain implements Server
 			file = new FileInputStream(new File("databases\\" + dbname + "\\"+ tableName +".eric"));
 		} 
 		catch (FileNotFoundException e1) 
-		{
-			
+		{	
 		}
 		try 
 		{
@@ -295,120 +257,14 @@ public class ServerMain implements Server
 	
 	public void addUser(String username, String password, String[] databaseList)
 	{
-		File file = new File("users.txt");
-		if(!file.exists())
-		{
-			try 
-			{
-				file.createNewFile();
-				System.out.println("new user file created");
-			} 
-			catch (IOException e) 
-			{
-			}
-		}
-		try 
-		{
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			String nextLine = null;
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.split(",");
-				if((username.toLowerCase()).compareTo(validList[0].toLowerCase()) == 0)
-					return;
-			}
-			userList.close();
-			BufferedWriter writer = new BufferedWriter(new FileWriter("users.txt", true));
-			writer.write("\n" + username + "," + password);
-			for(int i = 0; i < databaseList.length; i++)
-			{
-				writer.write("," + databaseList[i]);
-			}
-			writer.close();
-		} 
-		catch (FileNotFoundException e) 
-		{
-		} 
-		catch (IOException e) 
-		{	
-		}
-		trimUserfile();
+		userList.add(new User(username, password, databaseList));
+		saveConfig();
 	}
 	
 	 public void deleteUser(String username)
 	{
-		File file = new File("users.txt");
-		try 
-		{
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			StringBuilder newFileContents = new StringBuilder();
-			String nextLine = null;
-			int lineCount = 0;
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.trim().split(",");
-				if(validList[0]!=null && !validList[0].isEmpty())
-				{
-					if(username.toLowerCase().compareTo(validList[0])==0)
-					{
-						sendDeleteUser(new Message(Command.INCORRECT_USER,
-						"Your user profile has been deleted. Please request a new profile from an Admin."), username);
-						continue;
-					}
-					else
-					{
-						if(lineCount!=0)
-							newFileContents.append(System.getProperty("line.separator"));
-						newFileContents.append(nextLine);
-						lineCount++;
-					}
-				}
-			}
-			userList.close();
-			PrintWriter overwrite = new PrintWriter(file);
-			overwrite.write(newFileContents.toString());
-			overwrite.close();
-		} 
-		catch (FileNotFoundException e) 
-		{	
-		} 
-		catch (IOException e) 
-		{
-		}
-	}
-	
-	public void trimUserfile() //trims whitespace and empty lines in user.txt
-	{
-		File file = new File("users.txt");
-		try {
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			StringBuilder newFileContents = new StringBuilder();
-			String nextLine = null;
-			int lineCount = 0;
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.trim().split(",");
-				if(validList[0]!=null && !validList[0].isEmpty())
-				{
-					if(lineCount!=0)
-						newFileContents.append(System.getProperty("line.separator"));
-					newFileContents.append(nextLine);
-					lineCount++;
-				}
-			}
-			userList.close();
-			PrintWriter overwrite = new PrintWriter(file);
-			overwrite.write(newFileContents.toString());
-			overwrite.close();
-		} 
-		catch (FileNotFoundException e) 
-		{	
-			
-		} 
-		catch (IOException e) 
-		{
-			
-		}
+		userList.delete(new User(username));
+		saveConfig();
 	}
 
 	public void changeDatabaseUsers(String databaseName, String usernames[])
@@ -418,192 +274,27 @@ public class ServerMain implements Server
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
-		File file = new File("users.txt");
-		try 
-		{
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			StringBuilder newFileContents = new StringBuilder();
-			String nextLine = null;
-			int lineCount = 0;
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.trim().split(",");
-				if(validList[0]!=null && !validList[0].isEmpty())
-				{
-					if(lineCount != 0)
-						newFileContents.append(System.getProperty("line.separator"));
-					if(username.toLowerCase().compareTo(validList[0]) == 0) //found user
-					{
-						newFileContents.append(validList[0]+","+validList[1]);
-						for(int i= 0;i<databases.length;i++)
-							newFileContents.append(","+databases[i]);
-					}
-					else
-						newFileContents.append(nextLine.trim());
-				}
-				lineCount++;
-			}
-			userList.close();
-			PrintWriter overwrite = new PrintWriter(file);
-			overwrite.write(newFileContents.toString());
-			overwrite.close();
-		} 
-		catch (FileNotFoundException e) 
-		{
-			
-		} 
-		catch (IOException e) 
-		{
-			
-		}
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,databases);
+		userList.add(newUser);
+		saveConfig();
 	}
 	
 	public void changePassword(String username, String newPass)
 	{
-		File file = new File("users.txt");
-		try 
-		{
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			StringBuilder newFileContents = new StringBuilder();
-			String nextLine = null;
-			int lineCount = 0;
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.trim().split(",");
-				if(validList[0]!=null && !validList[0].isEmpty())
-				{
-					if(lineCount != 0)
-						newFileContents.append(System.getProperty("line.separator"));
-					if(username.toLowerCase().compareTo(validList[0]) == 0) //found user
-					{
-						newFileContents.append(validList[0]+","+newPass);
-						for(int i= 2;i<validList.length;i++)
-							newFileContents.append(","+validList[i]);
-					}
-					else
-						newFileContents.append(nextLine.trim());
-				}
-				lineCount++;
-			}
-			userList.close();
-			PrintWriter overwrite = new PrintWriter(file);
-			overwrite.write(newFileContents.toString());
-			overwrite.close();
-		} 
-		catch (FileNotFoundException e) 
-		{
-			
-		} 
-		catch (IOException e) 
-		{
-			
-		}
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,newPass);
+		userList.add(newUser);
+		saveConfig();
 	}
-	
-	public String[] getUserlist()
-	{
-		File file = new File("users.txt");
-		System.out.println(file.getAbsolutePath());
-		String[] listOfUsers = null;
-		try 
-		{
-			BufferedReader userList = new BufferedReader(new FileReader(file));
-			String nextLine = null;
-			DefinitelyNotArrayList<String> usersArrayList = new DefinitelyNotArrayList<>();
-			while((nextLine = userList.readLine())!=null)
-			{
-				String[] validList = nextLine.trim().split(",");
-				if(validList[0]!=null && !validList[0].isEmpty())
-				{
-					usersArrayList.add(validList[0]);
-				}
-			}
-			userList.close();
-			listOfUsers = new String[usersArrayList.size()];
-			listOfUsers = (String[]) usersArrayList.toArray(listOfUsers);
-		} 
-		catch (FileNotFoundException e) 
-		{
-			System.out.println(e.getMessage());
-		} 
-		catch (IOException e) 
-		{
-			System.out.println("catch2");
-		}
-		return listOfUsers;
-	}
-
-	private void saveKey(int key)
-	{
-		File file = new File("key.ini");
-		if(!file.exists())
-		{
-			key = 0;
-			try 
-			{
-				file.createNewFile();
-				System.out.println("key file created");
-			} 
-			catch (IOException e) 
-			{
-			}
-		}
-		try 
-		{
-			FileOutputStream fOut = new FileOutputStream(file);
-			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
-			oOut.writeObject(key);
-			oOut.close();
-			fOut.close();
-		} 
-		catch (FileNotFoundException e)
-		{
-		} 
-		catch (IOException e) 
-		{
-		}
-	}
-	
-	private int getKey() //TODO its private right now
-	{
-		int key;
-		File file = new File("key.config");
-		if(!file.exists())
-		{
-			saveKey(0);
-			return 0;
-		}
-		else try 
-		{
-			FileInputStream fIn = new FileInputStream(file);
-			ObjectInputStream oIn = new ObjectInputStream(fIn);
-			key = (int)oIn.readObject();
-			fIn.close();
-			oIn.close();
-			return key;
-		}
-		catch (FileNotFoundException e1) 
-		{
-			System.out.println("getKey failed, abort");
-			return -1;
-		}
-		catch (IOException e)
-		{	
-			System.out.println("getKey failed, abort");
-			return -1;
-		}
-		catch (ClassNotFoundException e)
-		{	
-			System.out.println("getKey failed, abort");
-			return -1;
-		}
-	}
-	
+		
 	@Override
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
 	{
 		Entry newEntry = new Entry(++entryKey, data);
-		saveKey(entryKey);
+		saveConfig();
 		Table newTable = getTable(databaseName,tableName);
 		newTable.addEntry(newEntry);
 		saveTable(databaseName, tableName, newTable);
@@ -638,12 +329,12 @@ public class ServerMain implements Server
 	}
 	
 	@Override
-	public void deleteEntry(String databaseName, String tableName, Entry entryToDelete)
+	public void deleteEntry(String databaseName, String tableName, int key)
 	{
 		Table currentTable = getTable(databaseName,tableName);
-		currentTable.removeEntry(entryToDelete.getKey());
+		currentTable.removeEntry(key);
 		saveTable(databaseName, tableName, currentTable);
-		sendObjectToAll(new Message(Command.DELETE_ENTRY,entryToDelete),databaseName,tableName);
+		sendObjectToAll(new Message(Command.DELETE_ENTRY,key),databaseName,tableName);
 	}
 	
 	@Override
@@ -662,38 +353,4 @@ public class ServerMain implements Server
 		table.delete();
 		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
 	}
-	
-	/*
-	//TODO //THIS USES USER AND CONFIG CLASSES
-	public void saveConfig(int entryKey, int userKey, User[] userList)
-	{
-		File file = new File("config.ini");
-		if(!file.exists())
-		{
-			try 
-			{
-				file.createNewFile();
-				System.out.println("config file created");
-			} 
-			catch (IOException e) 
-			{
-			}
-		}
-		try 
-		{
-			FileOutputStream fOut = new FileOutputStream(file);
-			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
-			oOut.writeObject(userList);
-			oOut.writeObject(entryKey);
-			oOut.writeObject(userKey);
-			oOut.close();
-			fOut.close();
-		} 
-		catch (FileNotFoundException e)
-		{
-		} 
-		catch (IOException e) 
-		{
-		}
-	} */
 }
