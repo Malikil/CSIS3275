@@ -178,8 +178,6 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			
-			
 			JComboBox<String> selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
@@ -229,15 +227,20 @@ public class ClientGUI extends JFrame
 			
 			JButton btnCreateDatabase = new JButton("Create Database");
 			btnCreateDatabase.setBounds(75, 350, 150, 25);
-      btnCreateDatabase.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			    parent.createDatabase();
-			  }
-		  });
-		  adminPanel.add(btnCreateDatabase);
+			btnCreateDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					parent.createDatabase();
+				}
+			});
+			adminPanel.add(btnCreateDatabase);
 			
-			JButton btnDeleteDatabase = new JButton("Delete Databasee");
+			JButton btnDeleteDatabase = new JButton("Delete Databases");
 			btnDeleteDatabase.setBounds(250, 350, 150, 25);
+			btnDeleteDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				    parent.deleteDatabase();
+				}
+			});
 			adminPanel.add(btnDeleteDatabase);
 		}
 		//Admin End--------------------------------------------------------------------------------
