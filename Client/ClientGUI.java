@@ -448,11 +448,11 @@ public class ClientGUI extends JFrame
 	public Entry getSelectedEntry()
 	{
 		int row = table.getSelectedRow();
-		Comparable[] data = new Comparable[table.getModel().getColumnCount() - 1];
+		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
 		for (int i = 0; i < data.length; i++)
 		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i + 1); // TODO Unchecked
+			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
 		}
-		return new Entry(Integer.parseInt((String)table.getModel().getValueAt(row, 0)), data); // TODO Ew
+		return new Entry(tableKeys[row], data);
 	}
 }
