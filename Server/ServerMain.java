@@ -234,7 +234,9 @@ public class ServerMain implements Server
 	
 	public void deleteDatabase(String databaseName)
 	{
-		File dir = new File(databaseName);
+		File dir = new File("databases\\" + databaseName);
+		//TODO NEED TO DELETE ALL TABLES INSIDE BEFORE .DELETE()
+		
 		dir.delete();
 		User[] users = userList.toArray(new User[userList.size()]);
 		for (User u : users)
@@ -247,15 +249,11 @@ public class ServerMain implements Server
 		saveConfig();
 	}
 	
-	 public void deleteUser(String username)
+	
+	public void deleteUser(String username)
 	{
 		userList.delete(new User(username));
 		saveConfig();
-	}
-
-	public void changeDatabaseUsers(String databaseName, String usernames[])
-	{
-		
 	}
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
