@@ -21,6 +21,7 @@ import Server.Command;
 import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
+import Server.Table;
 
 import javax.swing.border.LineBorder;
 
@@ -62,23 +63,108 @@ public class ClientGUI extends JFrame
 	private int[] tableKeys;
 	private JTextField textField;
 
+	public static void main(String[] args)
+	{
+		new ClientGUI(new Client(){
+
+			@Override
+			public void setDatabaseList(String[] list) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void getTableNames(String database) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void deleteCurrentTable() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void getTable(String tableName) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void addColumn() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void deleteColumn(int selectedIndex) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void createEntry(String[] headers) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void deleteEntry(int entryKey) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void editEntry(int entryIndex) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void setTable(Table newTable) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public String[] getColumnNames() {
+				// TODO Auto-generated method stub
+				return new String[] {"1", "2", "3"};
+			}
+
+			@Override
+			public void applySearch(String[] values, String[] comparisons, int[] fields) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void createTable() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		},true).setVisible(true);
+	}
 	/**
 	 * Create the application.
 	 */
-	public ClientGUI(Client owner) 
+	public ClientGUI(Client owner, boolean admin) 
 	{
 		getContentPane().setBackground(UIManager.getColor("CheckBoxMenuItem.selectionBackground"));
 		setTitle("Client Application");
 		parent = owner;
 		getContentPane().setFont(new Font("Tahoma", Font.ITALIC, 14));
-		initialize();
+		initialize(admin);
 	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize() 
+	private void initialize(boolean admin) 
 	{
+		//Menu---------------------------------------------------------------
 		JFrame thisFrame = this;
 		new JFrame();
 		setBounds(100, 100, 482, 482);
@@ -157,57 +243,64 @@ public class ClientGUI extends JFrame
 		});
 		helpMenu.add(details);
 		
+		//Menu End---------------------------------------------------------------------------------
+		
 		JTabbedPane searchTab = new JTabbedPane(JTabbedPane.TOP);
 		searchTab.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		searchTab.setBounds(0, 21, 465, 427);
 		getContentPane().add(searchTab);
 		
-		tableModel = new DefaultTableModel();
-		
-		JPanel adminPanel = new JPanel();
-		searchTab.addTab("Admin", null, adminPanel, null);
-		adminPanel.setLayout(null);
-		
-		JButton selectUserButton = new JButton("Select User");
-		selectUserButton.setBounds(0, 0, 107, 23);
-		adminPanel.add(selectUserButton);
-		
-		JComboBox<String> selectUserDropdown = new JComboBox<String>();
-		selectUserDropdown.setBounds(0, 0, 338, 20);
-		adminPanel.add(selectUserDropdown);
-		
-		JLabel userlistLabel = new JLabel("Userlist");
-		userlistLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		userlistLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-		userlistLabel.setBounds(0, 0, 80, 14);
-		adminPanel.add(userlistLabel);
-		
-		JButton addUserButton = new JButton("Add User");
-		addUserButton.setBounds(0, 0, 107, 23);
-		adminPanel.add(addUserButton);
-		
-		JButton deleteUserButton = new JButton("Delete User");
-		deleteUserButton.setBounds(0, 0, 107, 23);
-		adminPanel.add(deleteUserButton);
-		
-		JList databaseList = new JList();
-		JScrollPane uerListScroller = new JScrollPane(databaseList);
-		uerListScroller.setBorder(new LineBorder(new Color(0, 0, 0)));
-		uerListScroller.setBounds(67, 41, 338, 253);
-		adminPanel.add(uerListScroller);
-		
-		JButton btnCreateDatabase = new JButton("Create Database");
-		btnCreateDatabase.setBounds(67, 307, 97, 25);
-		btnCreateDatabase.addActionListener(new ActionListener() {
+		//Admin Tab--------------------------------------------------------------------------------
+		if(admin)
+		{
+			JPanel adminPanel = new JPanel();
+			searchTab.addTab("Admin", null, adminPanel, null);
+			adminPanel.setLayout(null);
+			
+			JLabel userlistLabel = new JLabel("Userlist");
+			userlistLabel.setHorizontalAlignment(SwingConstants.CENTER);
+			userlistLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+			userlistLabel.setBounds(190, 10, 80, 25);
+			adminPanel.add(userlistLabel);
+			
+			JButton selectUserButton = new JButton("Select User");
+			selectUserButton.setBounds(180, 90, 110, 25);
+			adminPanel.add(selectUserButton);
+			
+			JComboBox<String> selectUserDropdown = new JComboBox<String>();
+			selectUserDropdown.setBounds(60, 40, 350, 25);
+			adminPanel.add(selectUserDropdown);
+			
+			JButton addUserButton = new JButton("Add User");
+			addUserButton.setBounds(50, 90, 110, 25);
+			adminPanel.add(addUserButton);
+			
+			JButton deleteUserButton = new JButton("Delete User");
+			deleteUserButton.setBounds(310, 90, 110, 25);
+			adminPanel.add(deleteUserButton);
+			
+			JList databaseList = new JList();
+			JScrollPane dataBaseScroller = new JScrollPane(databaseList);
+			dataBaseScroller.setBorder(new LineBorder(new Color(0, 0, 0)));
+			dataBaseScroller.setBounds(50, 125, 375, 200);
+			adminPanel.add(dataBaseScroller);
+			
+			JButton btnCreateDatabase = new JButton("Create Database");
+			btnCreateDatabase.setBounds(75, 350, 150, 25);
+      btnCreateDatabase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				parent.createDatabase();
-			}
-		});
-		adminPanel.add(btnCreateDatabase);
+			    parent.createDatabase();
+			  }
+		  });
+		  adminPanel.add(btnCreateDatabase);
+			
+			JButton btnDeleteDatabase = new JButton("Delete Databasee");
+			btnDeleteDatabase.setBounds(250, 350, 150, 25);
+			adminPanel.add(btnDeleteDatabase);
+		}
+		//Admin End--------------------------------------------------------------------------------
 		
-		JButton btnDeleteDatabase = new JButton("Delete Databasee");
-		btnDeleteDatabase.setBounds(241, 307, 97, 25);
-		adminPanel.add(btnDeleteDatabase);
+		//Table Tab--------------------------------------------------------------------------------
 		
 		tablesPanel = new JPanel();
 		tablesPanel.setBackground(UIManager.getColor("Tree.selectionBackground"));
@@ -223,6 +316,7 @@ public class ClientGUI extends JFrame
 		fieldsCB = new JComboBox<String>();
 		fieldsCB.setBounds(82, 43, 300, 20);
 		tablesPanel.add(fieldsCB);
+		tableModel = new DefaultTableModel();
 		table = new JTable(tableModel);
 		table.setRowSelectionAllowed(true);
 		table.setColumnSelectionAllowed(false);
@@ -296,6 +390,10 @@ public class ClientGUI extends JFrame
 		});
 		tablesPanel.add(editBttn);
 		
+		//Table End--------------------------------------------------------------------------------
+		
+		//Filter Tab--------------------------------------------------------------------------------
+
 		JPanel mainPanel = new JPanel();
 		searchTab.addTab("Filter", null, mainPanel, null);
 		mainPanel.setLayout(null);
@@ -422,6 +520,8 @@ public class ClientGUI extends JFrame
 			}
 		});
 	}
+	
+	//Filter End--------------------------------------------------------------------------------
 	
 	public void setDatabases(String[] list)
 	{

@@ -18,8 +18,8 @@ import java.io.BufferedWriter;
 public class ServerMain implements Server
 {
 	private DefinitelyNotArrayList<ClientHandler> clientList = null;
-	private int entryKey = 0;
-	private AVLTree<User> userList = new AVLTree<User>();
+	private int entryKey;
+	private AVLTree<User> userList;
 	public ServerMain()
 	{
 		clientList = new DefinitelyNotArrayList<ClientHandler>();
@@ -102,6 +102,8 @@ public class ServerMain implements Server
 		File file = new File("config.albert");
 		if(!file.exists())
 		{
+			userList = new AVLTree<User>(new User("admin", "New Admin", new String[0], true));
+			entryKey = 0;
 			saveConfig();
 		}
 		try
@@ -115,11 +117,9 @@ public class ServerMain implements Server
 			entryKey = config.getEntryKey();	
 		}
 		catch (IOException ex)
-		{
-		} 
+		{	} 
 		catch (ClassNotFoundException e) 
-		{
-		}
+		{	}
 	}
 	
 	public void saveConfig()
@@ -135,11 +135,9 @@ public class ServerMain implements Server
 			fOut.close();
 		} 
 		catch (FileNotFoundException e)
-		{
-		} 
+		{	} 
 		catch (IOException e) 
-		{
-		}
+		{	}
 	}
 	public void sendObjectToAll(Message message, String database, String table)
 	{
@@ -186,11 +184,10 @@ public class ServerMain implements Server
 		FileInputStream file = null;
 		try 
 		{
-			file = new FileInputStream(new File("databases\\" + dbname + "\\"+ tableName +".eric"));
+			file = new FileInputStream(new File("databases\\" + dbname + "\\" + tableName + ".eric"));
 		} 
 		catch (FileNotFoundException e1) 
-		{	
-		}
+		{	}
 		try 
 		{
 			ObjectInputStream fileObjIn = new ObjectInputStream(file);
@@ -208,7 +205,7 @@ public class ServerMain implements Server
 
 	public void saveTable(String dbName, String tableName, Table table)
 	{
-		File file = new File("databases\\" + dbName+"\\"+tableName+".eric");
+		File file = new File("databases\\" + dbName + "\\" + tableName + ".eric");
 		if(!file.exists())
 		{
 			try 
@@ -235,24 +232,13 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void saveDatabase(String databaseName) //String[] userList)
-	{
-		AddDatabaseGUI adg = new AddDatabaseGUI();
-		adg.setVisible(true);
-		File dir = new File("databases\\" + adg.getDatabaseName());
-
-		if(!dir.isDirectory())
-		{
-			dir.mkdir();
-			return;
-		}
-		//TODO //changeUserDatabases();
-	}
-	
 	public void deleteDatabase(String databaseName)
 	{
 		File dir = new File(databaseName);
 		dir.delete();
+		User[] users = userList.toArray(new User[userList.size()]);
+		for (User u : users)
+			u.deleteDatabase(databaseName);
 	}
 	
 	public void addUser(String username, String password, String[] databaseList)
@@ -352,5 +338,11 @@ public class ServerMain implements Server
 		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
 		table.delete();
 		sendObjectToAll(new Message(Command.GET_TABLE_NAMES,getTableList(databaseName)),databaseName,tableName);
+	}
+
+	@Override
+	public void createDatabase(String databaseName)
+	{
+		// TODO
 	}
 }

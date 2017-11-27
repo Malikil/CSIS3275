@@ -14,6 +14,7 @@ import Server.Command;
 import Server.Entry;
 import Server.Message;
 import Server.Table;
+import Server.User;
 
 public class ClientMain implements Client
 {
@@ -22,11 +23,12 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	
-	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
+	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
+		
 		objOut = out;
 		objIn = in;
-		gui = new ClientGUI(this);
+		gui = new ClientGUI(this, admin);
 	}
 	
 	public static void main(String[] args)
@@ -53,8 +55,11 @@ public class ClientMain implements Client
 				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
 				if (conf == Command.CONNECTION_SUCCESS)
 				{
-					ClientMain client = new ClientMain(sock, out, in);
-					client.setDatabaseList(loginAttempt.getDatabaseList());
+					User user = loginAttempt.getUser();
+					ClientMain client = new ClientMain(sock, out, in, user.isAdmin());
+					
+					
+					client.setDatabaseList(user.getDatabases());
 					System.out.println("Databases set");
 					client.start();
 				}
