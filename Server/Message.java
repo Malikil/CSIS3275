@@ -44,7 +44,6 @@ public class Message implements Serializable
 	{
 			return (Table)data;
 	}
-
 	
 	public String getDatabase()
 	{
@@ -85,5 +84,10 @@ public class Message implements Serializable
 	public Integer getKey()
 	{
 		return (Integer)data;
+	}
+	
+	public User getUser()
+	{
+		return (User)data;
 	}
 }
