@@ -18,8 +18,6 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private Table currentTable = null;
-	//private AVLTree<Entry> filteredTable;
-	private String currentTableName;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
 	{
@@ -91,18 +89,33 @@ public class ClientMain implements Client
 					switch (received.getCommandType())
 					{
 					case ADD_COLUMNS:
+						Column[] columnList = received.getColumns();
+						for(int i = 0 ; i < columnList.length ; i++)
+							currentTable.addColumn(columnList[i]);
+						setTable(currentTable);
 						break;
 					case ADD_ENTRY:
+						 currentTable.addEntry(received.getEntry());
+						 setTable(currentTable);
 						break;
 					case ADD_TABLE:
+						// TODO add table name to table list, from string
 						break;
 					case DELETE_COLUMN:
+						currentTable.removeColumn(received.getColumnIndex());
+						setTable(currentTable);
 						break;
 					case DELETE_ENTRY:
+						currentTable.removeEntry(received.getKey());
+						setTable(currentTable);
 						break;
 					case DELETE_TABLE:
+						currentTable = null;
+						setTable(null);
 						break;
 					case EDIT_ENTRY:
+						currentTable.editEntry(received.getEntry());
+						setTable(currentTable);
 						break;
 					case GET_ACTUAL_TABLE:
 						currentTable = received.getTable();
@@ -110,8 +123,6 @@ public class ClientMain implements Client
 						break;
 					case GET_TABLE_NAMES:
 						gui.setTableList(received.getTableNames());
-						break;
-					case MESSAGE:
 						break;
 					default:
 						throw new IOException("Unexpected server command");
@@ -162,7 +173,7 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_TABLE, currentTableName));
+			objOut.writeObject(new Message(Command.DELETE_TABLE, null));
 		}
 		catch (IOException ex)
 		{
@@ -193,12 +204,10 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for table from server");
+			System.out.println("Error asking for table from server"); // TODO System.out
 		}
-		currentTableName = tableName;
 	}
 	
-	@Override
 	public void setTable(Table newTable)
 	{
 		currentTable = newTable;
@@ -212,7 +221,7 @@ public class ClientMain implements Client
 	{
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex)); //-1 because Primary Key is the first element
+			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex));
 		}
 		catch (IOException e)
 		{
@@ -221,17 +230,23 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void createEntry(String[] headers) { 
+	public void createEntry(String[] headers)
+	{ 
 		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
+		// TODO send new entry to server
 	}
 	
 	@Override
-	public void deleteEntry(int primaryKey)
+	public void deleteEntry(int key)
 	{
-		try {
-			objOut.writeObject(new Message(Command.DELETE_ENTRY, primaryKey));
-		} catch (IOException e) {
+		try
+		{
+			objOut.writeObject(new Message(Command.DELETE_ENTRY, key));
+		}
+		catch (IOException e)
+		{
+			// TODO Catch block
 		}
 	}
 

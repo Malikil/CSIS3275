@@ -5,7 +5,9 @@ import java.io.Serializable;
 public class Column implements Serializable
 {
 	public static final int STRING = 0;
-	public static final int NUMBER = 1;
+	public static final int INTEGER = 1;
+	public static final int DOUBLE = 2;
+	public static final int DATE = 3;
 	
 	private String name;
 	private int type;

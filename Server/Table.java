@@ -21,10 +21,10 @@ public class Table implements Serializable
 		int temp = Entry.getComparer();
 		Entry.setComparer(-1);
 		AVLTree<Entry> t = tree.reconstructTree();
-		Entry.setComparer(temp);
-		return t;
-	}
-	
+ 		Entry.setComparer(temp);
+ 		return t;
+ 	}
+ 
 	public void addColumn(Column col)
 	{
 		columns.add(col);
@@ -88,5 +88,6 @@ public class Table implements Serializable
 			temp[i] = (columns.get(i).getName());
 		}
 		return temp;
+		
 	}
 }
