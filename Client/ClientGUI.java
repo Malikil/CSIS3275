@@ -60,6 +60,7 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
+	private int[] tableKeys;
 
 	/**
 	 * Create the application.
@@ -436,7 +437,11 @@ public class ClientGUI extends JFrame
 	{
 		tableModel.setRowCount(0);
 		tableModel.setColumnIdentifiers(columns);
-		for (Entry e : data)
+		tableKeys = new int[data.length];
+		for (int i = 0; i < data.length; i++)
+		{
 			tableModel.addRow(e.getData());
+			tableKeys[i] = data[i].getKey();
+		}
 	}
 }
