@@ -22,8 +22,14 @@ public class EditEntryGUI extends JDialog
 	private Entry edit;
 	private JTextField[] newData;
 	
-	public JTextField[] getData() { return newData; }
 	public Entry getEntry() { return edit; }
+	public String[] getData()
+	{
+		String[] temp = new String[newData.length];
+		for (int i = 0; i < newData.length; i++)
+			temp[i] = newData[i].getText();
+		return temp;
+	}
 
 	/**
 	 * Create the application.

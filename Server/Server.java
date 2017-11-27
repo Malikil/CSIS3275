@@ -5,6 +5,7 @@ public interface Server
 	public String[] getUserDatabases(String user);
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
+	public void saveTable(String dbName, String tableName, Table table);
 	public void addEntry(String database, String table, Comparable[] data);
 	public void addColumns(String databaseName, String tableName, Column[] columns);
 	public void addTable(String databaseName, String tableName);
@@ -14,5 +15,4 @@ public interface Server
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase();
 	public User[] getUserList();
-	//public void addColumn(String database)
 }

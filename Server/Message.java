@@ -86,5 +86,4 @@ public class Message implements Serializable
 	{
 		return (Integer)data;
 	}
-	
 }
