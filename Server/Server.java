@@ -2,6 +2,7 @@ package Server;
 
 public interface Server
 {
+	//public String[] getAllDatabases();
 	public String[] getUserDatabases(String user);
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
@@ -15,4 +16,5 @@ public interface Server
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase(String databaseName);
 	public User[] getUserList();
+	public void deleteDatabase(String DBName);
 }

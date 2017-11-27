@@ -22,6 +22,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private Table currentTable = null;
+	private String[] databaseList;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -57,7 +58,6 @@ public class ClientMain implements Client
 				{
 					User user = loginAttempt.getUser();
 					ClientMain client = new ClientMain(sock, out, in, user.isAdmin());
-					
 					
 					client.setDatabaseList(user.getDatabases());
 					System.out.println("Databases set");
@@ -152,6 +152,7 @@ public class ClientMain implements Client
 	@Override
 	public void setDatabaseList(String[] list)
 	{
+		databaseList = list;
 		gui.setDatabases(list);
 	}
 	
@@ -345,7 +346,51 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database")));
+			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+		}
+		catch (HeadlessException | IOException e)
+		{	}
+	}
+
+	@Override
+	public void deleteDatabase() {
+		// TODO Auto-generated method stub
+		try
+		{
+			objOut.writeObject(new Message(Command.DELETE_DATABASE, JOptionPane.showInputDialog("Delete Database"))); //sending String 
+		}
+		catch (HeadlessException | IOException e)
+		{	}
+	}
+
+	@Override
+	public void editUser() {
+		// TODO Auto-generated method stub
+		try
+		{
+			objOut.writeObject(new Message(Command.EDIT_USER, null)); //TODO User Object
+		}
+		catch (HeadlessException | IOException e)
+		{	}
+	}
+
+	@Override
+	public void addUser() {
+		// TODO Auto-generated method stub
+		try
+		{
+			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser())); //TODO sending User object
+		}
+		catch (HeadlessException | IOException e)
+		{	}
+	}
+
+	@Override
+	public void deleteUser() {
+		// TODO Auto-generated method stub
+		try
+		{
+			objOut.writeObject(new Message(Command.DELETE_USER, null)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
 		{	}
