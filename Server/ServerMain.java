@@ -351,6 +351,6 @@ public class ServerMain implements Server
 	{
 		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
 		table.delete();
-		sendObjectToAll(new Message(Command.DELETE_TABLE,tableName),databaseName,tableName);
+		sendObjectToAll(new Message(Command.GET_TABLE_NAMES,getTableList(databaseName)),databaseName,tableName);
 	}
 }
