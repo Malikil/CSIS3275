@@ -16,6 +16,15 @@ public class Table implements Serializable
 		 columns = new DefinitelyNotArrayList<>();
 	}
 	
+	public AVLTree<Entry> getTree()
+	{
+		int temp = Entry.getComparer();
+		Entry.setComparer(-1);
+		AVLTree<Entry> t = tree.reconstructTree();
+ 		Entry.setComparer(temp);
+ 		return t;
+ 	}
+ 
 	public void addColumn(Column col)
 	{
 		columns.add(col);
