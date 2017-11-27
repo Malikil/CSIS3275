@@ -178,33 +178,44 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			JButton selectUserButton = new JButton("Edit User");
-			selectUserButton.setBounds(180, 90, 110, 25);
-			selectUserButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					parent.editUser();}
-			});
-			adminPanel.add(selectUserButton);
-			
 			JComboBox<String> selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
 			
+			JButton editUserButton = new JButton("Edit User");
+			editUserButton.setBounds(180, 90, 110, 25);
+			editUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					parent.editUser(selectUserDropdown.getSelectedItem());
+				}	
+			});
+			adminPanel.add(editUserButton);
+			
+			
 			JButton addUserButton = new JButton("Add User");
 			addUserButton.setBounds(50, 90, 110, 25);
-			addUserButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			addUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
 					parent.addUser();
-				}
+				}	
 			});
 			adminPanel.add(addUserButton);
 			
 			JButton deleteUserButton = new JButton("Delete User");
 			deleteUserButton.setBounds(310, 90, 110, 25);
-			deleteUserButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				    parent.deleteUser();
-				}
+			deleteUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					parent.deleteUser(selectUserDropdown.getSelectedItem());
+				}	
 			});
 			adminPanel.add(deleteUserButton);
 			
