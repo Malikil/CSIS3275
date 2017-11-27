@@ -99,7 +99,7 @@ public class ClientMain implements Client
 						 setTable(currentTable);
 						break;
 					case ADD_TABLE:
-						// TODO add table name to table list, from string
+						gui.addTableName(received.getTableName());
 						break;
 					case DELETE_COLUMN:
 						currentTable.removeColumn(received.getColumnIndex());
@@ -235,6 +235,14 @@ public class ClientMain implements Client
 		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
 		// TODO send new entry to server
+		Comparable[] newEntry = addEnt.getData();
+		 try
+		 {
+		 	objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry)); 
+		 }
+		 catch (IOException e)
+		 {
+		 } 
 	}
 	
 	@Override
@@ -253,6 +261,16 @@ public class ClientMain implements Client
 	@Override
 	public void addColumn() 
 	{
+		AddColumnGUI newCols = new AddColumnGUI(false);
+		newCols.setVisible(true);
+		Column[] addedColumns = newCols.getColumns();
+		 		try
+		 		{
+		 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
+		 		}
+		 		catch (IOException ex)
+		 		{
+		 		}  
 	}
 
 	@Override

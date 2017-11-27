@@ -160,7 +160,7 @@ public class ServerMain implements Server
 			if(client.getUsername().equals(username))
 					client.sendObject(message);
 	}
-  
+	
 	@Override
 	public String[] getUserDatabases(String user)
 	{
@@ -335,7 +335,7 @@ public class ServerMain implements Server
 		trimUserfile();
 	}
 	
-	public void deleteUser(String username)
+	 public void deleteUser(String username)
 	{
 		File file = new File("users.txt");
 		try 

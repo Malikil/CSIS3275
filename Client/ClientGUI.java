@@ -452,6 +452,20 @@ public class ClientGUI extends JFrame
 		}
 	}
 	
+	public void addTableName(String tableName)
+	{
+			JMenuItem newTable = new JMenuItem(tableName);
+			newTable.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					parent.getTable(tableName);
+				}
+			});
+			mnTables.add(newTable);	
+	}
+	
+	
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
