@@ -17,7 +17,7 @@ public class ClientHandler implements Runnable
 	private Server parent;
 	private String currentDatabaseName = null;
 	private String currentTableName = null;
-	private Table currentTable = null;
+	private String username = null;
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -37,67 +37,42 @@ public class ClientHandler implements Runnable
 	@Override
 	public void run()
 	{
-		try
+		boolean loggedIn = false;
+		do
 		{
-			boolean loggedIn = false;
-			BufferedReader userList = new BufferedReader(new FileReader(new File("users.txt")));
-			do
+			try 
 			{
-				try
+				User[] userList = parent.getUserList();
+				String[] userPass = ((Message)objIn.readObject()).getLogin();
+				userPass[0] = userPass[0].toLowerCase();
+				for(int i = 0 ; i < parent.getUserList().length;i++)
 				{
-					String[] userPass = ((Message)objIn.readObject()).getLogin();
-					// Make received username lowercase to avoid case sensitivity
-					userPass[0] = userPass[0].toLowerCase();
-					String nextLine;
-					while ((nextLine = userList.readLine()) != null)
+					if(userPass[0].equals(userList[i].getUsername()))
 					{
-						String[] userInfo = nextLine.split(",");
-						// Make username from file lowercase to avoid case sensitivity
-						userInfo[0] = userInfo[0].toLowerCase();
-						if (userInfo[0].equals(userPass[0]))
-							
-							if (userInfo[1].equals(userPass[1]))
-							{
-								// Send success to client
-								// Send available databases to client
-								objOut.writeObject(new Message(
-										Command.CONNECTION_SUCCESS,
-										parent.getUserDatabases(userInfo[0])));
-								loggedIn = true;
-								break;
-							}
-							else
-							{
-								objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
-								break;
-							}
+						if(userPass[1].equals(userList[i].getPassword()))
+						{
+							objOut.writeObject(new Message(Command.CONNECTION_SUCCESS,
+									parent.getUserDatabases(userPass[0])));
+							loggedIn = true;
+							break;
+						}
+						else
+						{
+							objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+							break;
+						}
 					}
-					if (!loggedIn && nextLine == null)
-						objOut.writeObject(new Message(Command.INCORRECT_USER, null));		
 				}
-				catch (IOException ex)
-				{
-				}
-				catch (ClassNotFoundException ex)
-				{
-				}
-			} while (!loggedIn);
-			userList.close();
-		}
-		catch (IOException ex)
-		{
-			System.out.println("User file couldn't be found");
-			try
+				if (!loggedIn)
+					objOut.writeObject(new Message(Command.INCORRECT_USER, null));	
+			} 
+			catch (ClassNotFoundException e) 
 			{
-				objIn.readObject(); // Receive the String[] of user/pass, we just don't need it now
-				objOut.writeObject(Command.MESSAGE);
-				objOut.close();
-				objIn.close();
+			} 
+			catch (IOException e) 
+			{
 			}
-			catch (IOException | ClassNotFoundException e2)
-			{ System.out.println("Couldn't close sockets"); }
-			return;
-		}
+		} while (!loggedIn);
 		
 		// Client is logged in, now wait for commands
 		while (true)
@@ -116,15 +91,16 @@ public class ClientHandler implements Runnable
 				case ADD_TABLE:
 					currentTableName = received.getTableName();
 					parent.addTable(currentDatabaseName,currentTableName);
+					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE,parent.getTable(currentDatabaseName, currentTableName)));
 					break;	//when client receives message, need to refresh GUI table
 				case DELETE_COLUMN:
 					parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());
 					break;
 				case DELETE_ENTRY:
-					parent.deleteEntry(currentDatabaseName, currentTableName, received.getEntry());
+					parent.deleteEntry(currentDatabaseName, currentTableName, received.getKey());
 					break;
 				case DELETE_TABLE:
-					parent.deleteTable(currentDatabaseName, received.getTableName());
+					parent.deleteTable(currentDatabaseName, currentTableName);
 					currentTableName = null;
 					break;
 				case EDIT_ENTRY:
@@ -132,8 +108,7 @@ public class ClientHandler implements Runnable
 					break;
 				case GET_ACTUAL_TABLE:
 					currentTableName = received.getTableName();
-					currentTable = parent.getTable(currentDatabaseName, currentTableName);
-					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, currentTable));
+					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, parent.getTable(currentDatabaseName, currentTableName)));
 					break;
 				case GET_TABLE_NAMES:
 					currentDatabaseName  = received.getDatabase();
@@ -170,5 +145,10 @@ public class ClientHandler implements Runnable
 	public String getCurrentDatabaseName()
 	{
 		return currentDatabaseName;
+	}
+	
+	public String getUsername()
+	{
+		return username;
 	}
 }

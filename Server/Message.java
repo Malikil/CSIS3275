@@ -81,4 +81,10 @@ public class Message implements Serializable
 	{
 		return (Integer)data;
 	}
+	
+	public Integer getKey()
+	{
+		return (Integer)data;
+	}
+	
 }

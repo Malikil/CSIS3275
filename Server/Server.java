@@ -8,10 +8,11 @@ public interface Server
 	public void addEntry(String database, String table, Comparable[] data);
 	public void addColumns(String databaseName, String tableName, Column[] columns);
 	public void addTable(String databaseName, String tableName);
-	public void deleteEntry(String databaseName, String tableName, Entry entryToDelete);
+	public void deleteEntry(String databaseName, String tableName, int key);
 	public void deleteColumn(String databaseName, String tableName, Integer index);
 	public void deleteTable(String databaseName, String tableName);
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase();
+	public User[] getUserList();
 	//public void addColumn(String database)
 }

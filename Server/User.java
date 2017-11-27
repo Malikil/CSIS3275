@@ -1,19 +1,38 @@
 package Server;
 
-public class User implements Comparable<Integer>{
+public class User implements Comparable<User>{
 
 	private String username;
 	private String password;
-	private int userKey;
-	private DefinitelyNotArrayList<String> databases;
+	private AVLTree<String> databases;
 	
-	public User(String uName, String pWord, String[] dBases, int key)
+	public User(String uName, String pWord, String[] dBases)
 	{
-		userKey = key;
 		username = uName;
 		password = pWord;
+		databases = new AVLTree<String>();
 		for(int i = 0; i < dBases.length ; i++)
 			databases.add(dBases[i]);
+	}
+	
+	public User(String uName)
+	{
+		username = uName;
+	}
+	
+	public User(User newUser, String[] dBases) 
+	{
+		this(newUser.getUsername(),newUser.getPassword(),dBases);
+	}
+	
+	public User(User newUser, String pWord)
+	{
+		this(newUser.getUsername(),pWord,newUser.getDatabases());
+	}
+	
+	public String getPassword()
+	{
+		return password;
 	}
 	
 	public String getUsername()
@@ -46,7 +65,7 @@ public class User implements Comparable<Integer>{
 	
 	public void changeDatabase(String[] newDBList)
 	{
-		DefinitelyNotArrayList<String> newDBs = new DefinitelyNotArrayList<String>();
+		AVLTree<String> newDBs = new AVLTree<String>();
 		for(int i = 0 ; i < newDBList.length ; i++)
 			newDBs.add(newDBList[i]);
 		databases = newDBs;
@@ -54,15 +73,12 @@ public class User implements Comparable<Integer>{
 	
 	public void deleteDatabase(String databaseToDelete)
 	{
-		//databases.remove(databases.search(databaseToDelete));    TODO 
+		databases.delete(databaseToDelete);
 	}
 	
 	@Override
-	public int compareTo(Integer key)
+	public int compareTo(User user)
 	{
-		return key.intValue() - userKey;
-	}
-	
-	
-	
+		return username.compareTo(user.getUsername());
+	}	
 }
