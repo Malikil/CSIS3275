@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import Server.AVLTree;
 import Server.Column;
 import Server.Command;
 import Server.Entry;
@@ -17,7 +18,7 @@ public class ClientMain implements Client
 	private ObjectOutputStream objOut;
 	private ClientGUI gui;
 	private Table currentTable = null;
-	private Entry[] filteredTable;
+	//private AVLTree<Entry> filteredTable;
 	private String currentTableName;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in) throws IOException
@@ -201,7 +202,6 @@ public class ClientMain implements Client
 	public void setTable(Table newTable)
 	{
 		currentTable = newTable;
-		filteredTable = newTable.asArray();
 		String[] colNames =  currentTable.getColumnNames();
 		gui.setFieldList(colNames);
 		gui.setTable(currentTable.asArray(),colNames);
@@ -243,7 +243,7 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry(int entryKey)
 	{
-		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), filteredTable[entryKey]);
+		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), gui.getSelectedEntry());
 		editGUI.setVisible(true);
 		if (editGUI.getEntry() != null)
 			try
@@ -268,70 +268,31 @@ public class ClientMain implements Client
 	@Override
 	public void applySearch(String[] values, String[] comparisons, int[] fields)
 	{
-		filteredTable = currentTable.asArray();
+		Comparable[] filterValues = new Comparable[values.length];
+		Column[] cols = currentTable.getColumns();
+		for (int i = 0; i < values.length; i++)
+		{
+			switch (cols[fields[i]].getType())
+			{
+			case Column.STRING:
+				filterValues[i] = values[i];
+				break;
+			case Column.NUMBER:
+				filterValues[i] = Double.parseDouble(values[i]);
+				break;
+			}
+		}
+		AVLTree<Entry> newTree = currentTable.getTree();
 		for (int i = 0; i < values.length; i++)
 		{
 			Entry.setComparer(fields[i]);
-			quickSort(0, filteredTable.length, filteredTable);
-			// Binary search for filter value
-			int index = binarySearch((Comparable[])filteredTable, (Comparable)values[i]);
-			switch (comparisons[i])
-			{
-			case "<":
-				while (filteredTable[++index].getField(fields[i]).compareTo(values[i]) < 1);
-			case "<=":
-			case "=":
-			case ">=":
-			case ">":
-			}
-			// Update temporary table
-			
+			newTree = newTree.reconstructTree();
+			// Create dud entry
+			Comparable[] tempDat = new Comparable[cols.length];
+			tempDat[fields[i]] = filterValues[i];
+			newTree = newTree.getRange(new Entry(-1, tempDat), comparisons[i]);
 		}
 		// Display table
-	}
-	
-	private <T extends Comparable<T>> int binarySearch(T[] arr, T val)
-	{
-		int front = 0, end = arr.length - 1;
-		for (int middle = (front + arr.length) / 2; front <= end; middle = (front + end) / 2)
-		{
-			if (val.equals(arr[middle]))
-				return middle;
-			else if (val.compareTo(arr[middle]) > 0)
-				front = middle + 1;
-			else
-				end = middle - 1;
-		}
-		return -1;
-	}
-	
-	private <T extends Comparable<T>> void quickSort(int start, int length, T[] arr)
-	{
-	    if (start >= length - 1) return;
-	    
-	    int front = start - 1;
-	    int last = length - 1;
-	    T pivot = arr[last];
-	    while (true)
-	    {
-	        while (arr[++front].compareTo(pivot) < 0);
-	        while (arr[--last].compareTo(pivot) > 0 && last > start);
-	        if (front < last)
-	        {
-	            T temp = arr[front];
-	            arr[front] = arr[last];
-	            arr[last] = temp;
-	        }
-	        else
-	        {
-	            T temp = arr[front];
-	            arr[front] = pivot;
-	            arr[length - 1] = temp;
-	            break;
-	        }
-	    }
-	    
-	    quickSort(start, front, arr);
-	    quickSort(front + 1, length, arr);
+		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
 	}
 }

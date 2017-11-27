@@ -44,7 +44,7 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 	
 	public void add(E item)
 	{
-		if (count < array.length)
+		if (count < array.length - 1)
 			array[count++] = item;
 		else
 		{
@@ -61,7 +61,7 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 		if (index < 0 || index > count)
 			throw new IndexOutOfBoundsException("Given index is outside the bounds of the array");
 		
-		if (count < array.length)
+		if (count < array.length - 1)
 		{
 			for (int i = count; i > index; i--)
 				array[i] = array[i - 1];

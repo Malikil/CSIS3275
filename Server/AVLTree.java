@@ -31,11 +31,6 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		count = 1;
 	}
 	
-	/*public AVLNode<T> getBase()
-	{
-		return base;
-	}*/// Why do we need to get the base?
-	
 	/**
 	 * Adds a value to the tree, then makes sure the tree is balanced
 	 * @param value The value to add to the tree
