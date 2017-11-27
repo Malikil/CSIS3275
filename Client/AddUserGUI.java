@@ -1,4 +1,4 @@
-package Server;
+package Client;
 
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -22,22 +22,6 @@ public class AddUserGUI {
 	private JFrame addUserFrame;
 	private JTextField textField;
 	private JTextField addUserField;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					AddUserGUI window = new AddUserGUI();
-					window.addUserFrame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the application.
