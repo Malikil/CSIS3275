@@ -316,7 +316,7 @@ public class ServerMain implements Server
 	{
 		Table newTable = new Table();
 		saveTable(databaseName, tableName, newTable);
-		sendObjectToAll(new Message(Command.ADD_TABLE, newTable),databaseName,tableName);
+		sendObjectToAll(new Message(Command.ADD_TABLE, tableName),databaseName,tableName);
 	}
 	
 	@Override
