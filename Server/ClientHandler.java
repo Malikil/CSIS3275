@@ -52,7 +52,7 @@ public class ClientHandler implements Runnable
 						if(userPass[1].equals(userList[i].getPassword()))
 						{
 							objOut.writeObject(new Message(Command.CONNECTION_SUCCESS,
-									parent.getUserDatabases(userPass[0])));
+									userList[i]));
 							loggedIn = true;
 							break;
 						}
