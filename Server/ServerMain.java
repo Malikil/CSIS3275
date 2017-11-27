@@ -31,9 +31,9 @@ public class ServerMain implements Server
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
 		
-		/*
+		
 		//FORTESTING TODO
-		server.saveDatabase("db1");
+		server.createDatabase("db1");
 		String[] testDBs = new String[1];
 		testDBs[0]= "db1";
 		server.addUser("a", "a", testDBs);
@@ -44,7 +44,7 @@ public class ServerMain implements Server
 		server.addColumns("db1", "table1", testCols);
 		//server.getTable("db1", "table1").getColumns().
 		//FORTESTING TODO
-		*/
+		
 		
 		new Thread(new ServerGUI(server)).start();
 		ServerSocket socket = null;
@@ -84,13 +84,16 @@ public class ServerMain implements Server
 		clientList.add(client);
 	}
 	
-	public void sendObjectToAll(Message messageToSend, String activeDatabase, String activeTable)
+	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
-			if(client.getCurrentTableName().equals(activeTable) && client.getCurrentDatabaseName().equals(activeDatabase))
-				client.sendObject(messageToSend);
+			if(client.getCurrentDatabaseName().equals(database))
+				if(message.getCommandType()==Command.DELETE_TABLE || client.getCurrentTableName().equals(table))
+					client.sendObject(message);
 	}
 
+	
+	
 	@Override
 	public String[] getUserDatabases(String user)
 	{
@@ -173,7 +176,7 @@ public class ServerMain implements Server
     
 		return tableReq;	
 	}
-
+	
 	public void saveTable(String dbName, String tableName, Table table)
 	{
 		File file = new File(dbName+"\\"+tableName+".eric");
@@ -203,7 +206,7 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void saveDatabase(String databaseName) //String[] userList)
+	public void createDatabase(String databaseName) //String[] userList)
 	{
 		File dir = new File(databaseName);
 		if(!dir.isDirectory())
@@ -212,12 +215,6 @@ public class ServerMain implements Server
 			return;
 		}
 		//TODO //changeUserDatabases();
-	}
-	
-	public void deleteDatabase(String databaseName)
-	{
-		File dir = new File(databaseName);
-		dir.delete();
 	}
 	
 	public void addUser(String username, String password, String[] databaseList)
