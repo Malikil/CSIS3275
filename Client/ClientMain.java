@@ -26,7 +26,6 @@ public class ClientMain implements Client
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
-		
 		objOut = out;
 		objIn = in;
 		gui = new ClientGUI(this, admin);
@@ -127,6 +126,7 @@ public class ClientMain implements Client
 					case GET_TABLE_NAMES:
 						gui.setTableList(received.getTableNames());
 						break;
+						
 					default:
 						throw new IOException("Unexpected server command");
 					}
@@ -364,11 +364,11 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void editUser() {
+	public void editUser(String username) {
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.EDIT_USER, null)); //TODO User Object
+			objOut.writeObject(new Message(Command.EDIT_USER, new AddUserGUI(databaseList, username,false).getUser())); //TODO User Object
 		}
 		catch (HeadlessException | IOException e)
 		{	}
@@ -379,18 +379,18 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser())); //TODO sending User object
+			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
 		}
 		catch (HeadlessException | IOException e)
 		{	}
 	}
 
 	@Override
-	public void deleteUser() {
+	public void deleteUser(String username) {
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_USER, null)); //TODO sending String username
+			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
 		{	}

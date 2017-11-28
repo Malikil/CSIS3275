@@ -189,7 +189,7 @@ public class ClientGUI extends JFrame
 				@Override
 				public void actionPerformed(ActionEvent e) 
 				{
-					parent.editUser(selectUserDropdown.getSelectedItem());
+					parent.editUser((String)selectUserDropdown.getSelectedItem());
 				}	
 			});
 			adminPanel.add(editUserButton);
@@ -214,7 +214,7 @@ public class ClientGUI extends JFrame
 				@Override
 				public void actionPerformed(ActionEvent e) 
 				{
-					parent.deleteUser(selectUserDropdown.getSelectedItem());
+					parent.deleteUser((String)selectUserDropdown.getSelectedItem());
 				}	
 			});
 			adminPanel.add(deleteUserButton);
