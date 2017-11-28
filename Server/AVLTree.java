@@ -294,10 +294,10 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 			if (current.compareTo(value) > 0)
 				newTree.add(current.getValue());
 			if (current.getLeft() != null)
-				lessThanNode(current.getLeft(), value, newTree);
+				greaterThanNode(current.getLeft(), value, newTree);
 		}
 		if (current.getRight() != null)
-			lessThanNode(current.getRight(), value, newTree);
+			greaterThanNode(current.getRight(), value, newTree);
 	}
 	
 	private void equalToNode(AVLNode<T> current, T value, AVLTree<T> newTree)
