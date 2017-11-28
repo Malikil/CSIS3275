@@ -22,5 +22,5 @@ public interface Client
 	public void editUser(String username);
 	public void addUser();
 	public void deleteUser(String username);
-
+	public void sort(int field);
 }
