@@ -238,6 +238,49 @@ public class ServerMain implements Server
 		{
 		}
 	}
+	
+	@Override
+	public boolean deleteDatabase(String databaseName)
+	{
+		File dir = new File("databases\\" + databaseName);
+		if (dir.list().length == 0)
+		{
+			dir.delete();
+			User[] users = userList.toArray(new User[userList.size()]);
+			for (User u : users)
+				u.deleteDatabase(databaseName);
+			return true;
+		}
+		else return false;
+	}
+	
+	@Override
+	public void deleteUser(String username)
+	{
+		userList.delete(new User(username));
+		for (ClientHandler c : clientList)
+			if (c.getUsername().equals(username))
+				c.sendObject(new Message(Command.DELETE_USER, null));
+		saveConfig();
+	}
+	
+	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,databases);
+		userList.add(newUser);
+		saveConfig();
+	}
+	
+	public void changePassword(String username, String newPass)
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,newPass);
+		userList.add(newUser);
+		saveConfig();
+	}
 		
 	@Override
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
@@ -342,8 +385,6 @@ public class ServerMain implements Server
 		}
 		else return false;
 	}
-	
-
 
 	@Override
 	public void createUser(User user)
@@ -360,7 +401,6 @@ public class ServerMain implements Server
 		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
 		
 	}
-	
 	
 	@Override
 	public void deleteUser(String username)
@@ -390,5 +430,4 @@ public class ServerMain implements Server
 		userList.add(newUser);
 		saveConfig();
 	}
-	
 }
