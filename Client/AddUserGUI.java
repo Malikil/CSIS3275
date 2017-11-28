@@ -28,32 +28,38 @@ public class AddUserGUI extends JDialog {
 	private JTextField addPasswordField;
 	private JCheckBox isAdmin;
 	private JList<String> databaseList;
+	private String[] databases;
+	private DefaultListModel model;
 
 	/**
 	 * Create the application.
 	 */
 	public AddUserGUI(String[] databases)
 	{
+		this.databases = databases;
 		initialize(true, null);
-		DefaultListModel model = new DefaultListModel();
-		databaseList = new JList<String>(databases);
-		model.addElement(databaseList);
-		databaseList.setModel(model);
+		
+
 	}
 	
-	public AddUserGUI(String[] databases, String username,boolean add)
+	public AddUserGUI(String[] databaseslist, String username,boolean add)
 	{
+		databases = databaseslist;
 		initialize(add, username);
-		DefaultListModel model = new DefaultListModel();
-		databaseList = new JList<String>(databases);
-		model.addElement(databaseList);
-		databaseList.setModel(model);
+
 	}
 	
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(boolean add, String username) {
+		model = new DefaultListModel<String>();
+		databaseList = new JList<String>(databases);
+		for(String dbName: databases) 
+		{
+			model.addElement(dbName);
+		}
+		databaseList.setModel(model);
 		
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		JDialog thisD = this;
@@ -92,8 +98,9 @@ public class AddUserGUI extends JDialog {
 			addUserField.setBounds(183, 11, 130, 26);
 			getContentPane().add(addUserField);
 			
-			databaseList = new JList<>();
+
 			databaseList.setBounds(114, 88, 154, 141);
+
 			JScrollPane sp = new JScrollPane(databaseList);
 			sp.setBounds(114, 100, 154, 141);
 			getContentPane().add(sp);
@@ -166,7 +173,7 @@ public class AddUserGUI extends JDialog {
 			addUserField.setText(username);
 			addUserField.setEditable(false);
 			
-			databaseList = new JList<>();
+
 			databaseList.setBounds(114, 88, 154, 141);
 			JScrollPane sp = new JScrollPane(databaseList);
 			sp.setBounds(114, 100, 154, 141);
@@ -210,8 +217,12 @@ public class AddUserGUI extends JDialog {
 	
 	public User getUser()
 	{
-		String[] selectedItems =
-				databaseList.getSelectedValuesList().toArray(new String[databaseList.getSelectedIndices().length]);
+		int[] selectedIndexes =  databaseList.getSelectedIndices();
+		String[] selectedItems = new String[selectedIndexes.length];
+		for(int i = 0; i < selectedIndexes.length; i++)
+		{
+			selectedItems[i] = databases[i];
+		}
 		
 		return new User(addUserField.getText(),addPasswordField.getText(), selectedItems, isAdmin.isSelected());
 	}
