@@ -195,6 +195,7 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 						current = current.getRight();
 			return true;
 		}
+		
 	}
 	
 	public T get(T value)
@@ -202,12 +203,14 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		AVLNode<T> current = base;
 		while (current != null)
 		{
+			if(current.compareTo(value) > 0)
+			{
+				return current.getValue();
+			}
 			if (current.compareTo(value) > 0)
 				current = current.getRight();
 			else if (current.compareTo(value) < 0)
 				current = current.getLeft();
-			else
-				return current.getValue();
 		}
 		return null;
 	}

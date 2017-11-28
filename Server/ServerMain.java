@@ -90,7 +90,7 @@ public class ServerMain implements Server
 		if(!file.exists())
 		{
 			userList = new DefinitelyNotArrayList<User>();
-			userList.add(new User("admin", "NewAdmin", new String[0], true));
+			userList.add(new User("admin", "NewAdmin", new String[] {"Admin"}, true));
 			entryKey = 0;
 			saveConfig();
 		}
@@ -117,6 +117,10 @@ public class ServerMain implements Server
 		file =  new File("databases");
 		if(!file.exists())
 			file.mkdir();
+		
+		file =  new File("databases\\admin");
+		if(!file.exists())
+			file.mkdir();
 	}
 	
 	public void saveConfig()
@@ -140,22 +144,28 @@ public class ServerMain implements Server
 	{
 		for (ClientHandler client : clientList)
 		{
-			if((message.getCommandType() == Command.DELETE_USER ||
-					message.getCommandType() == Command.ADD_USER ||
-					message.getCommandType() == Command.EDIT_USER ||
-					message.getCommandType() == Command.ADD_DATABASE ||
-					message.getCommandType() == Command.DELETE_DATABASE) &&
-					client.getCurrentUser().isAdmin())
+			if(!client.isConnected())
 			{
-				client.sendObject(message);
+				clientList.remove(client);
 			}
-			else if(client.getCurrentDatabaseName().equals(database))
-			{
-				if(message.getCommandType()==Command.DELETE_TABLE 
-				|| message.getCommandType()==Command.ADD_TABLE
-				|| client.getCurrentTableName().equals(table))
+			else {
+				if((message.getCommandType() == Command.DELETE_USER ||
+						message.getCommandType() == Command.ADD_USER ||
+						message.getCommandType() == Command.EDIT_USER ||
+						message.getCommandType() == Command.ADD_DATABASE ||
+						message.getCommandType() == Command.USER_LIST ||
+						message.getCommandType() == Command.DELETE_DATABASE) &&
+						client.getCurrentUser().isAdmin())
+				{
 					client.sendObject(message);
-				//else if (client.getUser().compareTo)
+				}
+				else if(client.getCurrentDatabaseName()!= null &&client.getCurrentDatabaseName().equals(database))
+				{
+					if(message.getCommandType()==Command.DELETE_TABLE 
+					|| message.getCommandType()==Command.ADD_TABLE
+					|| client.getCurrentTableName().equals(table))
+						client.sendObject(message);
+				}
 			}
 		}
 		
@@ -332,11 +342,10 @@ public class ServerMain implements Server
 		{
 			db.mkdir();
 			User[] users = userList.toArray(new User[userList.size()]);
-			String[] newDB = {databaseName};
 			for (User u : users)
 			{
 				if(u.isAdmin())
-					u.addDatabases(newDB);
+					u.addNewDatabase(databaseName);
 			}
 			this.sendObjectToAll(new Message(Command.ADD_DATABASE, databaseName),
 					databaseName, null);
@@ -377,7 +386,7 @@ public class ServerMain implements Server
 	{
 		userList.add(user);
 		saveConfig();
-		sendObjectToAll(new Message(Command.ADD_USER, user), null, null);
+		sendObjectToAll(new Message(Command.USER_LIST, getUserList()), null, null);
 	}
 
 	@Override
@@ -395,7 +404,7 @@ public class ServerMain implements Server
 			if (c.getCurrentUser().getUsername().equals(username))
 				c.sendObject(new Message(Command.LOGOFF, null));
 		saveConfig();
-		sendObjectToAll(new Message(Command.DELETE_USER, username), null, null);
+		sendObjectToAll(new Message(Command.USER_LIST, username), null, null);
 	}
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
@@ -410,5 +419,17 @@ public class ServerMain implements Server
 		User newUser = (User) userList.get(new User(username));
 		newUser.setPassword(newPass);
 		saveConfig();
+	}
+
+	@Override
+	public void removeClient(ClientHandler clientHandler) {
+		clientList.remove(clientHandler);
+		
+	}
+
+	@Override
+	public void sendUserList() {
+		this.sendObjectToAll(new Message(Command.USER_LIST,getUserList()), null, null);
+		
 	}
 }
