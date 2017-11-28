@@ -261,15 +261,15 @@ public class ClientGUI extends JFrame
 		tablesPanel.add(deleteFieldBttn);
 		
 		JButton sortFieldBttn = new JButton("Sort");
- -		sortFieldBttn.setBounds(293, 74, 89, 23);
- -		sortFieldBttn.addActionListener(new ActionListener() {
- -			@Override
- -			public void actionPerformed(ActionEvent e)
- -			{
- -				parent.sort(fieldsCB.getSelectedIndex());
- -			}
- -		});
- -		tablesPanel.add(sortFieldBttn);
+ 		sortFieldBttn.setBounds(293, 74, 89, 23);
+ 		sortFieldBttn.addActionListener(new ActionListener() {
+ 			@Override
+ 			public void actionPerformed(ActionEvent e)
+ 			{
+ 				parent.sort(fieldsCB.getSelectedIndex());
+ 			}
+ 		});
+ 		tablesPanel.add(sortFieldBttn);
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(62, 291, 99, 43);

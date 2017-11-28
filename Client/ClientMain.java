@@ -23,6 +23,8 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private String[] databaseList;
+	AVLTree<Entry> newTree;
+
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -345,8 +347,8 @@ public class ClientMain implements Client
 			}
   			catch (IOException ex)
   			{
- -				ex.printStackTrace();
- +				
+ 				ex.printStackTrace();
+ 				
   			}
 		}
 	}
@@ -377,7 +379,7 @@ public class ClientMain implements Client
 				break;
 			}
 		}
-		AVLTree<Entry> newTree = currentTable.getTree();
+		newTree = currentTable.getTree();
 		for (int i = 0; i < values.length; i++)
 		{
 			Entry.setComparer(fields[i]);

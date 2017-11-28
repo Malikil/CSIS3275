@@ -38,7 +38,7 @@ public class EditEntryGUI extends JDialog
 	 * @param fields The names of the fields to display
 	 * @param entry The entry to edit
 	 */
-	public EditEntryGUI(Column[] fields, Entry entry)
+	public EditEntryGUI(String[] fields, Entry entry)
 	{
 		initialize();
 		setTitle("Edit Entry");
