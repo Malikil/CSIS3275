@@ -332,6 +332,13 @@ public class ServerMain implements Server
 			// TODO Message if fail
 		}
 	}
+  
+	/* TODO use for Admins
+	@Override
+	public String[] getAllDatabases()
+	{
+		return new File("databases").list();
+	}*/
 	
 	@Override
 	public boolean deleteDatabase(String databaseName)

@@ -178,20 +178,45 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			JButton selectUserButton = new JButton("Select User");
-			selectUserButton.setBounds(180, 90, 110, 25);
-			adminPanel.add(selectUserButton);
-			
 			JComboBox<String> selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
 			
+			JButton editUserButton = new JButton("Edit User");
+			editUserButton.setBounds(180, 90, 110, 25);
+			editUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					parent.editUser((String)selectUserDropdown.getSelectedItem());
+				}	
+			});
+			adminPanel.add(editUserButton);
+			
+			
 			JButton addUserButton = new JButton("Add User");
 			addUserButton.setBounds(50, 90, 110, 25);
+			addUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					parent.addUser();
+				}	
+			});
 			adminPanel.add(addUserButton);
 			
 			JButton deleteUserButton = new JButton("Delete User");
 			deleteUserButton.setBounds(310, 90, 110, 25);
+			deleteUserButton.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e) 
+				{
+					parent.deleteUser((String)selectUserDropdown.getSelectedItem());
+				}	
+			});
 			adminPanel.add(deleteUserButton);
 			
 			JList databaseList = new JList();
@@ -202,15 +227,20 @@ public class ClientGUI extends JFrame
 			
 			JButton btnCreateDatabase = new JButton("Create Database");
 			btnCreateDatabase.setBounds(75, 350, 150, 25);
-      btnCreateDatabase.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			    parent.createDatabase();
-			  }
-		  });
-		  adminPanel.add(btnCreateDatabase);
+			btnCreateDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					parent.createDatabase();
+				}
+			});
+			adminPanel.add(btnCreateDatabase);
 			
-			JButton btnDeleteDatabase = new JButton("Delete Databasee");
+			JButton btnDeleteDatabase = new JButton("Delete Databases");
 			btnDeleteDatabase.setBounds(250, 350, 150, 25);
+			btnDeleteDatabase.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+				    parent.deleteDatabase();
+				}
+			});
 			adminPanel.add(btnDeleteDatabase);
 		}
 		//Admin End--------------------------------------------------------------------------------
