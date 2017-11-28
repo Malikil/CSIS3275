@@ -1,10 +1,8 @@
 package Client;
 
-import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.JFrame;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -16,8 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.UIManager;
-import javax.swing.table.DefaultTableModel;
-
 import Server.User;
 
 import javax.swing.SwingConstants;
@@ -58,8 +54,14 @@ public class AddUserGUI extends JDialog {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize(boolean add, String username) {
+		
+		setModalityType(ModalityType.APPLICATION_MODAL);
+		JDialog thisD = this;
+		
+		
 		if(add)
 		{
+			
 			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 			setTitle("Add User");
 			setBounds(100, 100, 300, 344);
@@ -68,6 +70,14 @@ public class AddUserGUI extends JDialog {
 			
 			JButton addDBBttn = new JButton("Add User");
 			addDBBttn.setBounds(135, 253, 117, 29);
+			addDBBttn.addActionListener(new ActionListener() 
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					thisD.dispose();
+				}
+			});
 			getContentPane().add(addDBBttn);
 			setTitle("Add User");
 			setBounds(35, 10, 405, 371);
@@ -127,11 +137,19 @@ public class AddUserGUI extends JDialog {
 			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 			setTitle("Edit User");
 			setBounds(100, 100, 300, 344);
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			getContentPane().setLayout(null);
 			
 			JButton addDBBttn = new JButton("Edit User");
 			addDBBttn.setBounds(135, 253, 117, 29);
+			addDBBttn.addActionListener(new ActionListener() 
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					thisD.dispose();
+				}
+			});
 			getContentPane().add(addDBBttn);
 			setTitle("Edit User");
 			setBounds(35, 10, 405, 371);
