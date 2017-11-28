@@ -15,9 +15,13 @@ public class ClientHandler implements Runnable
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
 	private Server parent;
-	private String currentDatabaseName = null;
-	private String currentTableName = null;
-	private String username = null;
+	private String currentDatabaseName;
+	private String currentTableName;
+	private User currentUser;
+	
+	public String getUsername() { return currentUser.getUsername(); }
+	public String getCurrentTableName() { return currentTableName; }
+	public String getCurrentDatabaseName() { return currentDatabaseName; }
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -42,36 +46,29 @@ public class ClientHandler implements Runnable
 		{
 			try 
 			{
-				User[] userList = parent.getUserList();
 				String[] userPass = ((Message)objIn.readObject()).getLogin();
-				userPass[0] = userPass[0].toLowerCase();
-				for(int i = 0 ; i < parent.getUserList().length;i++)
+				User parentUser = parent.getUser(userPass[0]);
+				if(parentUser != null)
 				{
-					if(userPass[0].equals(userList[i].getUsername()))
+					if(parentUser.equals(new User(userPass[0], userPass[1], null)))
 					{
-						if(userPass[1].equals(userList[i].getPassword()))
-						{
-							objOut.writeObject(new Message(Command.CONNECTION_SUCCESS,
-									userList[i]));
-							loggedIn = true;
-							break;
-						}
-						else
-						{
-							objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
-							break;
-						}
+						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
+						loggedIn = true;
+						break;
+					}
+					else
+					{
+						objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+						break;
 					}
 				}
 				if (!loggedIn)
-					objOut.writeObject(new Message(Command.INCORRECT_USER, null));	
+					objOut.writeObject(new Message(Command.INCORRECT_USER, null));
 			} 
 			catch (ClassNotFoundException e) 
-			{
-			} 
+			{	} // TODO
 			catch (IOException e) 
-			{
-			}
+			{	} // TODO
 		} while (!loggedIn);
 		
 		// Client is logged in, now wait for commands
@@ -134,19 +131,5 @@ public class ClientHandler implements Runnable
 		catch (IOException ex)
 		{
 		}
-	}
-	public String getCurrentTableName()
-	{
-		return currentTableName;
-	}
-	
-	public String getCurrentDatabaseName()
-	{
-		return currentDatabaseName;
-	}
-	
-	public String getUsername()
-	{
-		return username;
 	}
 }
