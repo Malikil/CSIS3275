@@ -19,7 +19,7 @@ public class ClientHandler implements Runnable
 	private String currentTableName;
 	private User currentUser;
 	
-	public String getUsername() { return currentUser.getUsername(); }
+	public User getCurrentUser() { return currentUser; }
 	public String getCurrentTableName() { return currentTableName; }
 	public String getCurrentDatabaseName() { return currentDatabaseName; }
 	
@@ -110,6 +110,21 @@ public class ClientHandler implements Runnable
 				case GET_TABLE_NAMES:
 					currentDatabaseName  = received.getDatabase();
 					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
+					break;
+				case DELETE_DATABASE:
+					parent.deleteDatabase(received.getDatabase());
+					break;
+				case ADD_DATABASE:
+					parent.createDatabase(received.getDatabase());
+					break;
+				case ADD_USER:
+					parent.createUser(received.getUser());
+					break;
+				case EDIT_USER:
+					parent.editUser(received.getUser());
+					break;
+				case DELETE_USER:
+					parent.deleteUser(received.getUsername());
 					break;
 				default:
 					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
