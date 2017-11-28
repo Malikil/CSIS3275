@@ -19,8 +19,8 @@ public interface Client
 	public void editEntry(int entryIndex);
 	public void setTable(Table newTable);
 	public void applySearch(String[] values, String[] comparisons, int[] fields);
-	public void editUser();
+	public void editUser(String username);
 	public void addUser();
-	public void deleteUser();
+	public void deleteUser(String username);
 
 }
