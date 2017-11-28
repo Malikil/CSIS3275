@@ -319,18 +319,36 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry(int entryKey)
 	{
-		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), gui.getSelectedEntry());
-		editGUI.setVisible(true);
-		if (editGUI.getEntry() != null)
+		Entry editEntry = gui.getSelectedEntry();
+ 		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumnNames(), editEntry);
+ 		editGUI.setVisible(true);
+		// Data validation
+ 		String[] newValues = editGUI.getData();
+ 		if (newValues != null)
+ 		{
+ 			Column[] cols = currentTable.getColumns();
 			try
-			{
-				if(editGUI.getEntry() != null)
-				objOut.writeObject(new Message(Command.EDIT_ENTRY, editGUI.getEntry()));
+  			{
+ 				for (int i = 0; i < cols.length; i++)
+ 				{
+ 					if (cols[i].getType() == Column.NUMBER)
+ 						editEntry.setfield(i, Double.parseDouble(newValues[i]));
+ 						else
+ 						editEntry.setfield(i, newValues[i]);
+ 				}
+ 				
+ 				objOut.writeObject(new Message(Command.EDIT_ENTRY, editEntry));
+ 			}
+			catch (NumberFormatException e)
+ 			{
+ 				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + e.getMessage());
 			}
-			catch (IOException ex)
-			{
-				
-			}
+  			catch (IOException ex)
+  			{
+ -				ex.printStackTrace();
+ +				
+  			}
+		}
 	}
 
 	@Override
@@ -432,6 +450,13 @@ public class ClientMain implements Client
 		}
 		catch (HeadlessException | IOException e)
 		{ 	}
+	}
+	
+	public void sort(int field)
+ 	{
+ 		Entry.setComparer(field);
+ 		newTree = newTree.reconstructTree();
+ 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
 	}
 
 	@Override
