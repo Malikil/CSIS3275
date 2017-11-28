@@ -19,4 +19,5 @@ public interface Server
 	public void createUser(User user);
 	public void editUser(User user);
 	public void deleteUser(String username);
+	public User getUser(String username);
 }

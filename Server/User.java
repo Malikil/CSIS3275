@@ -20,7 +20,7 @@ public class User implements Comparable<User>, Serializable
 	
 	public User(String uName, String pWord, String[] dBases, boolean admin)
 	{
-		username = uName;
+		username = uName.toLowerCase();
 		password = pWord;
 		databases = new AVLTree<String>();
 		for(int i = 0; i < dBases.length ; i++)
@@ -35,7 +35,7 @@ public class User implements Comparable<User>, Serializable
 	
 	public User(String uName)
 	{
-		username = uName;
+		username = uName.toLowerCase();
 	}
 	
 	public User(User newUser, String[] dBases) 
@@ -73,5 +73,13 @@ public class User implements Comparable<User>, Serializable
 	public int compareTo(User user)
 	{
 		return username.compareTo(user.getUsername());
-	}	
+	}
+	
+	public boolean equals(User user)
+	{
+		if (username.equals(user.getUsername()))
+			if (password.equals(user.getPassword()))
+				return true;
+		return false;
+	}
 }
