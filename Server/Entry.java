@@ -64,6 +64,7 @@ public class Entry implements Comparable<Entry>, Serializable
 	{
 		if (comparer == -1)
 		{
+			System.out.println("Comparing the searchfield " + o.primaryKey + " to this entry PK of " + primaryKey);
 			return primaryKey - o.primaryKey;
 		}
 		return fields.get(comparer).compareTo(o.fields.get(comparer));

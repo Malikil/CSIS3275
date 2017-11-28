@@ -137,6 +137,7 @@ public class ClientMain implements Client
 						break;
 					case DELETE_USER:
 						System.out.println("receives delete user");
+						break;
 					case ADD_DATABASE:
 						String[] newDatabaseList = new String[databaseList.length +1];
 						int i = 0;
@@ -145,7 +146,16 @@ public class ClientMain implements Client
 						newDatabaseList[i] = received.getDatabase();
 						setDatabaseList(newDatabaseList);
 						System.out.println(received.getDatabase());
-
+						break;
+					case USER_LIST:
+						System.out.println("received userlist");
+						User[] userlist = received.getUserList();
+						String[] users = new String[userlist.length];
+						for(int v = 0; v<userlist.length;v++)
+						{
+							users[v] = userlist[v].getUsername();
+						}
+						this.refreshUserList(users);
 						break;
 					default:
 						throw new IOException("Unexpected server command");
@@ -169,6 +179,10 @@ public class ClientMain implements Client
 		}
 	}
 	
+	private void refreshUserList(String[] userlist) {
+		gui.refreshUsers(userlist);
+	}
+
 	@Override
 	public void setDatabaseList(String[] list)
 	{
@@ -421,5 +435,16 @@ public class ClientMain implements Client
 		}
 		catch (HeadlessException | IOException e)
 		{ 	}
+	}
+
+	@Override
+	public void requestUserList() {
+		try
+		{
+			objOut.writeObject(new Message(Command.	USER_LIST, null)); 
+		}
+		catch (HeadlessException | IOException e)
+		{ 	
+		}
 	}
 }

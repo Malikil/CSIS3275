@@ -18,13 +18,15 @@ public class ClientHandler implements Runnable
 	private String currentDatabaseName;
 	private String currentTableName;
 	private User currentUser;
-	
+	private Socket connecter;
+	public boolean isConnected() { return connecter.isConnected();}
 	public User getCurrentUser() { return currentUser; }
 	public String getCurrentTableName() { return currentTableName; }
 	public String getCurrentDatabaseName() { return currentDatabaseName; }
 	
 	public ClientHandler(Socket connection, Server server)
 	{
+		connecter= connection;
 		parent = server;
 		// Establish connections
 		try
@@ -41,8 +43,7 @@ public class ClientHandler implements Runnable
 	@Override
 	public void run()
 	{
-		do
-		{
+
 			try 
 			{
 				String[] userPass = ((Message)objIn.readObject()).getLogin();
@@ -51,14 +52,20 @@ public class ClientHandler implements Runnable
 				{
 					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
 					{
+						
+						
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
 						currentUser = parentUser;
-						break;
+						if(parentUser.isAdmin())
+						{
+							objOut.writeObject(new Message(Command.DATABASE_LIST, parent.getAllDataBases()));
+							
+						}
+						
 					}
 					else
 					{
 						objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
-						break;
 					}
 				}
 				if (currentUser == null)
@@ -67,8 +74,7 @@ public class ClientHandler implements Runnable
 			catch (ClassNotFoundException e) 
 			{	} // TODO
 			catch (IOException e) 
-			{	} // TODO
-		} while (currentUser == null);
+			{	parent.removeClient(this); } 
 		
 		// Client is logged in, now wait for commands
 		while (true)
@@ -125,6 +131,8 @@ public class ClientHandler implements Runnable
 				case DELETE_USER:
 					parent.deleteUser(received.getUsername());
 					break;
+				case USER_LIST:
+					parent.sendUserList();
 				default:
 					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
 					break;
