@@ -129,6 +129,15 @@ public class ClientMain implements Client
 					case DATABASE_LIST:
 						setDatabaseList(received.getDatabaseList());
 						break;
+					case ADD_DATABASE:
+						String[] newDatabaseList = new String[databaseList.length +1];
+						int i = 0;
+						for(;i < databaseList.length; i++)
+							newDatabaseList[i] = databaseList[i];
+						newDatabaseList[i] = received.getDatabase();
+						setDatabaseList(newDatabaseList);
+						System.out.println(received.getDatabase());
+						break;
 					default:
 						throw new IOException("Unexpected server command");
 					}
@@ -348,7 +357,9 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+			String CDB = JOptionPane.showInputDialog("Create Database");
+			if(CDB != null)
+				objOut.writeObject(new Message(Command.ADD_DATABASE, CDB)); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}
