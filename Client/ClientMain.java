@@ -23,7 +23,6 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private String[] databaseList;
-	AVLTree<Entry> newTree;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -45,22 +44,20 @@ public class ClientMain implements Client
 			if (login.isCancelled()) return;
 			try
 			{
-				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
-				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
-				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
+				sock = new Socket(login.getEnteredIP(), 8001); 
+				out = new ObjectOutputStream(sock.getOutputStream()); 
+				in = new ObjectInputStream(sock.getInputStream());
 				Message loginAttempt = new Message(Command.LOGIN,
 						new String[] { login.getEnteredUser(), login.getEnteredPass() });
-				out.writeObject(loginAttempt); System.out.println("Sent user/pass");
+				out.writeObject(loginAttempt);
 				loginAttempt = (Message)in.readObject();
-				Command conf = loginAttempt.getCommandType(); System.out.println("Response received");
-				System.out.println("Server responded with " + conf.toString()); // TODO DEBUG
+				Command conf = loginAttempt.getCommandType(); 
 				if (conf == Command.CONNECTION_SUCCESS)
 				{
 					User user = loginAttempt.getUser();
 					ClientMain client = new ClientMain(sock, out, in, user.isAdmin());
 					
 					client.setDatabaseList(user.getDatabases());
-					System.out.println("Databases set");
 					client.start();
 				}
 				else
@@ -69,14 +66,12 @@ public class ClientMain implements Client
 			}
 			catch (IOException ex)
 			{
-				System.out.println("Error communicating with server:\t" + ex.getMessage());
 				try
 				{
 					sock.close();
 				}
 				catch (IOException io)
 				{
-					io.printStackTrace();
 					// Couldn't close socket
 				}
 			}
@@ -110,6 +105,9 @@ public class ClientMain implements Client
 					case ADD_TABLE:
 						gui.addTableName(received.getTableName());
 						break;
+					case DELETE_TABLE:
+						setTable(null);
+						break;
 					case DELETE_COLUMN:
 						currentTable.removeColumn(received.getColumnIndex());
 						setTable(currentTable);
@@ -132,13 +130,11 @@ public class ClientMain implements Client
 						setDatabaseList(received.getDatabaseList());
 						break;
 					case ADD_USER:
-						System.out.println("receives add user");
 						break;
 					case EDIT_USER:
-						System.out.println("receives edit user");
 						break;
 					case DELETE_USER:
-						System.out.println("receives delete user");
+						break;
 					case ADD_DATABASE:
 						String[] newDatabaseList = new String[databaseList.length +1];
 						int i = 0;
@@ -146,8 +142,15 @@ public class ClientMain implements Client
 							newDatabaseList[i] = databaseList[i];
 						newDatabaseList[i] = received.getDatabase();
 						setDatabaseList(newDatabaseList);
-						System.out.println(received.getDatabase());
-
+						break;
+					case USER_LIST:
+						User[] userlist = received.getUserList();
+						String[] users = new String[userlist.length];
+						for(int v = 0; v<userlist.length;v++)
+						{
+							users[v] = userlist[v].getUsername();
+						}
+						this.refreshUserList(users);
 						break;
 					default:
 						throw new IOException("Unexpected server command");
@@ -171,6 +174,10 @@ public class ClientMain implements Client
 		}
 	}
 	
+	private void refreshUserList(String[] userlist) {
+		gui.refreshUsers(userlist);
+	}
+
 	@Override
 	public void setDatabaseList(String[] list)
 	{
@@ -185,12 +192,15 @@ public class ClientMain implements Client
 	  	tableGUI.setVisible(true);
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_TABLE, tableGUI.getTableName()));
-			objOut.writeObject(new Message(Command.ADD_COLUMNS, tableGUI.getColumns()));
+			if(tableGUI.getTableName() != null)
+			{
+				objOut.writeObject(new Message(Command.ADD_TABLE, tableGUI.getTableName()));
+				if(tableGUI.getColumns() != null)
+				objOut.writeObject(new Message(Command.ADD_COLUMNS, tableGUI.getColumns()));
+			}
 		}
 		catch (IOException ex)
 		{
-			ex.printStackTrace();
 			// TODO Catch block
 		}
 	}
@@ -204,7 +214,6 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			ex.printStackTrace();
 			// TODO Catch block
 		}
 	}
@@ -215,11 +224,9 @@ public class ClientMain implements Client
 		try
 		{
 			objOut.writeObject(new Message(Command.GET_TABLE_NAMES, database));
-			System.out.println("Sent GET_DATABASE to server");
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for tables from server");
 		}
 	}
 	
@@ -228,11 +235,9 @@ public class ClientMain implements Client
 		try
 		{
 			objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, tableName));
-			System.out.println("Sent GET_TABLE to server");
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for table from server"); // TODO System.out
 		}
 	}
 	
@@ -241,8 +246,8 @@ public class ClientMain implements Client
 		if(newTable == null)
 		{
 			currentTable = null;
-			gui.setFieldList(new String[0]);
-			gui.setTable(new Entry[0],null);
+			gui.setFieldList(null);
+			gui.setTable(null,null);
 		}
 		else
 		{
@@ -251,7 +256,6 @@ public class ClientMain implements Client
 			gui.setFieldList(colNames);
 			gui.setTable(currentTable.asArray(),colNames);
 		}
-		newTree = currentTable.getTree();
 	}
 
 	@Override
@@ -268,35 +272,19 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void createEntry()
-	{
-		EditEntryGUI addEnt = new EditEntryGUI(currentTable.getColumnNames());
+	public void createEntry(String[] headers)
+	{ 
+		EditEntryGUI addEnt = new EditEntryGUI(headers);
 		addEnt.setVisible(true);
-		
-		String[] newData = addEnt.getData();
-		if (newData != null)
-		{
-			Column[] cols = currentTable.getColumns();
-			Comparable[] newEntry = new Comparable[newData.length];
-			try
-			{
-				for (int i = 0; i < newEntry.length; i++)
-					if (cols[i].getType() == Column.NUMBER)
-						newEntry[i] = Double.parseDouble(newData[i]);
-					else
-						newEntry[i] = newData[i];
-				
-				objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry));
-			}
-			catch (NumberFormatException ex)
-			{
-				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + ex.getMessage());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		Comparable[] newEntry = addEnt.getData();
+		 try
+		 {
+			 if(newEntry != null)
+		 	objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry)); 
+		 }
+		 catch (IOException e)
+		 {
+		 } 
 	}
 	
 	@Override
@@ -320,45 +308,46 @@ public class ClientMain implements Client
 		Column[] addedColumns = newCols.getColumns();
 		 		try
 		 		{
+		 			if(addedColumns!=null)
 		 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
 		 		}
 		 		catch (IOException ex)
 		 		{
-		 			ex.printStackTrace();
 		 		}  
 	}
 
 	@Override
-	public void editEntry()
+	public void editEntry(int entryKey)
 	{
 		Entry editEntry = gui.getSelectedEntry();
-		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumnNames(), editEntry);
-		editGUI.setVisible(true);
+ 		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumnNames(), editEntry);
+ 		editGUI.setVisible(true);
 		// Data validation
-		String[] newValues = editGUI.getData();
-		if (newValues != null)
-		{
-			Column[] cols = currentTable.getColumns();
+ 		String[] newValues = editGUI.getData();
+ 		if (newValues != null)
+ 		{
+ 			Column[] cols = currentTable.getColumns();
 			try
-			{
-				for (int i = 0; i < cols.length; i++)
-				{
-					if (cols[i].getType() == Column.NUMBER)
-						editEntry.setfield(i, Double.parseDouble(newValues[i]));
-					else
-						editEntry.setfield(i, newValues[i]);
-				}
-				
-				objOut.writeObject(new Message(Command.EDIT_ENTRY, editEntry));
-			}
+  			{
+ 				for (int i = 0; i < cols.length; i++)
+ 				{
+ 					if (cols[i].getType() == Column.NUMBER)
+ 						editEntry.setfield(i, Double.parseDouble(newValues[i]));
+ 						else
+ 						editEntry.setfield(i, newValues[i]);
+ 				}
+ 				
+ 				objOut.writeObject(new Message(Command.EDIT_ENTRY, editEntry));
+ 			}
 			catch (NumberFormatException e)
-			{
-				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + e.getMessage());
+ 			{
+ 				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + e.getMessage());
 			}
-			catch (IOException ex)
-			{
-				ex.printStackTrace();
-			}
+  			catch (IOException ex)
+  			{
+ -				ex.printStackTrace();
+ +				
+  			}
 		}
 	}
 
@@ -388,7 +377,7 @@ public class ClientMain implements Client
 				break;
 			}
 		}
-		newTree = currentTable.getTree();
+		AVLTree<Entry> newTree = currentTable.getTree();
 		for (int i = 0; i < values.length; i++)
 		{
 			Entry.setComparer(fields[i]);
@@ -396,7 +385,7 @@ public class ClientMain implements Client
 			// Create dud entry
 			Comparable[] tempDat = new Comparable[cols.length];
 			tempDat[fields[i]] = filterValues[i];
-			newTree = newTree.getRange(new Entry(-1, tempDat), comparisons[i]); // TODO
+			newTree = newTree.getRange(new Entry(-1, tempDat), comparisons[i]);
 		}
 		// Display table
 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
@@ -406,7 +395,9 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+			String CDB = JOptionPane.showInputDialog("Create Database");
+			if(CDB != null)
+				objOut.writeObject(new Message(Command.ADD_DATABASE, CDB)); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}
@@ -439,10 +430,15 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
+			AddUserGUI adder = new AddUserGUI(databaseList);
+			adder.setVisible(true);
+			
+			if(adder.getUser() != null){
+				objOut.writeObject(new Message(Command.ADD_USER, adder.getUser()));
+				}
 		}
 		catch (HeadlessException | IOException e)
-		{	}
+		{	e.printStackTrace();}
 	}
 
 	@Override
@@ -453,14 +449,24 @@ public class ClientMain implements Client
 			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
-		{	}
+		{ 	}
+	}
+	
+	public void sort(int field)
+ 	{
+ 		Entry.setComparer(field);
+ 		newTree = newTree.reconstructTree();
+ 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
 	}
 
 	@Override
-	public void sort(int field)
-	{
-		Entry.setComparer(field);
-		newTree = newTree.reconstructTree();
-		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
+	public void requestUserList() {
+		try
+		{
+			objOut.writeObject(new Message(Command.	USER_LIST, null)); 
+		}
+		catch (HeadlessException | IOException e)
+		{ 	
+		}
 	}
 }

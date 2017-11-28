@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
@@ -12,15 +13,23 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
+import Server.Column;
+import Server.Command;
 import Server.DefinitelyNotArrayList;
 import Server.Entry;
+import Server.Message;
+import Server.Table;
+
 import javax.swing.border.LineBorder;
 
 
 import java.awt.Color;
 import javax.swing.JScrollPane;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JMenuItem;
@@ -31,6 +40,8 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.ScrollPaneConstants;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import javax.swing.JList;
 
 public class ClientGUI extends JFrame
@@ -50,6 +61,7 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
 	private int[] tableKeys;
+	private JComboBox<String> selectUserDropdown;
 
 	/**
 	 * Create the application.
@@ -167,25 +179,14 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			JComboBox<String> selectUserDropdown = new JComboBox<String>();
+			selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
-			
-			JButton editUserButton = new JButton("Edit User");
-			editUserButton.setBounds(180, 90, 110, 25);
-			editUserButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					parent.editUser((String)selectUserDropdown.getSelectedItem());
-				}	
-			});
-			adminPanel.add(editUserButton);
-			
+			parent.requestUserList();
+				
 			
 			JButton addUserButton = new JButton("Add User");
-			addUserButton.setBounds(50, 90, 110, 25);
+			addUserButton.setBounds(180, 90, 110, 25);
 			addUserButton.addActionListener(new ActionListener()
 			{
 				@Override
@@ -196,17 +197,6 @@ public class ClientGUI extends JFrame
 			});
 			adminPanel.add(addUserButton);
 			
-			JButton deleteUserButton = new JButton("Delete User");
-			deleteUserButton.setBounds(310, 90, 110, 25);
-			deleteUserButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					parent.deleteUser((String)selectUserDropdown.getSelectedItem());
-				}	
-			});
-			adminPanel.add(deleteUserButton);
 			
 			JList databaseList = new JList();
 			JScrollPane dataBaseScroller = new JScrollPane(databaseList);
@@ -215,22 +205,14 @@ public class ClientGUI extends JFrame
 			adminPanel.add(dataBaseScroller);
 			
 			JButton btnCreateDatabase = new JButton("Create Database");
-			btnCreateDatabase.setBounds(75, 350, 150, 25);
+			btnCreateDatabase.setBounds(170, 350, 150, 25);
 			btnCreateDatabase.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					parent.createDatabase();
 				}
 			});
 			adminPanel.add(btnCreateDatabase);
-			
-			JButton btnDeleteDatabase = new JButton("Delete Databases");
-			btnDeleteDatabase.setBounds(250, 350, 150, 25);
-			btnDeleteDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				    parent.deleteDatabase();
-				}
-			});
-			adminPanel.add(btnDeleteDatabase);
+
 		}
 		//Admin End--------------------------------------------------------------------------------
 		
@@ -261,7 +243,7 @@ public class ClientGUI extends JFrame
 		tablesPanel.add(scroller);
 		
 		JButton addFieldBttn = new JButton("Add");
-		addFieldBttn.setBounds(82, 74, 89, 23);
+		addFieldBttn.setBounds(130, 74, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parent.addColumn();
@@ -275,26 +257,31 @@ public class ClientGUI extends JFrame
 				parent.deleteColumn(fieldsCB.getSelectedIndex());
 			}
 		});
-		deleteFieldBttn.setBounds(188, 74, 89, 23);
+		deleteFieldBttn.setBounds(230, 74, 89, 23);
 		tablesPanel.add(deleteFieldBttn);
 		
 		JButton sortFieldBttn = new JButton("Sort");
-		sortFieldBttn.setBounds(293, 74, 89, 23);
-		sortFieldBttn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				parent.sort(fieldsCB.getSelectedIndex());
-			}
-		});
-		tablesPanel.add(sortFieldBttn);
+ -		sortFieldBttn.setBounds(293, 74, 89, 23);
+ -		sortFieldBttn.addActionListener(new ActionListener() {
+ -			@Override
+ -			public void actionPerformed(ActionEvent e)
+ -			{
+ -				parent.sort(fieldsCB.getSelectedIndex());
+ -			}
+ -		});
+ -		tablesPanel.add(sortFieldBttn);
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(62, 291, 99, 43);
 		addBttn.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.createEntry();
+			public void actionPerformed(ActionEvent e)
+			{
+				int i = fieldsCB.getItemCount();
+				String[] headers = new String[i];
+				for(int j = 0;j<headers.length;j++)
+					headers[j] = fieldsCB.getItemAt(j);
+				parent.createEntry(headers);
 			}
 		});
 		tablesPanel.add(addBttn);
@@ -321,7 +308,7 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				int entryRow = table.getSelectedRow();
-				parent.editEntry();
+				parent.editEntry(entryRow);
 			}
 		});
 		tablesPanel.add(editBttn);
@@ -335,27 +322,24 @@ public class ClientGUI extends JFrame
 		mainPanel.setLayout(null);
 		
 		valueFilter = new DefinitelyNotArrayList<>();
-		valueFilter.add(new JTextField());
-		valueFilter.get(0).setBounds(249, 53, 146, 22);
+
 		
 		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
 		comparisonTypes = new DefinitelyNotArrayList<>();
-		comparisonTypes.add(new JComboBox/*<>*/(comparisonStrings));
-		comparisonTypes.get(0).setBounds(186, 53, 51, 22);
+
 		
 		fieldFilter = new DefinitelyNotArrayList<>();
-		fieldFilter.add(new JComboBox/*<>*/(parent.getColumnNames()));
-		fieldFilter.get(0).setBounds(71, 53, 103, 22);
+		
 		
 		JPanel filterButtonPanel = new JPanel();
 		filterButtonPanel.setBounds(0, 0, 461, 398);
 		mainPanel.add(filterButtonPanel);
 		filterButtonPanel.setLayout(null);
 		JButton btnRemoveFilter = new JButton("Remove");
-		btnRemoveFilter.setBounds(184, 350, 91, 23);
+		btnRemoveFilter.setBounds(130, 350, 91, 23);
 		filterButtonPanel.add(btnRemoveFilter);
 		JButton btnApplyFilter = new JButton("Apply");
-		btnApplyFilter.setBounds(287, 350, 89, 23);
+		btnApplyFilter.setBounds(230, 350, 89, 23);
 		filterButtonPanel.add(btnApplyFilter);
 		
 		JScrollPane searchTabScroll = new JScrollPane();
@@ -378,12 +362,10 @@ public class ClientGUI extends JFrame
 		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
 		searchFieldLbl.setBounds(102, 26, 46, 14);
 		searchPanel.add(searchFieldLbl);
-		searchPanel.add(valueFilter.get(0));
-		searchPanel.add(comparisonTypes.get(0));
-		searchPanel.add(fieldFilter.get(0));
+
 		
 		JButton btnAddFilter = new JButton("Add");
-		btnAddFilter.setBounds(81, 350, 91, 23);
+		btnAddFilter.setBounds(30, 350, 91, 23);
 		filterButtonPanel.add(btnAddFilter);
 		btnAddFilter.addActionListener(new ActionListener() {
 			@Override
@@ -419,7 +401,7 @@ public class ClientGUI extends JFrame
 				for (int i = 0; i < values.length; i++)
 				{
 					values[i] = valueFilter.get(i).getText();
-					comps[i] = (String)comparisonTypes.get(i).getSelectedItem(); //
+					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
 				try
@@ -432,6 +414,30 @@ public class ClientGUI extends JFrame
 				}
 			}
 		});
+		
+		
+		JButton resetFilter = new JButton("Reset");
+		resetFilter.setBounds(330, 350, 89, 23);
+		filterButtonPanel.add(resetFilter);
+		resetFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				String[] values = new String[0],
+						 comps = new String[0];
+				int[] fields = new int[0];
+				
+				try
+				{
+					parent.applySearch(values, comps, fields);
+				}
+				catch (NumberFormatException ex)
+				{
+					JOptionPane.showMessageDialog(thisFrame, "Error parsing numbers\n" + ex.getMessage());
+				}
+			}
+		});
+		
 		btnRemoveFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -510,20 +516,27 @@ public class ClientGUI extends JFrame
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
-		for (String s : fields)
-			fieldsCB.addItem(s);
+		if(fields != null)
+		{
+			for (String s : fields)
+				fieldsCB.addItem(s);
+		}
 	}
 	
 	public void setTable(Entry[] data, String[] columns)
 	{
 		tableModel.setRowCount(0);
 		tableModel.setColumnIdentifiers(columns);
-		tableKeys = new int[data.length];
-		for (int i = 0; i < data.length; i++)
+		if(data!= null)
 		{
-			tableModel.addRow(data[i].getData());
-			tableKeys[i] = data[i].getKey();
+			tableKeys = new int[data.length];
+			for (int i = 0; i < data.length; i++)
+			{
+				tableModel.addRow(data[i].getData());
+				tableKeys[i] = data[i].getKey();
+			}
 		}
+
 	}
 	
 	public Entry getSelectedEntry()
@@ -532,10 +545,19 @@ public class ClientGUI extends JFrame
 		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
 		for (int i = 0; i < data.length; i++)
 		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Will this keep numbers as numbers?
+			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
 		}
 		return new Entry(tableKeys[row], data);
 	}
 
+	public void refreshUsers(String[] userlist)
+	{
+		selectUserDropdown.removeAllItems();
+		for(String username: userlist)
+		{
+			selectUserDropdown.addItem(username);
+		}
+		
+	}
 	
 }

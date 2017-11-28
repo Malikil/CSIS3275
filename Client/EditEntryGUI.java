@@ -19,8 +19,10 @@ public class EditEntryGUI extends JDialog
 {
 	private JPanel panel;
 	
+	private Entry edit;
 	private JTextField[] newData;
-
+	
+	public Entry getEntry() { return edit; }
 	public String[] getData()
 	{
 		if (newData == null)
@@ -36,19 +38,19 @@ public class EditEntryGUI extends JDialog
 	 * @param fields The names of the fields to display
 	 * @param entry The entry to edit
 	 */
-	public EditEntryGUI(String[] fields, Entry entry)
+	public EditEntryGUI(Column[] fields, Entry entry)
 	{
 		initialize();
 		setTitle("Edit Entry");
-		//edit = entry;
+		edit = entry;
 		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
-			JLabel label = new JLabel(fields[i]);
+			JLabel label = new JLabel(fields[i].toString());
 			label.setBounds(10, i * 25 + 11, 90, 14);
 			panel.add(label);
 			JTextField newField = new JTextField();
-			newField.setText(entry.getField(i).toString());
+			newField.setText(edit.getField(i).toString());
 			newData[i] = newField;
 			newData[i].setBounds(110, i * 25 + 8, 120, 20);
 			panel.add(newData[i]);
@@ -60,7 +62,7 @@ public class EditEntryGUI extends JDialog
 	{
 		initialize();
 		setTitle("Create Entry");
-		//edit = null;
+		edit = null;
 		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
@@ -100,6 +102,12 @@ public class EditEntryGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				// If we do data validation, it'll probably be here
+				if (edit != null)
+				{
+					for (int i = 0; i < newData.length; i++)
+						edit.setfield(i, newData[i].getText());
+				}
 				thisDialog.dispose();
 			}
 		});
@@ -112,6 +120,7 @@ public class EditEntryGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				newData = null;
+				edit = null;
 				thisDialog.dispose();
 			}
 		});

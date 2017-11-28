@@ -56,6 +56,13 @@ public class User implements Comparable<User>, Serializable
 		}
 	}
 	
+	public void addNewDatabase(String newDB)
+	{
+
+			databases.add(newDB);
+
+	}
+	
 	public void changeDatabase(String[] newDBList)
 	{
 		AVLTree<String> newDBs = new AVLTree<String>();
