@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import java.awt.Font;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingConstants;
@@ -13,23 +12,15 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
-import Server.Column;
-import Server.Command;
 import Server.DefinitelyNotArrayList;
 import Server.Entry;
-import Server.Message;
-import Server.Table;
-
 import javax.swing.border.LineBorder;
 
 
 import java.awt.Color;
 import javax.swing.JScrollPane;
-import javax.swing.JPopupMenu;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.JMenuItem;
@@ -40,8 +31,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.ScrollPaneConstants;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import javax.swing.JList;
 
 public class ClientGUI extends JFrame
@@ -291,19 +280,21 @@ public class ClientGUI extends JFrame
 		
 		JButton sortFieldBttn = new JButton("Sort");
 		sortFieldBttn.setBounds(293, 74, 89, 23);
+		sortFieldBttn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.sort(fieldsCB.getSelectedIndex());
+			}
+		});
 		tablesPanel.add(sortFieldBttn);
 		
 		JButton addBttn = new JButton("Add Entry");
 		addBttn.setBounds(62, 291, 99, 43);
 		addBttn.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				int i = fieldsCB.getItemCount();
-				String[] headers = new String[i];
-				for(int j = 0;j<headers.length;j++)
-					headers[j] = fieldsCB.getItemAt(j);
-				parent.createEntry(headers);
+			public void actionPerformed(ActionEvent e) {
+				parent.createEntry();
 			}
 		});
 		tablesPanel.add(addBttn);
@@ -330,7 +321,7 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				int entryRow = table.getSelectedRow();
-				parent.editEntry(entryRow);
+				parent.editEntry();
 			}
 		});
 		tablesPanel.add(editBttn);
@@ -428,7 +419,7 @@ public class ClientGUI extends JFrame
 				for (int i = 0; i < values.length; i++)
 				{
 					values[i] = valueFilter.get(i).getText();
-					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
+					comps[i] = (String)comparisonTypes.get(i).getSelectedItem(); //
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
 				try
@@ -533,7 +524,6 @@ public class ClientGUI extends JFrame
 			tableModel.addRow(data[i].getData());
 			tableKeys[i] = data[i].getKey();
 		}
-
 	}
 	
 	public Entry getSelectedEntry()
@@ -542,7 +532,7 @@ public class ClientGUI extends JFrame
 		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
 		for (int i = 0; i < data.length; i++)
 		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
+			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Will this keep numbers as numbers?
 		}
 		return new Entry(tableKeys[row], data);
 	}

@@ -235,7 +235,8 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	public AVLTree<T> reconstructTree()
 	{
 		AVLTree<T> temp = new AVLTree<>();
-		reconstructNode(base, temp);
+		if (base != null)
+			reconstructNode(base, temp);
 		return temp;
 	}
 	
@@ -251,26 +252,27 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 	public AVLTree<T> getRange(T value, String mode)
 	{
 		AVLTree<T> temp = new AVLTree<T>();
-		switch (mode)
-		{
-		case "<":
-			lessThanNode(base, value, temp);
-			break;
-		case "<=":
-			lessThanNode(base, value, temp);
-			equalToNode(base, value, temp);
-			break;
-		case "=":
-			equalToNode(base, value, temp);
-			break;
-		case ">=":
-			greaterThanNode(base, value, temp);
-			equalToNode(base, value, temp);
-			break;
-		case ">":
-			greaterThanNode(base, value, temp);
-			break;
-		}
+		if (base != null)
+			switch (mode)
+			{
+			case "<":
+				lessThanNode(base, value, temp);
+				break;
+			case "<=":
+				lessThanNode(base, value, temp);
+				equalToNode(base, value, temp);
+				break;
+			case "=":
+				equalToNode(base, value, temp);
+				break;
+			case ">=":
+				greaterThanNode(base, value, temp);
+				equalToNode(base, value, temp);
+				break;
+			case ">":
+				greaterThanNode(base, value, temp);
+				break;
+			}
 		return temp;
 	}
 	
@@ -294,10 +296,10 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 			if (current.compareTo(value) > 0)
 				newTree.add(current.getValue());
 			if (current.getLeft() != null)
-				lessThanNode(current.getLeft(), value, newTree);
+				greaterThanNode(current.getLeft(), value, newTree);
 		}
 		if (current.getRight() != null)
-			lessThanNode(current.getRight(), value, newTree);
+			greaterThanNode(current.getRight(), value, newTree);
 	}
 	
 	private void equalToNode(AVLNode<T> current, T value, AVLTree<T> newTree)
