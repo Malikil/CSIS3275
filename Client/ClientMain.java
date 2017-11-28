@@ -23,6 +23,7 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private String[] databaseList;
+	private String[] userList;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -84,74 +85,70 @@ public class ClientMain implements Client
 			}
 		}
 	}
+	
 
 	public void start()
 	{
 		gui.setVisible(true);
 		try
 		{
-				while (true)
+			while (true)
+			{
+				Message received = (Message)objIn.readObject();
+				switch (received.getCommandType())
 				{
-					Message received = (Message)objIn.readObject();
-					switch (received.getCommandType())
-					{
-					case ADD_COLUMNS:
-						Column[] columnList = received.getColumns();
-						for(int i = 0 ; i < columnList.length ; i++)
-							currentTable.addColumn(columnList[i]);
-						setTable(currentTable);
-						break;
-					case ADD_ENTRY:
-						 currentTable.addEntry(received.getEntry());
-						 setTable(currentTable);
-						break;
-					case ADD_TABLE:
-						gui.addTableName(received.getTableName());
-						break;
-					case DELETE_COLUMN:
-						currentTable.removeColumn(received.getColumnIndex());
-						setTable(currentTable);
-						break;
-					case DELETE_ENTRY:
-						currentTable.removeEntry(received.getKey());
-						setTable(currentTable);
-						break;
-					case EDIT_ENTRY:
-						currentTable.editEntry(received.getEntry());
-						setTable(currentTable);
-						break;
-					case GET_ACTUAL_TABLE:
-						setTable(received.getTable());
-						break;
-					case GET_TABLE_NAMES:
-						gui.setTableList(received.getTableNames());
-						break;
-					case DATABASE_LIST:
-						setDatabaseList(received.getDatabaseList());
-						break;
-					case ADD_USER:
-						System.out.println("receives add user");
-						break;
-					case EDIT_USER:
-						System.out.println("receives edit user");
-						break;
-					case DELETE_USER:
-						System.out.println("receives delete user");
-					case ADD_DATABASE:
-						String[] newDatabaseList = new String[databaseList.length +1];
-						int i = 0;
-						for(;i < databaseList.length; i++)
-							newDatabaseList[i] = databaseList[i];
-						newDatabaseList[i] = received.getDatabase();
-						setDatabaseList(newDatabaseList);
-						System.out.println(received.getDatabase());
-
-						break;
-					default:
-						throw new IOException("Unexpected server command");
-					}
+				case ADD_COLUMNS:
+					Column[] columnList = received.getColumns();
+					for(int i = 0 ; i < columnList.length ; i++)
+						currentTable.addColumn(columnList[i]);
+					setTable(currentTable);
+					break;
+				case ADD_ENTRY:
+					 currentTable.addEntry(received.getEntry());
+					 setTable(currentTable);
+					break;
+				case ADD_TABLE:
+					gui.addTableName(received.getTableName());
+					break;
+				case DELETE_COLUMN:
+					currentTable.removeColumn(received.getColumnIndex());
+					setTable(currentTable);
+					break;
+				case DELETE_ENTRY:
+					currentTable.removeEntry(received.getKey());
+					setTable(currentTable);
+					break;
+				case EDIT_ENTRY:
+					currentTable.editEntry(received.getEntry());
+					setTable(currentTable);
+					break;
+				case GET_ACTUAL_TABLE:
+					setTable(received.getTable());
+					break;
+				case GET_TABLE_NAMES:
+					gui.setTableList(received.getTableNames());
+					break;
+				case DATABASE_LIST:
+					setDatabaseList(received.getDatabaseList());
+					break;
+				case ADD_USER:
+					userList[userList.length +1] = received.getUsername();
+					System.out.println("receives add user");
+					break;
+				case EDIT_USER:
+					System.out.println("receives edit user");
+					break;
+				case DELETE_USER:
+					//lock();
+					System.out.println("receives delete user");
+					break;
+				case GET_USER_LIST:
+					setUserList(received.getUserList());
+					break;
+				default:
+					throw new IOException("Unexpected server command");
 				}
-			
+			}
 		}
 		catch (ClassNotFoundException ex)
 		{
@@ -174,6 +171,12 @@ public class ClientMain implements Client
 	{
 		databaseList = list;
 		gui.setDatabases(list);
+	}
+	
+	public void setUserList(String[] list)
+	{
+		userList = list;
+		gui.setUserCB(userList);
 	}
 	
 	@Override
@@ -366,9 +369,9 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			String CDB = JOptionPane.showInputDialog("Create Database");
-			if(CDB != null)
-				objOut.writeObject(new Message(Command.ADD_DATABASE, CDB)); //sending String
+			String dbName = JOptionPane.showInputDialog("Create Database");
+			if(dbName != null)
+				objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}

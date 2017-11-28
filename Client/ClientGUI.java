@@ -22,6 +22,7 @@ import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
 import Server.Table;
+import Server.User;
 
 import javax.swing.border.LineBorder;
 
@@ -60,6 +61,7 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
+	JComboBox<String> selectUserDropdown;
 	private int[] tableKeys;
 
 	/**
@@ -178,7 +180,7 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			JComboBox<String> selectUserDropdown = new JComboBox<String>();
+			selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
 			
@@ -545,6 +547,15 @@ public class ClientGUI extends JFrame
 			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
 		}
 		return new Entry(tableKeys[row], data);
+	}
+
+	public void setUserCB(String[] userList) 
+	{
+		selectUserDropdown.removeAll();
+		for (String user : userList)
+		{
+			selectUserDropdown.addItem(user);
+		}
 	}
 
 	
