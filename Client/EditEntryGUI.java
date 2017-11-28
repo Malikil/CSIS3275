@@ -25,6 +25,8 @@ public class EditEntryGUI extends JDialog
 	public Entry getEntry() { return edit; }
 	public String[] getData()
 	{
+		if (newData == null)
+			return null;
 		String[] temp = new String[newData.length];
 		for (int i = 0; i < newData.length; i++)
 			temp[i] = newData[i].getText();
