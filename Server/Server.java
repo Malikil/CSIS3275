@@ -21,4 +21,7 @@ public interface Server
 	public void editUser(User user);
 	public void deleteUser(String username);
 	public User getUser(String username);
+	public void removeClient(ClientHandler clientHandler);
+	public void sendUserList();
+	public String[] getAllDataBases();
 }

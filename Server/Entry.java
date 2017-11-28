@@ -66,6 +66,22 @@ public class Entry implements Comparable<Entry>, Serializable
 		{
 			return primaryKey - o.primaryKey;
 		}
+		if(fields.get(comparer) == null || o.fields.get(comparer) == null )
+		{
+			if(fields.get(comparer) == null && o.fields.get(comparer) == null)
+			{
+				return 0;
+			}
+			if(fields.get(comparer) == null)
+			{
+				return ( (Comparable)("")).compareTo(o.fields.get(comparer));
+			}
+			if(o.fields.get(comparer) == null)
+			{
+				return fields.get(comparer).compareTo("");
+			}
+		}
+		
 		return fields.get(comparer).compareTo(o.fields.get(comparer));
 	}
 	
