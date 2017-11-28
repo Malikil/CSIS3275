@@ -133,7 +133,10 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 							deleter.getParent().setRight(current);
 						else
 							deleter.getParent().setLeft(current);
-					rebalance(rebalancer);
+					if (count > 2)
+						rebalance(rebalancer);
+					else
+						base = current;
 				}
 				
 				count--;
