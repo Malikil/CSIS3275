@@ -121,8 +121,11 @@ public class ServerMain implements Server
 	public void saveConfig()
 	{
 		File file = new File("config.albert");
+		
 		try 
 		{
+			file.delete();
+			file.createNewFile();
 			FileOutputStream fOut = new FileOutputStream(file);
 			ObjectOutputStream oOut = new ObjectOutputStream(fOut);
 			Config config = new Config(userList, entryKey);

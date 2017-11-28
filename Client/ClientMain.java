@@ -361,7 +361,7 @@ public class ClientMain implements Client
 			// Create dud entry
 			Comparable[] tempDat = new Comparable[cols.length];
 			tempDat[fields[i]] = filterValues[i];
-			newTree = newTree.getRange(new Entry(-1, tempDat), comparisons[i]);
+			newTree = newTree.getRange(new Entry(-1, tempDat), comparisons[i]); // TODO
 		}
 		// Display table
 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());

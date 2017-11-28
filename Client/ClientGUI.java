@@ -424,7 +424,7 @@ public class ClientGUI extends JFrame
 				for (int i = 0; i < values.length; i++)
 				{
 					values[i] = valueFilter.get(i).getText();
-					comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
+					comps[i] = (String)comparisonTypes.get(i).getSelectedItem(); //
 					fields[i] = fieldFilter.get(i).getSelectedIndex();
 				}
 				try
