@@ -293,13 +293,8 @@ public class ClientGUI extends JFrame
 		addBttn.setBounds(62, 291, 99, 43);
 		addBttn.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				int i = fieldsCB.getItemCount();
-				String[] headers = new String[i];
-				for(int j = 0;j<headers.length;j++)
-					headers[j] = fieldsCB.getItemAt(j);
-				parent.createEntry(headers);
+			public void actionPerformed(ActionEvent e) {
+				parent.createEntry();
 			}
 		});
 		tablesPanel.add(addBttn);
@@ -326,7 +321,7 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				int entryRow = table.getSelectedRow();
-				parent.editEntry(entryRow);
+				parent.editEntry();
 			}
 		});
 		tablesPanel.add(editBttn);
@@ -537,7 +532,7 @@ public class ClientGUI extends JFrame
 		Comparable[] data = new Comparable[table.getModel().getColumnCount()];
 		for (int i = 0; i < data.length; i++)
 		{
-			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Unchecked
+			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Will this keep numbers as numbers?
 		}
 		return new Entry(tableKeys[row], data);
 	}

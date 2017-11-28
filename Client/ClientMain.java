@@ -268,19 +268,35 @@ public class ClientMain implements Client
 	}
 	
 	@Override
-	public void createEntry(String[] headers)
-	{ 
-		EditEntryGUI addEnt = new EditEntryGUI(headers);
+	public void createEntry()
+	{
+		EditEntryGUI addEnt = new EditEntryGUI(currentTable.getColumnNames());
 		addEnt.setVisible(true);
-		// TODO send new entry to server
-		Comparable[] newEntry = addEnt.getData();
-		 try
-		 {
-		 	objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry)); 
-		 }
-		 catch (IOException e)
-		 {
-		 } 
+		
+		String[] newData = addEnt.getData();
+		if (newData != null)
+		{
+			Column[] cols = currentTable.getColumns();
+			Comparable[] newEntry = new Comparable[newData.length];
+			try
+			{
+				for (int i = 0; i < newEntry.length; i++)
+					if (cols[i].getType() == Column.NUMBER)
+						newEntry[i] = Double.parseDouble(newData[i]);
+					else
+						newEntry[i] = newData[i];
+				
+				objOut.writeObject(new Message(Command.ADD_ENTRY, newEntry));
+			}
+			catch (NumberFormatException ex)
+			{
+				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + ex.getMessage());
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
@@ -308,23 +324,42 @@ public class ClientMain implements Client
 		 		}
 		 		catch (IOException ex)
 		 		{
+		 			ex.printStackTrace();
 		 		}  
 	}
 
 	@Override
-	public void editEntry(int entryKey)
+	public void editEntry()
 	{
-		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumns(), gui.getSelectedEntry());
+		Entry editEntry = gui.getSelectedEntry();
+		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumnNames(), editEntry);
 		editGUI.setVisible(true);
-		if (editGUI.getEntry() != null)
+		// Data validation
+		String[] newValues = editGUI.getData();
+		if (newValues != null)
+		{
+			Column[] cols = currentTable.getColumns();
 			try
 			{
-				objOut.writeObject(new Message(Command.EDIT_ENTRY, editGUI.getEntry()));
+				for (int i = 0; i < cols.length; i++)
+				{
+					if (cols[i].getType() == Column.NUMBER)
+						editEntry.setfield(i, Double.parseDouble(newValues[i]));
+					else
+						editEntry.setfield(i, newValues[i]);
+				}
+				
+				objOut.writeObject(new Message(Command.EDIT_ENTRY, editEntry));
+			}
+			catch (NumberFormatException e)
+			{
+				JOptionPane.showMessageDialog(gui, "Error converting value to Number\n" + e.getMessage());
 			}
 			catch (IOException ex)
 			{
-				
+				ex.printStackTrace();
 			}
+		}
 	}
 
 	@Override
