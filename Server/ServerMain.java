@@ -39,6 +39,7 @@ public class ServerMain implements Server
 			while (true)
 			{
 				server.addClient(new ClientHandler(socket.accept(), server));
+				System.out.println("Client Connected");
 			}
 		}
 		catch (IOException ex)
@@ -140,19 +141,21 @@ public class ServerMain implements Server
 		{
 			if((message.getCommandType() == Command.DELETE_USER ||
 					message.getCommandType() == Command.ADD_USER ||
-					message.getCommandType() == Command.EDIT_USER) &&
+					message.getCommandType() == Command.EDIT_USER ||
+					message.getCommandType() == Command.ADD_DATABASE ||
+					message.getCommandType() == Command.DELETE_DATABASE) &&
 					client.getCurrentUser().isAdmin())
 			{
-				client.sendObject(message);	
+				client.sendObject(message);
 			}
-			
-			
 			else if(client.getCurrentDatabaseName().equals(database))
+			{
 				if(message.getCommandType()==Command.DELETE_TABLE 
 				|| message.getCommandType()==Command.ADD_TABLE
 				|| client.getCurrentTableName().equals(table))
 					client.sendObject(message);
 				//else if (client.getUser().compareTo)
+			}
 		}
 		
 	}
@@ -334,7 +337,8 @@ public class ServerMain implements Server
 				if(u.isAdmin())
 					u.addDatabases(newDB);
 			}
-				
+			this.sendObjectToAll(new Message(Command.ADD_DATABASE, databaseName),
+					databaseName, null);
 		}
 		else
 		{
@@ -342,13 +346,13 @@ public class ServerMain implements Server
 		}
 	}
   
-	/* TODO use for Admins
+	/*
 	@Override
 	public String[] getAllDatabases()
 	{
 		return new File("databases").list();
-	}*/
-	
+	}
+	*/
 	@Override
 	public boolean deleteDatabase(String databaseName)
 	{
