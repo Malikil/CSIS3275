@@ -129,7 +129,13 @@ public class ServerMain implements Server
 	{
 		for (ClientHandler client : clientList)
 		{
-			if(client.getCurrentDatabaseName().equals(database))
+			if((message.getCommandType() == Command.DELETE_USER || message.getCommandType() == Command.ADD_USER || message.getCommandType() == Command.EDIT_USER  )&& client.getUser().isAdmin())
+			{
+				client.sendObject(message);	
+			}
+			
+			
+			else if(client.getCurrentDatabaseName().equals(database))
 				if(message.getCommandType()==Command.DELETE_TABLE 
 				|| message.getCommandType()==Command.ADD_TABLE
 				|| client.getCurrentTableName().equals(table))
@@ -344,20 +350,15 @@ public class ServerMain implements Server
 	{
 		userList.add(user);
 		saveConfig();
+		sendObjectToAll(new Message(Command.ADD_USER, user), null, null);
 	}
 
 	@Override
 	public void editUser(User user) {
 		if(userList.delete(user))
 			userList.add(user);
+		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
 		
-		
-		User[] users = userList.toArray(new User[userList.size()]);
-		for (User u : users)
-			if(u.isAdmin())
-			{
-				sendObjecttoUser(u.getUsername(), new Message(Command.DATABASE_LIST, userList));
-			}
 	}
 	
 	
@@ -367,8 +368,9 @@ public class ServerMain implements Server
 		userList.delete(new User(username));
 		for (ClientHandler c : clientList)
 			if (c.getUsername().equals(username))
-				c.sendObject(new Message(Command.DELETE_USER, null));
+				c.sendObject(new Message(Command.LOGOFF, null));
 		saveConfig();
+		sendObjectToAll(new Message(Command.DELETE_USER, username), null, null);
 	}
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
