@@ -53,6 +53,8 @@ public class ClientHandler implements Runnable
 					{
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
 						currentUser = parentUser;
+						if(currentUser.isAdmin())
+							objOut.writeObject(new Message(Command.GET_USER_LIST, parent.getUserList()));
 						break;
 					}
 					else
@@ -111,7 +113,8 @@ public class ClientHandler implements Runnable
 					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); System.out.println("Sent databases to client");
 					break;
 				case DELETE_DATABASE:
-					parent.deleteDatabase(received.getDatabase());
+					if(!parent.deleteDatabase(received.getDatabase()));
+						objOut.writeObject(new Message(Command.OPERATION_FAIL, null));
 					break;
 				case ADD_DATABASE:
 					parent.createDatabase(received.getDatabase());
@@ -125,6 +128,8 @@ public class ClientHandler implements Runnable
 				case DELETE_USER:
 					parent.deleteUser(received.getUsername());
 					break;
+				case GET_USER_LIST:
+					objOut.writeObject(new Message(Command.GET_USER_LIST, parent.getUserList()));
 				default:
 					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
 					break;

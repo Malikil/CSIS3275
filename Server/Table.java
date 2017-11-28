@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Table implements Serializable
 {
+
 	private DefinitelyNotArrayList<Column> columns;
 	AVLTree<Entry> tree;
 	

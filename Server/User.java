@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class User implements Comparable<User>, Serializable
 {
+	private static final long serialVersionUID = -4795806296678293205L;
 	private String username;
 	private String password;
 	private boolean admin;
@@ -36,6 +37,15 @@ public class User implements Comparable<User>, Serializable
 	public User(String uName)
 	{
 		username = uName.toLowerCase();
+	}
+	public User(User user) {
+		// TODO Test
+		username = user.getUsername();
+		password = user.getPassword();
+		databases = new AVLTree<String>();
+		for(int i = 0; i < user.getDatabases().length ; i++)
+			databases.add( user.getDatabases()[i]);
+		this.admin = true;
 	}
 	/*
 	public User(User newUser, String[] dBases) 
