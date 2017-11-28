@@ -23,6 +23,7 @@ public class ClientMain implements Client
 	private ClientGUI gui;
 	private Table currentTable = null;
 	private String[] databaseList;
+	AVLTree<Entry> newTree;
 	
 	public ClientMain(Socket sock, ObjectOutputStream out, ObjectInputStream in, boolean admin) throws IOException
 	{
@@ -75,6 +76,7 @@ public class ClientMain implements Client
 				}
 				catch (IOException io)
 				{
+					io.printStackTrace();
 					// Couldn't close socket
 				}
 			}
@@ -188,6 +190,7 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
+			ex.printStackTrace();
 			// TODO Catch block
 		}
 	}
@@ -201,6 +204,7 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
+			ex.printStackTrace();
 			// TODO Catch block
 		}
 	}
@@ -237,8 +241,8 @@ public class ClientMain implements Client
 		if(newTable == null)
 		{
 			currentTable = null;
-			gui.setFieldList(null);
-			gui.setTable(null,null);
+			gui.setFieldList(new String[0]);
+			gui.setTable(new Entry[0],null);
 		}
 		else
 		{
@@ -247,6 +251,7 @@ public class ClientMain implements Client
 			gui.setFieldList(colNames);
 			gui.setTable(currentTable.asArray(),colNames);
 		}
+		newTree = currentTable.getTree();
 	}
 
 	@Override
@@ -348,7 +353,7 @@ public class ClientMain implements Client
 				break;
 			}
 		}
-		AVLTree<Entry> newTree = currentTable.getTree();
+		newTree = currentTable.getTree();
 		for (int i = 0; i < values.length; i++)
 		{
 			Entry.setComparer(fields[i]);
@@ -366,9 +371,7 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			String CDB = JOptionPane.showInputDialog("Create Database");
-			if(CDB != null)
-				objOut.writeObject(new Message(Command.ADD_DATABASE, CDB)); //sending String
+			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}
@@ -401,15 +404,10 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			AddUserGUI adder = new AddUserGUI(databaseList);
-			adder.setVisible(true);
-			
-			if(adder.getUser() != null){
-				objOut.writeObject(new Message(Command.ADD_USER, adder.getUser()));
-				}
+			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
 		}
 		catch (HeadlessException | IOException e)
-		{	e.printStackTrace();}
+		{	}
 	}
 
 	@Override
@@ -420,6 +418,14 @@ public class ClientMain implements Client
 			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
-		{ 	}
+		{	}
+	}
+
+	@Override
+	public void sort(int field)
+	{
+		Entry.setComparer(field);
+		newTree = newTree.reconstructTree();
+		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
 	}
 }
