@@ -50,7 +50,7 @@ public class ClientHandler implements Runnable
 				User parentUser = parent.getUser(userPass[0]);
 				if(parentUser != null)
 				{
-					if(parentUser.equals(new User(userPass[0], userPass[1], null)))
+					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
 					{
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
 						loggedIn = true;

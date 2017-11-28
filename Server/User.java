@@ -37,7 +37,7 @@ public class User implements Comparable<User>, Serializable
 	{
 		username = uName.toLowerCase();
 	}
-	
+	/*
 	public User(User newUser, String[] dBases) 
 	{
 		this(newUser.getUsername(),newUser.getPassword(),dBases);
@@ -47,7 +47,7 @@ public class User implements Comparable<User>, Serializable
 	{
 		this(newUser.getUsername(),pWord,newUser.getDatabases());
 	}
-	
+	*/
 	public void addDatabases(String[] newDBList)
 	{
 		for(int i = 0; i < newDBList.length; i++)

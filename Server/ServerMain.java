@@ -371,7 +371,6 @@ public class ServerMain implements Server
 		if(userList.delete(user))
 			userList.add(user);
 		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
-		
 	}
 	
 	@Override
@@ -388,18 +387,14 @@ public class ServerMain implements Server
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
 		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,databases);
-		userList.add(newUser);
+		newUser.changeDatabase(databases);
 		saveConfig();
-	} // TODO
+	}
 	
 	public void changePassword(String username, String newPass)
 	{
 		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,newPass);
-		userList.add(newUser);
+		newUser.setPassword(newPass);
 		saveConfig();
-	} // TODO
+	}
 }
