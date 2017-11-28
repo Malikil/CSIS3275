@@ -64,9 +64,9 @@ public class User implements Comparable<User>, Serializable
 		databases = newDBs;
 	}
 	
-	public void deleteDatabase(String databaseToDelete)
+	public boolean deleteDatabase(String databaseToDelete)
 	{
-		databases.delete(databaseToDelete);
+		return databases.delete(databaseToDelete);
 	}
 	
 	@Override

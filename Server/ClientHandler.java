@@ -15,9 +15,13 @@ public class ClientHandler implements Runnable
 	private ObjectInputStream objIn;
 	private ObjectOutputStream objOut;
 	private Server parent;
-	private String currentDatabaseName = null;
-	private String currentTableName = null;
-	private String username = null;
+	private String currentDatabaseName;
+	private String currentTableName;
+	private User currentUser;
+	
+	public User getCurrentUser() { return currentUser; }
+	public String getCurrentTableName() { return currentTableName; }
+	public String getCurrentDatabaseName() { return currentDatabaseName; }
 	
 	public ClientHandler(Socket connection, Server server)
 	{
@@ -149,19 +153,5 @@ public class ClientHandler implements Runnable
 		catch (IOException ex)
 		{
 		}
-	}
-	public String getCurrentTableName()
-	{
-		return currentTableName;
-	}
-	
-	public String getCurrentDatabaseName()
-	{
-		return currentDatabaseName;
-	}
-	
-	public String getUsername()
-	{
-		return username;
 	}
 }

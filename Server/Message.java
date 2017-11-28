@@ -90,4 +90,8 @@ public class Message implements Serializable
 	{
 		return (User)data;
 	}
+
+	public String getUsername() {
+		return (String) data;
+	}
 }

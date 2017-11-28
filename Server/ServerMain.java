@@ -100,7 +100,7 @@ public class ServerMain implements Server
 			fIn.close();
 			oIn.close();
 			userList = config.getUserList();
-			entryKey = config.getEntryKey();	
+			entryKey = config.getEntryKey();
 		}
 		catch (IOException ex)
 		{	} 
@@ -128,17 +128,41 @@ public class ServerMain implements Server
 	public void sendObjectToAll(Message message, String database, String table)
 	{
 		for (ClientHandler client : clientList)
-			if(client.getCurrentDatabaseName().equals(database))
+		{
+			if((message.getCommandType() == Command.DELETE_USER ||
+					message.getCommandType() == Command.ADD_USER ||
+					message.getCommandType() == Command.EDIT_USER) &&
+					client.getCurrentUser().isAdmin())
+			{
+				client.sendObject(message);	
+			}
+			
+			
+			else if(client.getCurrentDatabaseName().equals(database))
 				if(message.getCommandType()==Command.DELETE_TABLE 
 				|| message.getCommandType()==Command.ADD_TABLE
 				|| client.getCurrentTableName().equals(table))
 					client.sendObject(message);
+				//else if (client.getUser().compareTo)
+		}
+		
+	}
+	
+	private void sendObjecttoUser(String username, Message message) {
+		for (ClientHandler client : clientList)
+		{
+			if(client.getCurrentUser().getUsername().equals(username))
+			{
+				client.sendObject(message);
+			}
+		}
+		
 	}
 	
 	public void sendDeleteUser(Message message, String username)
 	{
 		for (ClientHandler client : clientList)
-			if(client.getUsername().equals(username))
+			if(client.getCurrentUser().getUsername().equals(username))
 					client.sendObject(message);
 	}
 	
@@ -217,49 +241,6 @@ public class ServerMain implements Server
 		{
 		}
 	}
-	
-	@Override
-	public boolean deleteDatabase(String databaseName)
-	{
-		File dir = new File("databases\\" + databaseName);
-		if (dir.list().length == 0)
-		{
-			dir.delete();
-			User[] users = userList.toArray(new User[userList.size()]);
-			for (User u : users)
-				u.deleteDatabase(databaseName);
-			return true;
-		}
-		else return false;
-	}
-	
-	@Override
-	public void deleteUser(String username)
-	{
-		userList.delete(new User(username));
-		for (ClientHandler c : clientList)
-			if (c.getUsername().equals(username))
-				c.sendObject(new Message(Command.DELETE_USER, null));
-		saveConfig();
-	}
-	
-	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,databases);
-		userList.add(newUser);
-		saveConfig();
-	}
-	
-	public void changePassword(String username, String newPass)
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,newPass);
-		userList.add(newUser);
-		saveConfig();
-	}
 		
 	@Override
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
@@ -328,7 +309,41 @@ public class ServerMain implements Server
 	@Override
 	public void createDatabase(String databaseName)
 	{
-		// TODO
+		File db = new File("databases\\" + databaseName);
+		if (!db.exists())
+		{
+			db.mkdir();
+			User[] users = userList.toArray(new User[userList.size()]);
+			String[] newDB = {databaseName};
+			for (User u : users)
+			{
+				if(u.isAdmin())
+					u.addDatabases(newDB);
+			}
+				
+		}
+		else
+		{
+			// TODO Message if fail
+		}
+	}
+	
+	@Override
+	public boolean deleteDatabase(String databaseName)
+	{
+		File dir = new File("databases\\" + databaseName);
+		if (dir.list().length == 0)
+		{
+			dir.delete();
+			User[] users = userList.toArray(new User[userList.size()]);
+			for (User u : users)
+				if(u.deleteDatabase(databaseName))
+				{
+					sendObjecttoUser(u.getUsername(), new Message(Command.DATABASE_LIST, u.getDatabases()));
+				}
+			return true;
+		}
+		else return false;
 	}
 
 	@Override
@@ -336,11 +351,43 @@ public class ServerMain implements Server
 	{
 		userList.add(user);
 		saveConfig();
+		sendObjectToAll(new Message(Command.ADD_USER, user), null, null);
 	}
 
 	@Override
 	public void editUser(User user) {
-		// TODO Auto-generated method stub
+		if(userList.delete(user))
+			userList.add(user);
+		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
 		
 	}
+	
+	@Override
+	public void deleteUser(String username)
+	{
+		userList.delete(new User(username));
+		for (ClientHandler c : clientList)
+			if (c.getCurrentUser().getUsername().equals(username))
+				c.sendObject(new Message(Command.LOGOFF, null));
+		saveConfig();
+		sendObjectToAll(new Message(Command.DELETE_USER, username), null, null);
+	}
+	
+	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,databases);
+		userList.add(newUser);
+		saveConfig();
+	} // TODO
+	
+	public void changePassword(String username, String newPass)
+	{
+		User newUser = userList.get(new User(username));
+		userList.delete(newUser);
+		newUser = new User(newUser,newPass);
+		userList.add(newUser);
+		saveConfig();
+	} // TODO
 }
