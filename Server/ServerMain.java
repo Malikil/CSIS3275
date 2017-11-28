@@ -103,9 +103,14 @@ public class ServerMain implements Server
 			entryKey = config.getEntryKey();
 		}
 		catch (IOException ex)
-		{	} 
+		{
+			if (file.exists())
+				file.delete();
+		} 
 		catch (ClassNotFoundException e) 
-		{	}
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	public void saveConfig()
