@@ -371,7 +371,7 @@ public class ClientMain implements Client
 		{
 			String dbName = JOptionPane.showInputDialog("Create Database");
 			if(dbName != null)
-				objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+				objOut.writeObject(new Message(Command.ADD_DATABASE, dbName)); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}
@@ -382,7 +382,9 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_DATABASE, JOptionPane.showInputDialog("Delete Database"))); //sending String 
+			String database = JOptionPane.showInputDialog("Delete Database");
+			if (database != null)
+				objOut.writeObject(new Message(Command.DELETE_DATABASE, database)); //sending String 
 		}
 		catch (HeadlessException | IOException e)
 		{	}
