@@ -552,6 +552,7 @@ public class ClientGUI extends JFrame
 
 	public void refreshUsers(String[] userlist)
 	{
+		selectUserDropdown.removeAllItems();
 		for(String username: userlist)
 		{
 			selectUserDropdown.addItem(username);

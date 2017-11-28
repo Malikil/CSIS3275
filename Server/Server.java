@@ -23,4 +23,5 @@ public interface Server
 	public User getUser(String username);
 	public void removeClient(ClientHandler clientHandler);
 	public void sendUserList();
+	public String[] getAllDataBases();
 }

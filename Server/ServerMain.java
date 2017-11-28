@@ -432,4 +432,10 @@ public class ServerMain implements Server
 		this.sendObjectToAll(new Message(Command.USER_LIST,getUserList()), null, null);
 		
 	}
+
+	@Override
+	public String[] getAllDataBases() {
+		File file = new File("databases");
+		return file.list();
+	}
 }

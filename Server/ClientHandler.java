@@ -52,8 +52,16 @@ public class ClientHandler implements Runnable
 				{
 					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
 					{
+						
+						
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
 						currentUser = parentUser;
+						if(parentUser.isAdmin())
+						{
+							objOut.writeObject(new Message(Command.DATABASE_LIST, parent.getAllDataBases()));
+							
+						}
+						
 					}
 					else
 					{
