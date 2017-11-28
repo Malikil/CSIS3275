@@ -63,7 +63,7 @@ public class AddUserGUI extends JDialog {
 			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
 			setTitle("Add User");
 			setBounds(100, 100, 300, 344);
-			setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			getContentPane().setLayout(null);
 			
 			JButton addDBBttn = new JButton("Add User");
