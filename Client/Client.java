@@ -14,13 +14,14 @@ public interface Client
 	public String[] getColumnNames();
 	public void addColumn();
 	public void deleteColumn(int selectedIndex);
-	public void createEntry();
+	public void createEntry(String[] headers);
 	public void deleteEntry(int entryKey);
-	public void editEntry();
+	public void editEntry(int entryIndex);
 	public void setTable(Table newTable);
 	public void applySearch(String[] values, String[] comparisons, int[] fields);
 	public void editUser(String username);
 	public void addUser();
 	public void deleteUser(String username);
-	public void sort(int field);
+	public void requestUserList();
+
 }

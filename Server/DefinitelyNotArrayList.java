@@ -127,4 +127,38 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 			public E next() { return array[i++]; }
 		};
 	}
+
+	public Comparable get(Comparable itemToFind) {
+		Comparable found = null;
+		
+		for(E element: array)
+		{
+			if(element!=null)
+			{
+				if(((Comparable) element).compareTo(itemToFind) == 0)
+				{
+					found = (Comparable) element;
+				}
+			}
+		}
+		
+		return found;
+	}
+
+	public boolean delete(Comparable itemToFind) {
+		
+		boolean foundit = false;
+		
+		for(int i = 0; i < count; i++)
+		{
+			if(((Comparable) array[i]).compareTo(itemToFind) == 0)
+			{
+				remove(i);
+				return true;
+			}
+		}
+		
+		return foundit;
+		
+	}
 }

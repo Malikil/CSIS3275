@@ -149,7 +149,7 @@ public class AddColumnGUI extends JDialog
 		newColScroller.setViewportView(newColPanel);
 		newColPanel.setLayout(null);
 		
-		String[] fieldTypes = { "String", "Number" };
+		String[] fieldTypes = { "String", "Integer", "Double" };
 		Dimension windowSize = new Dimension(275, 50);
 		newColPanel.setPreferredSize(windowSize);
 		

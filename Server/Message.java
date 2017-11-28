@@ -94,4 +94,9 @@ public class Message implements Serializable
 	public String getUsername() {
 		return (String) data;
 	}
+	
+	public User[] getUserList()
+	{
+		return (User[]) data;
+	}
 }

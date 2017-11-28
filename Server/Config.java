@@ -4,16 +4,16 @@ import java.io.Serializable;
 
 public class Config implements Serializable
 {
-	private AVLTree<User> userList;
+	private DefinitelyNotArrayList<User> userList;
 	private int entryKey;
 	
-	Config(AVLTree<User> newUserList, int key)
+	Config(DefinitelyNotArrayList<User> userList2, int key)
 	{
-		userList = newUserList;
+		userList = userList2;
 		entryKey = key;
 	}
 	
-	public AVLTree<User> getUserList()
+	public DefinitelyNotArrayList<User> getUserList()
 	{
 		return userList;
 	}
