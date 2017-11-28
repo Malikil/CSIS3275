@@ -19,7 +19,7 @@ public class ServerMain implements Server
 {
 	private DefinitelyNotArrayList<ClientHandler> clientList;
 	private int entryKey;
-	private AVLTree<User> userList;
+	private DefinitelyNotArrayList<User> userList;
 	public ServerMain()
 	{
 		clientList = new DefinitelyNotArrayList<ClientHandler>();
@@ -89,7 +89,8 @@ public class ServerMain implements Server
 		File file = new File("config.albert");
 		if(!file.exists())
 		{
-			userList = new AVLTree<User>(new User("admin", "NewAdmin", new String[0], true));
+			userList = new DefinitelyNotArrayList<User>();
+			userList.add(new User("admin", "NewAdmin", new String[0], true));
 			entryKey = 0;
 			saveConfig();
 		}
@@ -181,7 +182,7 @@ public class ServerMain implements Server
 	@Override
 	public String[] getUserDatabases(String user)
 	{
-		return userList.get(new User(user)).getDatabases();
+		return ((User) userList.get(new User(user))).getDatabases();
 	}
 
 	@Override
@@ -320,7 +321,7 @@ public class ServerMain implements Server
 	
 	public User getUser(String username)
 	{
-		return userList.get(new User(username));
+		return (User) userList.get(new User(username));
 	}
 
 	@Override
@@ -399,14 +400,14 @@ public class ServerMain implements Server
 	
 	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
 	{
-		User newUser = userList.get(new User(username));
+		User newUser = (User) userList.get(new User(username));
 		newUser.changeDatabase(databases);
 		saveConfig();
 	}
 	
 	public void changePassword(String username, String newPass)
 	{
-		User newUser = userList.get(new User(username));
+		User newUser = (User) userList.get(new User(username));
 		newUser.setPassword(newPass);
 		saveConfig();
 	}
