@@ -30,20 +30,6 @@ public class ServerMain implements Server
 	{
 		// Create a new server window, and assign it a new server handler
 		ServerMain server = new ServerMain();
-		
-		/*
-		//FORTESTING TODO
-		server.saveDatabase("db1");
-		String[] testDBs = new String[1];
-		testDBs[0]= "db1";
-		server.addTable("db1", "table1");
-		Column[] testCols = new Column[1];
-		Column testCol = new Column("col1=string",0);
-		testCols[0] = testCol;
-		server.addColumns("db1", "table1", testCols);
-		//server.getTable("db1", "table1").getColumns().
-		//FORTESTING TODO
-		*/
 
 		ServerSocket socket = null;
 		try
@@ -232,27 +218,28 @@ public class ServerMain implements Server
 		}
 	}
 	
-	public void deleteDatabase(String databaseName)
+	@Override
+	public boolean deleteDatabase(String databaseName)
 	{
 		File dir = new File("databases\\" + databaseName);
-		//TODO NEED TO DELETE ALL TABLES INSIDE BEFORE .DELETE()
-		
-		dir.delete();
-		User[] users = userList.toArray(new User[userList.size()]);
-		for (User u : users)
-			u.deleteDatabase(databaseName);
+		if (dir.list().length == 0)
+		{
+			dir.delete();
+			User[] users = userList.toArray(new User[userList.size()]);
+			for (User u : users)
+				u.deleteDatabase(databaseName);
+			return true;
+		}
+		else return false;
 	}
 	
-	public void addUser(String username, String password, String[] databaseList)
-	{
-		userList.add(new User(username, password, databaseList));
-		saveConfig();
-	}
-	
-	
+	@Override
 	public void deleteUser(String username)
 	{
 		userList.delete(new User(username));
+		for (ClientHandler c : clientList)
+			if (c.getUsername().equals(username))
+				c.sendObject(new Message(Command.DELETE_USER, null));
 		saveConfig();
 	}
 	
@@ -342,5 +329,18 @@ public class ServerMain implements Server
 	public void createDatabase(String databaseName)
 	{
 		// TODO
+	}
+
+	@Override
+	public void createUser(User user)
+	{
+		userList.add(user);
+		saveConfig();
+	}
+
+	@Override
+	public void editUser(User user) {
+		// TODO Auto-generated method stub
+		
 	}
 }
