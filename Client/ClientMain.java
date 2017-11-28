@@ -129,6 +129,24 @@ public class ClientMain implements Client
 					case DATABASE_LIST:
 						setDatabaseList(received.getDatabaseList());
 						break;
+					case ADD_USER:
+						System.out.println("receives add user");
+						break;
+					case EDIT_USER:
+						System.out.println("receives edit user");
+						break;
+					case DELETE_USER:
+						System.out.println("receives delete user");
+					case ADD_DATABASE:
+						String[] newDatabaseList = new String[databaseList.length +1];
+						int i = 0;
+						for(;i < databaseList.length; i++)
+							newDatabaseList[i] = databaseList[i];
+						newDatabaseList[i] = received.getDatabase();
+						setDatabaseList(newDatabaseList);
+						System.out.println(received.getDatabase());
+
+						break;
 					default:
 						throw new IOException("Unexpected server command");
 					}
@@ -348,7 +366,9 @@ public class ClientMain implements Client
 	public void createDatabase() {	
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+			String CDB = JOptionPane.showInputDialog("Create Database");
+			if(CDB != null)
+				objOut.writeObject(new Message(Command.ADD_DATABASE, CDB)); //sending String
 		}
 		catch (HeadlessException | IOException e)
 		{	}
@@ -381,10 +401,15 @@ public class ClientMain implements Client
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
+			AddUserGUI adder = new AddUserGUI(databaseList);
+			adder.setVisible(true);
+			
+			if(adder.getUser() != null){
+				objOut.writeObject(new Message(Command.ADD_USER, adder.getUser()));
+				}
 		}
 		catch (HeadlessException | IOException e)
-		{	}
+		{	e.printStackTrace();}
 	}
 
 	@Override
@@ -395,6 +420,6 @@ public class ClientMain implements Client
 			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
-		{	}
+		{ 	}
 	}
 }
