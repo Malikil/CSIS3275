@@ -111,6 +111,10 @@ public class ServerMain implements Server
 		{
 			e.printStackTrace();
 		}
+		
+		file = new File("databases");
+		if (!file.exists())
+			file.mkdir();
 	}
 	
 	public void saveConfig()

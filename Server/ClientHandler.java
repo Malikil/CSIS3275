@@ -41,7 +41,6 @@ public class ClientHandler implements Runnable
 	@Override
 	public void run()
 	{
-		boolean loggedIn = false;
 		do
 		{
 			try 
@@ -53,7 +52,7 @@ public class ClientHandler implements Runnable
 					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
 					{
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
-						loggedIn = true;
+						currentUser = parentUser;
 						break;
 					}
 					else
@@ -62,14 +61,14 @@ public class ClientHandler implements Runnable
 						break;
 					}
 				}
-				if (!loggedIn)
+				if (currentUser == null)
 					objOut.writeObject(new Message(Command.INCORRECT_USER, null));
 			} 
 			catch (ClassNotFoundException e) 
 			{	} // TODO
 			catch (IOException e) 
 			{	} // TODO
-		} while (!loggedIn);
+		} while (currentUser == null);
 		
 		// Client is logged in, now wait for commands
 		while (true)
