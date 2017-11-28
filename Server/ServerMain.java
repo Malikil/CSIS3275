@@ -100,7 +100,7 @@ public class ServerMain implements Server
 			fIn.close();
 			oIn.close();
 			userList = config.getUserList();
-			entryKey = config.getEntryKey();	
+			entryKey = config.getEntryKey();
 		}
 		catch (IOException ex)
 		{	} 
@@ -129,7 +129,10 @@ public class ServerMain implements Server
 	{
 		for (ClientHandler client : clientList)
 		{
-			if((message.getCommandType() == Command.DELETE_USER || message.getCommandType() == Command.ADD_USER || message.getCommandType() == Command.EDIT_USER  )&& client.getUser().isAdmin())
+			if((message.getCommandType() == Command.DELETE_USER ||
+					message.getCommandType() == Command.ADD_USER ||
+					message.getCommandType() == Command.EDIT_USER) &&
+					client.getCurrentUser().isAdmin())
 			{
 				client.sendObject(message);	
 			}
@@ -148,7 +151,7 @@ public class ServerMain implements Server
 	private void sendObjecttoUser(String username, Message message) {
 		for (ClientHandler client : clientList)
 		{
-			if(client.getUsername().equals(username))
+			if(client.getCurrentUser().getUsername().equals(username))
 			{
 				client.sendObject(message);
 			}
@@ -159,7 +162,7 @@ public class ServerMain implements Server
 	public void sendDeleteUser(Message message, String username)
 	{
 		for (ClientHandler client : clientList)
-			if(client.getUsername().equals(username))
+			if(client.getCurrentUser().getUsername().equals(username))
 					client.sendObject(message);
 	}
 	
@@ -237,49 +240,6 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{
 		}
-	}
-	
-	@Override
-	public boolean deleteDatabase(String databaseName)
-	{
-		File dir = new File("databases\\" + databaseName);
-		if (dir.list().length == 0)
-		{
-			dir.delete();
-			User[] users = userList.toArray(new User[userList.size()]);
-			for (User u : users)
-				u.deleteDatabase(databaseName);
-			return true;
-		}
-		else return false;
-	}
-	
-	@Override
-	public void deleteUser(String username)
-	{
-		userList.delete(new User(username));
-		for (ClientHandler c : clientList)
-			if (c.getUsername().equals(username))
-				c.sendObject(new Message(Command.DELETE_USER, null));
-		saveConfig();
-	}
-	
-	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,databases);
-		userList.add(newUser);
-		saveConfig();
-	}
-	
-	public void changePassword(String username, String newPass)
-	{
-		User newUser = userList.get(new User(username));
-		userList.delete(newUser);
-		newUser = new User(newUser,newPass);
-		userList.add(newUser);
-		saveConfig();
 	}
 		
 	@Override
@@ -407,7 +367,7 @@ public class ServerMain implements Server
 	{
 		userList.delete(new User(username));
 		for (ClientHandler c : clientList)
-			if (c.getUsername().equals(username))
+			if (c.getCurrentUser().getUsername().equals(username))
 				c.sendObject(new Message(Command.LOGOFF, null));
 		saveConfig();
 		sendObjectToAll(new Message(Command.DELETE_USER, username), null, null);
@@ -420,7 +380,7 @@ public class ServerMain implements Server
 		newUser = new User(newUser,databases);
 		userList.add(newUser);
 		saveConfig();
-	}
+	} // TODO
 	
 	public void changePassword(String username, String newPass)
 	{
@@ -429,5 +389,5 @@ public class ServerMain implements Server
 		newUser = new User(newUser,newPass);
 		userList.add(newUser);
 		saveConfig();
-	}
+	} // TODO
 }
