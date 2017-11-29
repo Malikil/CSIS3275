@@ -15,4 +15,5 @@ public interface Server
 	public void createDatabase(String databaseName);
 	public void createUser(User user);
 	public User getUser(String username);
+	public void disconnectClient(ClientHandler client);
 }

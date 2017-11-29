@@ -310,5 +310,15 @@ public class ServerMain implements Server
 		saveConfig();
 	}
 	
+	@Override
+	public void disconnectClient(ClientHandler client)
+	{
+		if (clientList.remove(client))
+			System.out.println("Client removed");
+		else
+			System.out.println("Failed to remove client");
+		
+	}
+	
 	private String[] getDatabaseList() { return new File("databases").list(); }
 }

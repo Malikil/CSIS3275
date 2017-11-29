@@ -1,13 +1,8 @@
 package Server;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ClientHandler implements Runnable
@@ -135,7 +130,7 @@ public class ClientHandler implements Runnable
 		}
 		catch (IOException ex)
 		{
-			ex.printStackTrace();
+			parent.disconnectClient(this);
 		}
 	}
 }
