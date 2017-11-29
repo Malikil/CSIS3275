@@ -92,37 +92,12 @@ public class ClientGUI extends JFrame
 		
 		mnTables = new JMenu("Tables");
 		fileMenu.add(mnTables);
-		
-		JSeparator separator = new JSeparator();
-		fileMenu.add(separator);
-		
-		JMenuItem mntmAddTable = new JMenuItem("Add Table");
-		fileMenu.add(mntmAddTable);
-		mntmAddTable.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				parent.createTable();
-			}	
-		});
-		
-		JMenuItem mntmDeleteTable = new JMenuItem("Delete Table");
-		fileMenu.add(mntmDeleteTable);
-		mntmDeleteTable.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
-				parent.deleteCurrentTable();
-			}
-		});
 
 		JMenu adminMenu = new JMenu("Admin");
 		adminMenu.setBackground(new Color(153, 204, 255));
 		adminMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		
 		JMenuItem createUser = new JMenuItem("Create User");
-		createUser.setBackground(new Color(153, 204, 255));
-		createUser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		createUser.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -133,8 +108,6 @@ public class ClientGUI extends JFrame
 		adminMenu.add(createUser);
 		
 		JMenuItem createDatabase = new JMenuItem("Create Database");
-		createDatabase.setBackground(new Color(153, 204, 255));
-		createDatabase.setFont(new Font("Segoe UI", Font.PLAIN, 12));
 		createDatabase.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -145,7 +118,10 @@ public class ClientGUI extends JFrame
 		adminMenu.add(createDatabase);
 		
 		if (admin)
-			menuBar.add(adminMenu);
+		{
+			fileMenu.addSeparator();
+			fileMenu.add(adminMenu);
+		}
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setBackground(new Color(102, 204, 255));
@@ -429,9 +405,31 @@ public class ClientGUI extends JFrame
 	public void setTableList(String[] list)
 	{
 		mnTables.removeAll();
+		
+		JMenuItem newTable = new JMenuItem("Add Table...");
+		newTable.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.createTable();
+			}
+		});
+		mnTables.add(newTable);
+		
+		newTable = new JMenuItem("Delete Current Table");
+		newTable.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.deleteCurrentTable();
+			}
+		});
+		mnTables.add(newTable);
+		mnTables.addSeparator();
+		
 		for (String table : list)
 		{
-			JMenuItem newTable = new JMenuItem(table);
+			newTable = new JMenuItem(table);
 			newTable.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e)

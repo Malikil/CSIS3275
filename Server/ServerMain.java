@@ -1,19 +1,13 @@
 package Server;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
-import java.util.ArrayList;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.io.BufferedWriter;
 
 public class ServerMain implements Server
 {
@@ -69,10 +63,14 @@ public class ServerMain implements Server
 	
 	public void initializeFromConfig()
 	{
-		File file = new File("config.albert");
+		File file =  new File("databases");
+		if(!file.exists())
+			file.mkdir();
+		
+		file = new File("config.albert");
 		if(!file.exists())
 		{
-			userList = new AVLTree<User>(new User("admin", "NewAdmin", new String[0], true));
+			userList = new AVLTree<User>(new User("admin", "NewAdmin", getDatabaseList(), true));
 			entryKey = 0;
 			saveConfig();
 		}
@@ -95,10 +93,6 @@ public class ServerMain implements Server
 		{
 			e.printStackTrace();
 		}
-		
-		file =  new File("databases");
-		if(!file.exists())
-			file.mkdir();
 	}
 	
 	public void saveConfig()
@@ -214,11 +208,11 @@ public class ServerMain implements Server
 	public void addEntry(String databaseName, String tableName, Comparable[] data) 
 	{
 		Entry newEntry = new Entry(++entryKey, data);
-		saveConfig();
 		Table newTable = getTable(databaseName,tableName);
 		newTable.addEntry(newEntry);
 		saveTable(databaseName, tableName, newTable);
 		sendObjectToAll(new Message(Command.ADD_ENTRY, newEntry),databaseName,tableName);
+		saveConfig();
 	}
 
 	@Override
@@ -246,6 +240,7 @@ public class ServerMain implements Server
 		currentTable.editEntry(newEntry);
 		saveTable(databaseName, tableName, currentTable);
 		sendObjectToAll(new Message(Command.EDIT_ENTRY, newEntry),databaseName,tableName);
+		
 	}
 	
 	@Override
@@ -270,9 +265,25 @@ public class ServerMain implements Server
 	public void deleteTable(String databaseName, String tableName)
 	{
 		File table = new File("databases\\" + databaseName + "\\" + tableName + ".eric");
-		table.delete();
-		sendObjectToAll(new Message(Command.GET_TABLE_NAMES,getTableList(databaseName)),databaseName,tableName);
+		if (table.delete())
+			sendDeleteTable(databaseName,tableName);
 	}
+	
+	public void sendDeleteTable(String database, String table)
+    {
+        for (ClientHandler client : clientList)
+        {
+            if(client.getCurrentDatabaseName().equals(database))
+            {
+                client.sendObject(new Message(Command.GET_TABLE_NAMES,getTableList(database)));
+                if(client.getCurrentTableName().equals(table))
+                {
+                    client.sendObject(new Message(Command.GET_ACTUAL_TABLE,null));
+                    client.setCurrentTableName(null);
+                }
+            }
+        }
+    }
 	
 	public User getUser(String username)
 	{
@@ -295,6 +306,7 @@ public class ServerMain implements Server
 			}
 			this.sendObjectToAll(new Message(Command.DATABASE_LIST, getDatabaseList()),
 											 databaseName, null);
+			saveConfig();
 		}
 		else
 		{
@@ -306,6 +318,8 @@ public class ServerMain implements Server
 	public void createUser(User user)
 	{
 		if (userList.delete(user)) System.out.println("User overwritten");
+		if (user.isAdmin())
+			user.setDatabases(getDatabaseList());
 		userList.add(user);
 		saveConfig();
 	}

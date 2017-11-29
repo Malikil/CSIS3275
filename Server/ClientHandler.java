@@ -18,6 +18,8 @@ public class ClientHandler implements Runnable
 	public String getCurrentTableName() { return currentTableName; }
 	public String getCurrentDatabaseName() { return currentDatabaseName; }
 	
+	public void setCurrentTableName(String tableName) { currentTableName = tableName; }
+	
 	public ClientHandler(Socket connection, Server server)
 	{
 		parent = server;
@@ -44,7 +46,7 @@ public class ClientHandler implements Runnable
 				User parentUser = parent.getUser(userPass[0]);
 				if(parentUser != null)
 				{
-					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
+					if(parentUser.equals(new User(userPass[0], userPass[1])))
 					{
 						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
 						currentUser = parentUser;
@@ -131,6 +133,16 @@ public class ClientHandler implements Runnable
 		catch (IOException ex)
 		{
 			parent.disconnectClient(this);
+			try
+			{
+				objOut.close();
+				objIn.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				System.out.println("If the user is getting disconnected, we might not need to close here"); // TODO
+			}
 		}
 	}
 }

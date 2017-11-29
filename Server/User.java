@@ -37,17 +37,13 @@ public class User implements Comparable<User>, Serializable
 	{
 		username = uName.toLowerCase();
 	}
-	/*
-	public User(User newUser, String[] dBases) 
+	
+	public User(String uName, String pWord)
 	{
-		this(newUser.getUsername(),newUser.getPassword(),dBases);
+		username = uName;
+		password = pWord;
 	}
 	
-	public User(User newUser, String pWord)
-	{
-		this(newUser.getUsername(),pWord,newUser.getDatabases());
-	}
-	*/
 	public void addDatabases(String[] newDBList)
 	{
 		for(int i = 0; i < newDBList.length; i++)
@@ -56,12 +52,11 @@ public class User implements Comparable<User>, Serializable
 		}
 	}
 	
-	public void changeDatabase(String[] newDBList)
+	public void setDatabases(String[] newDatabases)
 	{
-		AVLTree<String> newDBs = new AVLTree<String>();
-		for(int i = 0 ; i < newDBList.length ; i++)
-			newDBs.add(newDBList[i]);
-		databases = newDBs;
+		databases = new AVLTree<String>();
+		for(int i = 0 ; i < newDatabases.length ; i++)
+			databases.add(newDatabases[i]);
 	}
 	
 	public boolean deleteDatabase(String databaseToDelete)
