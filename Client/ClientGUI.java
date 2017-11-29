@@ -50,7 +50,6 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
 	private int[] tableKeys;
-	private JComboBox<String> selectUserDropdown;
 
 	/**
 	 * Create the application.
@@ -485,12 +484,5 @@ public class ClientGUI extends JFrame
 			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Will this keep numbers as numbers?
 		}
 		return new Entry(tableKeys[row], data);
-	}
-
-	public void setUserList(String[] userlist)
-	{
-		selectUserDropdown.removeAllItems();
-		for (String user : userlist)
-			selectUserDropdown.addItem(user);
 	}
 }
