@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
@@ -22,8 +23,6 @@ import javax.swing.JDialog;
 
 public class AddUserGUI extends JDialog {
 
-	private JFrame addUserFrame;
-	private JTextField textField;
 	private JTextField addUserField;
 	private JTextField addPasswordField;
 	private JCheckBox isAdmin;
@@ -34,182 +33,102 @@ public class AddUserGUI extends JDialog {
 	 */
 	public AddUserGUI(String[] databases)
 	{
-		initialize(true, null);
-		DefaultListModel model = new DefaultListModel();
-		databaseList = new JList<String>(databases);
-		model.addElement(databaseList);
-		databaseList.setModel(model);
-	}
-	
-	public AddUserGUI(String[] databases, String username,boolean add)
-	{
-		initialize(add, username);
-		DefaultListModel model = new DefaultListModel();
-		databaseList = new JList<String>(databases);
-		model.addElement(databaseList);
-		databaseList.setModel(model);
+		initialize(databases);
 	}
 	
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	private void initialize(boolean add, String username) {
-		
+	private void initialize(String[] databases)
+	{
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		JDialog thisD = this;
+		getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
+		setTitle("Add User");
+		setBounds(100, 100, 405, 371);
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		getContentPane().setLayout(null);
 		
-		
-		if(add)
+		JButton addUserButton = new JButton("Add User");
+		addUserButton.setBounds(70, 253, 117, 29);
+		addUserButton.addActionListener(new ActionListener() 
 		{
-			
-			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
-			setTitle("Add User");
-			setBounds(100, 100, 300, 344);
-			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			getContentPane().setLayout(null);
-			
-			JButton addDBBttn = new JButton("Add User");
-			addDBBttn.setBounds(135, 253, 117, 29);
-			addDBBttn.addActionListener(new ActionListener() 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					thisD.dispose();
-				}
-			});
-			getContentPane().add(addDBBttn);
-			setTitle("Add User");
-			setBounds(35, 10, 405, 371);
-			getContentPane().add(addDBBttn);
-			
-			JLabel addUserLbl = new JLabel("Enter Username");
-			addUserLbl.setBounds(73, 16, 104, 16);
-			getContentPane().add(addUserLbl);
-			
-			addUserField = new JTextField();
-			addUserField.setColumns(10);
-			addUserField.setBounds(183, 11, 130, 26);
-			getContentPane().add(addUserField);
-			
-			databaseList = new JList<>();
-			databaseList.setBounds(114, 88, 154, 141);
-			JScrollPane sp = new JScrollPane(databaseList);
-			sp.setBounds(114, 100, 154, 141);
-			getContentPane().add(sp);
-			
-			JButton helpBttn = new JButton("?");
-			helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
-			helpBttn.setBounds(359, 303, 40, 40);
-			helpBttn.addActionListener(new ActionListener() 
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					JOptionPane.showMessageDialog(helpBttn,
-						"Username Field:  \n   Enter a desired Username\n" + 
-						"Database List: \n  Select certain databases you wish to \n assign to the new user\n\n" +
-						"	Press 'Add User' to add new User");
-				}
-			});
-			getContentPane().add(helpBttn);
-			
-			JLabel DatabaseListLbl = new JLabel("Database List");
-			DatabaseListLbl.setHorizontalAlignment(SwingConstants.CENTER);
-			DatabaseListLbl.setBounds(135, 72, 104, 16);
-			getContentPane().add(DatabaseListLbl);
-			
-			JLabel PassLB = new JLabel("Enter Password");
-			PassLB.setBounds(73, 48, 104, 16);
-			getContentPane().add(PassLB);
-			
-			addPasswordField = new JTextField();
-			addPasswordField.setColumns(10);
-			addPasswordField.setBounds(183, 43, 130, 26);
-			getContentPane().add(addPasswordField);
+				thisD.dispose();
+			}
+		});
+		getContentPane().add(addUserButton);
 		
-			isAdmin = new JCheckBox("Check If Admin");
-			isAdmin.setBounds(145, 289, 97, 23);
-			getContentPane().add(isAdmin);
-		}
-		else //Edit---------------------------------------------------------------------------------
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.setBounds(210, 253, 117, 29);
+		cancelButton.addActionListener(new ActionListener() 
 		{
-			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
-			setTitle("Edit User");
-			setBounds(100, 100, 300, 344);
-			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			getContentPane().setLayout(null);
-			
-			JButton addDBBttn = new JButton("Edit User");
-			addDBBttn.setBounds(135, 253, 117, 29);
-			addDBBttn.addActionListener(new ActionListener() 
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					thisD.dispose();
-				}
-			});
-			getContentPane().add(addDBBttn);
-			setTitle("Edit User");
-			setBounds(35, 10, 405, 371);
-			getContentPane().add(addDBBttn);
-			
-			JLabel addUserLbl = new JLabel("Username:");
-			addUserLbl.setBounds(73, 16, 104, 16);
-			getContentPane().add(addUserLbl);
-			
-			addUserField = new JTextField();
-			addUserField.setColumns(10);
-			addUserField.setBounds(183, 11, 130, 26);
-			getContentPane().add(addUserField);
-			addUserField.setText(username);
-			addUserField.setEditable(false);
-			
-			databaseList = new JList<>();
-			databaseList.setBounds(114, 88, 154, 141);
-			JScrollPane sp = new JScrollPane(databaseList);
-			sp.setBounds(114, 100, 154, 141);
-			getContentPane().add(sp);
-			
-			JButton helpBttn = new JButton("?");
-			helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
-			helpBttn.setBounds(359, 303, 40, 40);
-			helpBttn.addActionListener(new ActionListener() 
+				addUserField = null;
+				thisD.dispose();
+			}
+		});
+		getContentPane().add(cancelButton);
+		
+		JLabel addUserLbl = new JLabel("Enter Username");
+		addUserLbl.setBounds(73, 16, 104, 16);
+		getContentPane().add(addUserLbl);
+		
+		addUserField = new JTextField();
+		addUserField.setColumns(10);
+		addUserField.setBounds(183, 11, 130, 26);
+		getContentPane().add(addUserField);
+		
+		databaseList = new JList<>(databases);
+		databaseList.setBounds(114, 88, 154, 141);
+		databaseList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		JScrollPane sp = new JScrollPane(databaseList);
+		sp.setBounds(114, 100, 154, 141);
+		getContentPane().add(sp);
+		
+		JButton helpBttn = new JButton("?");
+		helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
+		helpBttn.setBounds(359, 303, 40, 40);
+		helpBttn.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
 			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					JOptionPane.showMessageDialog(helpBttn,
-						"Username Field:  \n   Enter a desired Username\n" + 
-						"Database List: \n  Select certain databases you wish to \n assign to the new user\n\n" +
-						"	Press 'Add User' to add new User");
-				}
-			});
-			getContentPane().add(helpBttn);
-			
-			JLabel DatabaseListLbl = new JLabel("Database List");
-			DatabaseListLbl.setHorizontalAlignment(SwingConstants.CENTER);
-			DatabaseListLbl.setBounds(135, 72, 104, 16);
-			getContentPane().add(DatabaseListLbl);
-			
-			JLabel PassLB = new JLabel("Enter Password");
-			PassLB.setBounds(73, 48, 104, 16);
-			getContentPane().add(PassLB);
-			
-			addPasswordField = new JTextField();
-			addPasswordField.setColumns(10);
-			addPasswordField.setBounds(183, 43, 130, 26);
-			getContentPane().add(addPasswordField);
-			
-			isAdmin = new JCheckBox("Check If Admin");
-			isAdmin.setBounds(145, 289, 97, 23);
-			getContentPane().add(isAdmin);
-		}
+				JOptionPane.showMessageDialog(helpBttn,
+					"Username Field:  \n   Enter a desired Username\n" + 
+					"Database List: \n  Select certain databases you wish to \n assign to the new user\n\n" +
+					"	Press 'Add User' to add new User");
+			}
+		});
+		getContentPane().add(helpBttn);
+		
+		JLabel DatabaseListLbl = new JLabel("Database List");
+		DatabaseListLbl.setHorizontalAlignment(SwingConstants.CENTER);
+		DatabaseListLbl.setBounds(135, 72, 104, 16);
+		getContentPane().add(DatabaseListLbl);
+		
+		JLabel PassLB = new JLabel("Enter Password");
+		PassLB.setBounds(73, 48, 104, 16);
+		getContentPane().add(PassLB);
+		
+		addPasswordField = new JTextField();
+		addPasswordField.setColumns(10);
+		addPasswordField.setBounds(183, 43, 130, 26);
+		getContentPane().add(addPasswordField);
+	
+		isAdmin = new JCheckBox("Check If Admin");
+		isAdmin.setBounds(145, 289, 97, 23);
+		getContentPane().add(isAdmin);
 	}
 	
 	public User getUser()
 	{
+		if (addUserField == null)
+			return null;
 		String[] selectedItems =
 				databaseList.getSelectedValuesList().toArray(new String[databaseList.getSelectedIndices().length]);
 		

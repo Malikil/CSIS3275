@@ -131,16 +131,6 @@ public class ClientMain implements Client
 					case DATABASE_LIST:
 						setDatabaseList(received.getDatabaseList());
 						break;
-					case ADD_DATABASE:
-						String[] newDatabaseList = new String[databaseList.length +1];
-						int i = 0;
-						for(;i < databaseList.length; i++)
-							newDatabaseList[i] = databaseList[i];
-						newDatabaseList[i] = received.getDatabase();
-						setDatabaseList(newDatabaseList);
-						System.out.println(received.getDatabase());
-
-						break;
 					default:
 						throw new IOException("Unexpected server command");
 					}
@@ -175,16 +165,17 @@ public class ClientMain implements Client
 	{
 	  	AddColumnGUI tableGUI = new AddColumnGUI(true); //true for create table, false for create column
 	  	tableGUI.setVisible(true);
-		try
-		{
-			objOut.writeObject(new Message(Command.ADD_TABLE, tableGUI.getTableName()));
-			objOut.writeObject(new Message(Command.ADD_COLUMNS, tableGUI.getColumns()));
-		}
-		catch (IOException ex)
-		{
-			ex.printStackTrace();
-			// TODO Catch block
-		}
+	  	if (tableGUI.getTableName() != null)
+			try
+			{
+				objOut.writeObject(new Message(Command.ADD_TABLE, tableGUI.getTableName()));
+				objOut.writeObject(new Message(Command.ADD_COLUMNS, tableGUI.getColumns()));
+			}
+			catch (IOException ex)
+			{
+				ex.printStackTrace();
+				// TODO Catch block
+			}
 	}
 	
 	@Override
@@ -215,6 +206,7 @@ public class ClientMain implements Client
 		}
 	}
 	
+	@Override
 	public void getTable(String tableName)
 	{
 		try
@@ -413,14 +405,21 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void addUser() {
+	public void addUser()
+	{
 		// TODO Auto-generated method stub
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
+			AddUserGUI userGUI = new AddUserGUI(databaseList);
+			userGUI.setVisible(true);
+			User newUser = userGUI.getUser();
+			if (newUser != null)
+				objOut.writeObject(new Message(Command.ADD_USER, newUser));
 		}
 		catch (HeadlessException | IOException e)
-		{	}
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Override
