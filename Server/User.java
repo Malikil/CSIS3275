@@ -18,14 +18,14 @@ public class User implements Comparable<User>, Serializable
 	public void setPassword(String newPass) { password = newPass; }
 	public boolean isAdmin() { return admin; }
 	
-	public User(String uName, String pWord, String[] dBases, boolean admin)
+	public User(String uName, String pWord, String[] dBases, boolean admn)
 	{
 		username = uName.toLowerCase();
 		password = pWord;
 		databases = new AVLTree<String>();
 		for(int i = 0; i < dBases.length ; i++)
 			databases.add(dBases[i]);
-		this.admin = admin;
+		admin = admn;
 	}
 	
 	public User(String uName, String pWord, String[] databases)
