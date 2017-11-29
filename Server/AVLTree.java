@@ -205,9 +205,9 @@ public class AVLTree<T extends Comparable<T>> implements Serializable
 		AVLNode<T> current = base;
 		while (current != null)
 		{
-			if (current.compareTo(value) > 0)
+			if (current.compareTo(value) < 0)
 				current = current.getRight();
-			else if (current.compareTo(value) < 0)
+			else if (current.compareTo(value) > 0)
 				current = current.getLeft();
 			else
 				return current.getValue();
