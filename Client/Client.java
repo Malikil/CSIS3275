@@ -20,4 +20,5 @@ public interface Client
 	public void applySearch(String[] values, String[] comparisons, int[] fields);
 	public void addUser();
 	public void sort(int field);
+	public void quit();
 }

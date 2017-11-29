@@ -38,34 +38,35 @@ public class ClientHandler implements Runnable
 	@Override
 	public void run()
 	{
-		do
+		try 
 		{
-			try 
+			String[] userPass = ((Message)objIn.readObject()).getLogin();
+			User parentUser = parent.getUser(userPass[0]);
+			if(parentUser != null)
 			{
-				String[] userPass = ((Message)objIn.readObject()).getLogin();
-				User parentUser = parent.getUser(userPass[0]);
-				if(parentUser != null)
+				if(parentUser.equals(new User(userPass[0], userPass[1])))
 				{
-					if(parentUser.equals(new User(userPass[0], userPass[1])))
-					{
-						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
-						currentUser = parentUser;
-						break;
-					}
-					else
-					{
-						objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
-						break;
-					}
+					objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
+					currentUser = parentUser;
+					currentDatabaseName = "";
+					currentTableName = "";
 				}
-				if (currentUser == null)
-					objOut.writeObject(new Message(Command.INCORRECT_USER, null));
-			} 
-			catch (ClassNotFoundException e) 
-			{	} // TODO
-			catch (IOException e) 
-			{	} // TODO
-		} while (currentUser == null);
+				else
+					objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+			}
+			if (currentUser == null)
+			{
+				objOut.writeObject(new Message(Command.INCORRECT_USER, null));
+				parent.disconnectClient(this);
+				objOut.close();
+				objIn.close();
+				return;
+			}
+		} 
+		catch (ClassNotFoundException e) 
+		{	} // TODO
+		catch (IOException e) 
+		{	} // TODO
 		
 		// Client is logged in, now wait for commands
 		while (true)
@@ -94,7 +95,7 @@ public class ClientHandler implements Runnable
 					break;
 				case DELETE_TABLE:
 					parent.deleteTable(currentDatabaseName, currentTableName);
-					currentTableName = null;
+					currentTableName = "";
 					break;
 				case EDIT_ENTRY:
 					parent.editEntry(currentDatabaseName, currentTableName,received.getEntry());
@@ -112,6 +113,9 @@ public class ClientHandler implements Runnable
 					break;
 				case ADD_USER:
 					parent.createUser(received.getUser());
+					break;
+				case LOGOFF:
+					parent.disconnectClient(this);
 					break;
 				default:
 					System.out.println("lol you sent wrong message to ClientHandler"); //TODO
@@ -140,8 +144,7 @@ public class ClientHandler implements Runnable
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
-				System.out.println("If the user is getting disconnected, we might not need to close here"); // TODO
+				System.out.println("Couldn't close sockets" + e.getMessage()); // TODO
 			}
 		}
 	}

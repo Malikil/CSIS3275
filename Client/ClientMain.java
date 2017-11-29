@@ -58,7 +58,7 @@ public class ClientMain implements Client
 				{
 					User user = loginAttempt.getUser();
 					ClientMain client = new ClientMain(sock, out, in, user.isAdmin());
-					
+					client.setGUITitle(user);
 					client.setDatabaseList(user.getDatabases());
 					System.out.println("Databases set");
 					client.start();
@@ -397,6 +397,8 @@ public class ClientMain implements Client
 			String database = JOptionPane.showInputDialog("Create Database");
 			if (database != null && !database.equals(""))
 				objOut.writeObject(new Message(Command.ADD_DATABASE, database)); //sending String
+			else
+				JOptionPane.showMessageDialog(gui, "Databases must have names");
 		}
 		catch (HeadlessException | IOException e)
 		{
@@ -428,5 +430,40 @@ public class ClientMain implements Client
 		Entry.setComparer(field);
 		newTree = newTree.reconstructTree();
 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
+	}
+
+	@Override
+	public void quit()
+	{
+		try
+		{
+			objOut.writeObject(new Message(Command.LOGOFF, null));
+		}
+		catch (IOException writeError)
+		{
+			System.out.println("Error writing LOGOFF\n" + writeError.getMessage());
+		}
+		finally
+		{
+			try
+			{
+				objIn.close();
+				objOut.close();
+			}
+			catch (IOException ex)
+			{
+				System.out.println("Couldn't close sockets");
+			}
+			finally
+			{
+				System.exit(0);
+			}
+		}
+	}
+	
+	private void setGUITitle(User user)
+	{
+		gui.setTitle((user.isAdmin() ? "Admin" : "Client") +
+						" GUI - " + user.getUsername());
 	}
 }

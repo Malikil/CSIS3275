@@ -53,24 +53,18 @@ public class AddColumnGUI extends JDialog
 		if (createTable)
 		{
 			setTitle("Create Table");
+			
+			tableName = new JTextField();
+			tableName.setBounds(142, 17, 130, 26);
+			tableName.setColumns(10);
 			getContentPane().add(tableLabel);
+			
+			tableLabel = new JLabel("Table Name");
+			tableLabel.setBounds(51, 22, 83, 16);
 			getContentPane().add(tableName);
 		}
 		else
 			setTitle("Add Column");
-		
-		/*for (int i = 0; i < arr.size(); i++)
-		{
-			JTextField fieldName = new JTextField(arr.get(i));
-			fieldName.setBounds(10, arr.size() * 25 + 11, 90, 14);
-			arr.add(fieldName.getText());
-			
-			columnType = new JComboBox<String>();
-			columnType.addItem("String");
-			columnType.addItem("Integer");
-			columnType.addItem("Double");
-		}
-		panel.setPreferredSize(new Dimension(0, arr.size() * 25 + 11));*/
 	}
 
 	/**
@@ -81,7 +75,7 @@ public class AddColumnGUI extends JDialog
 		JDialog thisDialog = this;
 		setResizable(false);
 		setBounds(100, 100, 325, 310);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		getContentPane().setLayout(null);
 		
@@ -96,6 +90,20 @@ public class AddColumnGUI extends JDialog
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				if (tableName != null && tableName.getText().equals(""))
+				{
+					JOptionPane.showMessageDialog(thisDialog, "Table must have a name");
+					return;
+				}
+				else
+				{
+					for (JTextField col : colNames)
+						if (col.getText().equals(""))
+						{
+							JOptionPane.showMessageDialog(thisDialog, "All fields must have a name");
+							return;
+						}
+				}
 				thisDialog.dispose();
 			}
 		});
@@ -124,13 +132,6 @@ public class AddColumnGUI extends JDialog
 		helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
 		helpBttn.setBounds(321, 149, 40, 40);
 		getContentPane().add(helpBttn);
-		
-		tableName = new JTextField();
-		tableName.setBounds(142, 17, 130, 26);
-		tableName.setColumns(10);
-		
-		tableLabel = new JLabel("Table Name");
-		tableLabel.setBounds(51, 22, 83, 16);
 		
 		JPanel tablesPanel = new JPanel();
 		JScrollPane scrollPane = new JScrollPane(tablesPanel);

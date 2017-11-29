@@ -56,7 +56,16 @@ public class AddUserGUI extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				thisD.dispose();
+				if (!isAdmin.isSelected() && databaseList.isSelectionEmpty())
+				{
+					JOptionPane.showMessageDialog(thisD, "Basic users must have at least one database");
+				}
+				else if (addUserField.getText().equals("") || addPasswordField.getText().equals(""))
+				{
+					JOptionPane.showMessageDialog(thisD, "Username and password must have values");
+				}
+				else
+					thisD.dispose();
 			}
 		});
 		getContentPane().add(addUserButton);
@@ -84,10 +93,9 @@ public class AddUserGUI extends JDialog {
 		getContentPane().add(addUserField);
 		
 		databaseList = new JList<>(databases);
-		databaseList.setBounds(114, 88, 154, 141);
 		databaseList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		JScrollPane sp = new JScrollPane(databaseList);
-		sp.setBounds(114, 100, 154, 141);
+		sp.setBounds(55, 100, 154, 141);
 		getContentPane().add(sp);
 		
 		JButton helpBttn = new JButton("?");
@@ -108,7 +116,7 @@ public class AddUserGUI extends JDialog {
 		
 		JLabel DatabaseListLbl = new JLabel("Database List");
 		DatabaseListLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		DatabaseListLbl.setBounds(135, 72, 104, 16);
+		DatabaseListLbl.setBounds(75, 73, 104, 16);
 		getContentPane().add(DatabaseListLbl);
 		
 		JLabel PassLB = new JLabel("Enter Password");
@@ -120,8 +128,9 @@ public class AddUserGUI extends JDialog {
 		addPasswordField.setBounds(183, 43, 130, 26);
 		getContentPane().add(addPasswordField);
 	
-		isAdmin = new JCheckBox("Check If Admin");
-		isAdmin.setBounds(145, 289, 97, 23);
+		isAdmin = new JCheckBox("Admin");
+		isAdmin.setBounds(225, 150, 97, 23);
+		isAdmin.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		getContentPane().add(isAdmin);
 	}
 	
