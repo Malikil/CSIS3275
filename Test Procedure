@@ -1,8 +1,8 @@
 1.	Application summery
     a.	 We have: Server client, Admin/User Client. 
-    b.	Admins and Users connect to Server through sockets
+    b.	Admins and Users connect to Server through sockets. Multiple clients can access the server at the same time.
     c.	Clients and Server can connect as long as on the same network
-    d.	All data is saved on the Server computer
+    d.	All data is saved on the Server computer, clients are updated in real time
     e.	Able to: CREATE/UPDATE_USER, CREATE_DATABASE
     f.	ADD/DELETE_TABLE, ADD/DELETE_FIELDS, ADD/EDIT/DELETE_ENTRIES
     g.	SORT BY FIELD, FILTER WITH ONE OR MULTIPLE FIELDS
