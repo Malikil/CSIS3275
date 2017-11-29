@@ -79,11 +79,12 @@ public class ClientGUI extends JFrame
 		getContentPane().setLayout(null);
 		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		this.addWindowListener(new WindowAdapter() {
+		this.addWindowListener(new WindowAdapter() { //exit
 			@Override
 			public void windowClosing(WindowEvent w)
 			{
 				parent.quit();
+				thisFrame.dispose();
 			}
 		});
 		

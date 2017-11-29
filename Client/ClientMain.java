@@ -488,8 +488,10 @@ public class ClientMain implements Client
 		{
 			try
 			{
-				objIn.close();
-				objOut.close();
+				if(objIn != null)
+					objIn.close();
+				if(objOut!= null)
+					objOut.close();
 			}
 			catch (IOException ex)
 			{

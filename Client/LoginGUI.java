@@ -7,9 +7,14 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.UIManager;
 
 public class LoginGUI extends JDialog
@@ -47,6 +52,14 @@ public class LoginGUI extends JDialog
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 323, 228);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() { //exit
+			@Override
+			public void windowClosing(WindowEvent w)
+			{
+				cancelled = true;
+				thisDialog.dispose();
+			}
+		});
 		getContentPane().setLayout(null);
 		
 		JLabel lblIp = new JLabel("IP: ");

@@ -3,6 +3,8 @@ package Client;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -76,6 +78,16 @@ public class AddColumnGUI extends JDialog
 		setResizable(false);
 		setBounds(100, 100, 325, 310);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(new WindowAdapter() { //exit
+			@Override
+			public void windowClosing(WindowEvent w)
+			{
+				tableName = null;
+				colNames = null;
+				thisDialog.dispose();
+			}
+		});
+		
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		getContentPane().setLayout(null);
 		
