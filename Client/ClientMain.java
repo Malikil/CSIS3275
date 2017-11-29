@@ -248,16 +248,16 @@ public class ClientMain implements Client
 		if(currentTable == null)
 		{
 			gui.showPopup("Please select a table first.");
-			return;
 		}
-		try
-		{
-			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		} 
+		else if (selectedIndex >= 0)
+			try
+			{
+				objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex));
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			} 
 	}
 	
 	@Override
@@ -326,14 +326,15 @@ public class ClientMain implements Client
 		AddColumnGUI newCols = new AddColumnGUI(false);
 		newCols.setVisible(true);
 		Column[] addedColumns = newCols.getColumns();
- 		try
- 		{
- 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
- 		}
- 		catch (IOException ex)
- 		{
- 			ex.printStackTrace();
- 		}
+		if (addedColumns != null)
+	 		try
+	 		{
+	 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
+	 		}
+	 		catch (IOException ex)
+	 		{
+	 			ex.printStackTrace();
+	 		}
 	}
 
 	@Override
