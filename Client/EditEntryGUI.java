@@ -40,7 +40,6 @@ public class EditEntryGUI extends JDialog
 	{
 		initialize();
 		setTitle("Edit Entry");
-		//edit = entry;
 		newData = new JTextField[fields.length];
 		for (int i = 0; i < fields.length; i++)
 		{
@@ -48,7 +47,9 @@ public class EditEntryGUI extends JDialog
 			label.setBounds(10, i * 25 + 11, 90, 14);
 			panel.add(label);
 			JTextField newField = new JTextField();
-			newField.setText(entry.getField(i).toString());
+			newField.setText(entry.getField(i) != null ?
+							 entry.getField(i).toString() :
+							 "");
 			newData[i] = newField;
 			newData[i].setBounds(110, i * 25 + 8, 120, 20);
 			panel.add(newData[i]);

@@ -97,11 +97,9 @@ public class ClientGUI extends JFrame
 		
 		JMenuItem mntmAddTable = new JMenuItem("Add Table");
 		fileMenu.add(mntmAddTable);
-		mntmAddTable.addActionListener(new ActionListener()
-		{
+		mntmAddTable.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
+			public void actionPerformed(ActionEvent e) {
 				parent.createTable();
 			}	
 		});
@@ -116,6 +114,37 @@ public class ClientGUI extends JFrame
 				parent.deleteCurrentTable();
 			}
 		});
+
+		JMenu adminMenu = new JMenu("Admin");
+		adminMenu.setBackground(new Color(153, 204, 255));
+		adminMenu.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		
+		JMenuItem createUser = new JMenuItem("Create User");
+		createUser.setBackground(new Color(153, 204, 255));
+		createUser.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		createUser.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.addUser();
+			}
+		});
+		adminMenu.add(createUser);
+		
+		JMenuItem createDatabase = new JMenuItem("Create Database");
+		createDatabase.setBackground(new Color(153, 204, 255));
+		createDatabase.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+		createDatabase.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				parent.createDatabase();
+			}
+		});
+		adminMenu.add(createDatabase);
+		
+		if (admin)
+			menuBar.add(adminMenu);
 		
 		JMenu helpMenu = new JMenu("Help");
 		helpMenu.setBackground(new Color(102, 204, 255));
@@ -153,86 +182,6 @@ public class ClientGUI extends JFrame
 		searchTab.setBackground(UIManager.getColor("Tree.selectionBackground"));
 		searchTab.setBounds(0, 21, 465, 427);
 		getContentPane().add(searchTab);
-		
-		//Admin Tab--------------------------------------------------------------------------------
-		if(admin)
-		{
-			JPanel adminPanel = new JPanel();
-			searchTab.addTab("Admin", null, adminPanel, null);
-			adminPanel.setLayout(null);
-			
-			JLabel userlistLabel = new JLabel("Userlist");
-			userlistLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			userlistLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-			userlistLabel.setBounds(190, 10, 80, 25);
-			adminPanel.add(userlistLabel);
-			
-			JComboBox<String> selectUserDropdown = new JComboBox<String>();
-			selectUserDropdown.setBounds(60, 40, 350, 25);
-			adminPanel.add(selectUserDropdown);
-			
-			JButton editUserButton = new JButton("Edit User");
-			editUserButton.setBounds(180, 90, 110, 25);
-			editUserButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					parent.editUser((String)selectUserDropdown.getSelectedItem());
-				}	
-			});
-			adminPanel.add(editUserButton);
-			
-			
-			JButton addUserButton = new JButton("Add User");
-			addUserButton.setBounds(50, 90, 110, 25);
-			addUserButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					parent.addUser();
-				}	
-			});
-			adminPanel.add(addUserButton);
-			
-			JButton deleteUserButton = new JButton("Delete User");
-			deleteUserButton.setBounds(310, 90, 110, 25);
-			deleteUserButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e) 
-				{
-					parent.deleteUser((String)selectUserDropdown.getSelectedItem());
-				}	
-			});
-			adminPanel.add(deleteUserButton);
-			
-			JList databaseList = new JList();
-			JScrollPane dataBaseScroller = new JScrollPane(databaseList);
-			dataBaseScroller.setBorder(new LineBorder(new Color(0, 0, 0)));
-			dataBaseScroller.setBounds(50, 125, 375, 200);
-			adminPanel.add(dataBaseScroller);
-			
-			JButton btnCreateDatabase = new JButton("Create Database");
-			btnCreateDatabase.setBounds(75, 350, 150, 25);
-			btnCreateDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					parent.createDatabase();
-				}
-			});
-			adminPanel.add(btnCreateDatabase);
-			
-			JButton btnDeleteDatabase = new JButton("Delete Databases");
-			btnDeleteDatabase.setBounds(250, 350, 150, 25);
-			btnDeleteDatabase.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-				    parent.deleteDatabase();
-				}
-			});
-			adminPanel.add(btnDeleteDatabase);
-		}
-		//Admin End--------------------------------------------------------------------------------
 		
 		//Table Tab--------------------------------------------------------------------------------
 		
@@ -536,6 +485,4 @@ public class ClientGUI extends JFrame
 		}
 		return new Entry(tableKeys[row], data);
 	}
-
-	
 }

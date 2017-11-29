@@ -131,14 +131,6 @@ public class ClientMain implements Client
 					case DATABASE_LIST:
 						setDatabaseList(received.getDatabaseList());
 						break;
-					case ADD_USER:
-						System.out.println("receives add user");
-						break;
-					case EDIT_USER:
-						System.out.println("receives edit user");
-						break;
-					case DELETE_USER:
-						System.out.println("receives delete user");
 					case ADD_DATABASE:
 						String[] newDatabaseList = new String[databaseList.length +1];
 						int i = 0;
@@ -403,35 +395,18 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void createDatabase() {	
+	public void createDatabase()
+	{	
 		try
 		{
-			objOut.writeObject(new Message(Command.ADD_DATABASE, JOptionPane.showInputDialog("Create Database"))); //sending String
+			String database = JOptionPane.showInputDialog("Create Database");
+			if (database != null && !database.equals(""))
+				objOut.writeObject(new Message(Command.ADD_DATABASE, database)); //sending String
 		}
 		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
-	public void deleteDatabase() {
-		// TODO Auto-generated method stub
-		try
 		{
-			objOut.writeObject(new Message(Command.DELETE_DATABASE, JOptionPane.showInputDialog("Delete Database"))); //sending String 
+			e.printStackTrace();
 		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
-	public void editUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.EDIT_USER, new AddUserGUI(databaseList, username,false).getUser())); //TODO User Object
-		}
-		catch (HeadlessException | IOException e)
-		{	}
 	}
 
 	@Override
@@ -440,17 +415,6 @@ public class ClientMain implements Client
 		try
 		{
 			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
-		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
-	public void deleteUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
 		{	}

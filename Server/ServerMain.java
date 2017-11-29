@@ -66,23 +66,6 @@ public class ServerMain implements Server
 		new Thread(client).start();
 		clientList.add(client);
 	}
-
-	public User[] getUserList()
-	{
-		return userList.toArray(new User[userList.size()]);
-	}
-	
-	public String[] getUsernameStrings()
-	{
-		int size = userList.size();
-		String[] uList = new String[size];
-		User[] newUList = userList.toArray(new User[size]);
-		for(int i = 0 ; i < size ; i++)
-		{
-			uList[i] = newUList[i].getUsername();
-		}
-		return uList;
-	}
 	
 	public void initializeFromConfig()
 	{
@@ -142,12 +125,7 @@ public class ServerMain implements Server
 	{
 		for (ClientHandler client : clientList)
 		{
-			if((message.getCommandType() == Command.DELETE_USER ||
-					message.getCommandType() == Command.ADD_USER ||
-					message.getCommandType() == Command.EDIT_USER ||
-					message.getCommandType() == Command.ADD_DATABASE ||
-					message.getCommandType() == Command.DELETE_DATABASE) &&
-					client.getCurrentUser().isAdmin())
+			if(message.getCommandType() == Command.DATABASE_LIST && client.getCurrentUser().isAdmin())
 			{
 				client.sendObject(message);
 			}
@@ -159,32 +137,7 @@ public class ServerMain implements Server
 					client.sendObject(message);
 				//else if (client.getUser().compareTo)
 			}
-		}
-		
-	}
-	
-	private void sendObjecttoUser(String username, Message message) {
-		for (ClientHandler client : clientList)
-		{
-			if(client.getCurrentUser().getUsername().equals(username))
-			{
-				client.sendObject(message);
-			}
-		}
-		
-	}
-	
-	public void sendDeleteUser(Message message, String username)
-	{
-		for (ClientHandler client : clientList)
-			if(client.getCurrentUser().getUsername().equals(username))
-					client.sendObject(message);
-	}
-	
-	@Override
-	public String[] getUserDatabases(String user)
-	{
-		return userList.get(new User(user)).getDatabases();
+		}	
 	}
 
 	@Override
@@ -334,83 +287,28 @@ public class ServerMain implements Server
 		{
 			db.mkdir();
 			User[] users = userList.toArray(new User[userList.size()]);
-			String[] newDB = {databaseName};
+			String[] newDB = { databaseName };
 			for (User u : users)
 			{
 				if(u.isAdmin())
 					u.addDatabases(newDB);
 			}
-			this.sendObjectToAll(new Message(Command.ADD_DATABASE, databaseName),
-					databaseName, null);
+			this.sendObjectToAll(new Message(Command.DATABASE_LIST, getDatabaseList()),
+											 databaseName, null);
 		}
 		else
 		{
 			// TODO Message if fail
 		}
 	}
-  
-	/*
-	@Override
-	public String[] getAllDatabases()
-	{
-		return new File("databases").list();
-	}
-	*/
-	@Override
-	public boolean deleteDatabase(String databaseName)
-	{
-		File dir = new File("databases\\" + databaseName);
-		if (dir.list().length == 0)
-		{
-			dir.delete();
-			User[] users = userList.toArray(new User[userList.size()]);
-			for (User u : users)
-				if(u.deleteDatabase(databaseName))
-				{
-					sendObjecttoUser(u.getUsername(), new Message(Command.DATABASE_LIST, u.getDatabases()));
-				}
-			return true;
-		}
-		else return false;
-	}
 
 	@Override
 	public void createUser(User user)
 	{
+		if (userList.delete(user)) System.out.println("User overwritten");
 		userList.add(user);
 		saveConfig();
-		sendObjectToAll(new Message(Command.ADD_USER, user), null, null);
-	}
-
-	@Override
-	public void editUser(User user) {
-		if(userList.delete(user))
-			userList.add(user);
-		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
 	}
 	
-	@Override
-	public void deleteUser(String username)
-	{
-		userList.delete(new User(username));
-		for (ClientHandler c : clientList)
-			if (c.getCurrentUser().getUsername().equals(username))
-				c.sendObject(new Message(Command.LOGOFF, null));
-		saveConfig();
-		sendObjectToAll(new Message(Command.DELETE_USER, username), null, null);
-	}
-	
-	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
-	{
-		User newUser = userList.get(new User(username));
-		newUser.changeDatabase(databases);
-		saveConfig();
-	}
-	
-	public void changePassword(String username, String newPass)
-	{
-		User newUser = userList.get(new User(username));
-		newUser.setPassword(newPass);
-		saveConfig();
-	}
+	private String[] getDatabaseList() { return new File("databases").list(); }
 }
