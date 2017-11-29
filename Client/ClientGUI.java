@@ -243,7 +243,7 @@ public class ClientGUI extends JFrame
 		tablesPanel.add(scroller);
 		
 		JButton addFieldBttn = new JButton("Add");
-		addFieldBttn.setBounds(130, 74, 89, 23);
+		addFieldBttn.setBounds(70, 74, 89, 23);
 		addFieldBttn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parent.addColumn();
@@ -257,7 +257,7 @@ public class ClientGUI extends JFrame
 				parent.deleteColumn(fieldsCB.getSelectedIndex());
 			}
 		});
-		deleteFieldBttn.setBounds(230, 74, 89, 23);
+		deleteFieldBttn.setBounds(170, 74, 89, 23);
 		tablesPanel.add(deleteFieldBttn);
 		
 		JButton sortFieldBttn = new JButton("Sort");
@@ -272,7 +272,7 @@ public class ClientGUI extends JFrame
  		tablesPanel.add(sortFieldBttn);
 		
 		JButton addBttn = new JButton("Add Entry");
-		addBttn.setBounds(62, 291, 99, 43);
+		addBttn.setBounds(52, 291, 99, 43);
 		addBttn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)

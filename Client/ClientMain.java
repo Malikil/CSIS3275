@@ -258,6 +258,7 @@ public class ClientMain implements Client
 			gui.setFieldList(colNames);
 			gui.setTable(currentTable.asArray(),colNames);
 		}
+		newTree = currentTable.getTree();
 	}
 
 	@Override
