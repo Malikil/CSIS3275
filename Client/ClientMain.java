@@ -104,8 +104,8 @@ public class ClientMain implements Client
 						setTable(currentTable);
 						break;
 					case ADD_ENTRY:
-						 currentTable.addEntry(received.getEntry());
-						 setTable(currentTable);
+						currentTable.addEntry(received.getEntry());
+						setTable(currentTable);
 						break;
 					case ADD_TABLE:
 						gui.addTableName(received.getTableName());
@@ -242,8 +242,9 @@ public class ClientMain implements Client
 			String[] colNames =  currentTable.getColumnNames();
 			gui.setFieldList(colNames);
 			gui.setTable(currentTable.asArray(),colNames);
+			newTree = currentTable.getTree();
+			gui.resetFilters();
 		}
-		newTree = currentTable.getTree();
 	}
 
 	@Override
@@ -300,7 +301,7 @@ public class ClientMain implements Client
 		}
 		catch (IOException e)
 		{
-			// TODO Catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -310,14 +311,14 @@ public class ClientMain implements Client
 		AddColumnGUI newCols = new AddColumnGUI(false);
 		newCols.setVisible(true);
 		Column[] addedColumns = newCols.getColumns();
-		 		try
-		 		{
-		 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
-		 		}
-		 		catch (IOException ex)
-		 		{
-		 			ex.printStackTrace();
-		 		}  
+ 		try
+ 		{
+ 			objOut.writeObject(new Message(Command.ADD_COLUMNS, addedColumns));
+ 		}
+ 		catch (IOException ex)
+ 		{
+ 			ex.printStackTrace();
+ 		}
 	}
 
 	@Override
@@ -366,6 +367,8 @@ public class ClientMain implements Client
 	@Override
 	public void applySearch(String[] values, String[] comparisons, int[] fields)
 	{
+		if (currentTable == null)
+			return;
 		Comparable[] filterValues = new Comparable[values.length];
 		Column[] cols = currentTable.getColumns();
 		for (int i = 0; i < values.length; i++)

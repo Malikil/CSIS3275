@@ -6,7 +6,6 @@ public interface Client
 {
 	public void setDatabaseList(String[] list);
 	public void createDatabase();
-	public void deleteDatabase();
 	public void getTableNames(String database);
 	public void createTable();
 	public void deleteCurrentTable();
@@ -19,8 +18,6 @@ public interface Client
 	public void editEntry();
 	public void setTable(Table newTable);
 	public void applySearch(String[] values, String[] comparisons, int[] fields);
-	public void editUser(String username);
 	public void addUser();
-	public void deleteUser(String username);
 	public void sort(int field);
 }

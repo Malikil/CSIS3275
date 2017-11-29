@@ -114,6 +114,12 @@ public class DefinitelyNotArrayList<E> implements Serializable, Iterable<E>
 		array[index] = value;
 		return oldValue;
 	}
+	
+	public void clear()
+	{
+		for (int i = 0; i < count; i++)
+			array[i] = null;
+	}
 
 	@Override
 	public Iterator<E> iterator()

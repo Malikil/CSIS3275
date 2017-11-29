@@ -46,6 +46,7 @@ public class ClientGUI extends JFrame
 	private JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
 	private JScrollPane scroller;
+	JButton btnAddFilter, btnRemoveFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
@@ -284,28 +285,13 @@ public class ClientGUI extends JFrame
 		mainPanel.setLayout(null);
 		
 		valueFilter = new DefinitelyNotArrayList<>();
-		valueFilter.add(new JTextField());
-		valueFilter.get(0).setBounds(249, 53, 146, 22);
-		
-		String[] comparisonStrings = {  "<", "<=", "=", ">=", ">" };
 		comparisonTypes = new DefinitelyNotArrayList<>();
-		comparisonTypes.add(new JComboBox/*<>*/(comparisonStrings));
-		comparisonTypes.get(0).setBounds(186, 53, 51, 22);
-		
 		fieldFilter = new DefinitelyNotArrayList<>();
-		fieldFilter.add(new JComboBox/*<>*/(parent.getColumnNames()));
-		fieldFilter.get(0).setBounds(71, 53, 103, 22);
 		
 		JPanel filterButtonPanel = new JPanel();
 		filterButtonPanel.setBounds(0, 0, 461, 398);
 		mainPanel.add(filterButtonPanel);
 		filterButtonPanel.setLayout(null);
-		JButton btnRemoveFilter = new JButton("Remove");
-		btnRemoveFilter.setBounds(184, 350, 91, 23);
-		filterButtonPanel.add(btnRemoveFilter);
-		JButton btnApplyFilter = new JButton("Apply");
-		btnApplyFilter.setBounds(287, 350, 89, 23);
-		filterButtonPanel.add(btnApplyFilter);
 		
 		JScrollPane searchTabScroll = new JScrollPane();
 		searchTabScroll.setBounds(0, 0, 461, 335);
@@ -327,13 +313,9 @@ public class ClientGUI extends JFrame
 		searchFieldLbl.setFont(new Font("Tahoma", Font.BOLD, 11));
 		searchFieldLbl.setBounds(102, 26, 46, 14);
 		searchPanel.add(searchFieldLbl);
-		searchPanel.add(valueFilter.get(0));
-		searchPanel.add(comparisonTypes.get(0));
-		searchPanel.add(fieldFilter.get(0));
 		
-		JButton btnAddFilter = new JButton("Add");
-		btnAddFilter.setBounds(81, 350, 91, 23);
-		filterButtonPanel.add(btnAddFilter);
+		btnAddFilter = new JButton("Add");
+		btnAddFilter.setBounds(31, 350, 91, 23);
 		btnAddFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -343,7 +325,7 @@ public class ClientGUI extends JFrame
 				fieldFilter.get(fieldFilter.size() - 1).setBounds(71, fieldFilter.size() * 27 + 26, 103, 22);
 				searchPanel.add(fieldFilter.get(fieldFilter.size() - 1));
 				
-				comparisonTypes.add(new JComboBox<>(comparisonStrings));
+				comparisonTypes.add(new JComboBox<>(new String[] { "<", "<=", "=", ">=", ">" }));
 				comparisonTypes.get(comparisonTypes.size() - 1).setBounds(186, comparisonTypes.size() * 27 + 26, 51, 22);
 				searchPanel.add(comparisonTypes.get(comparisonTypes.size() - 1));
 				
@@ -357,6 +339,37 @@ public class ClientGUI extends JFrame
 				searchPanel.repaint();
 			}
 		});
+		filterButtonPanel.add(btnAddFilter);
+		
+		btnRemoveFilter = new JButton("Remove");
+		btnRemoveFilter.setBounds(134, 350, 91, 23);
+		btnRemoveFilter.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (valueFilter.size() > 0)
+				{
+					// Remove row
+					searchPanel.remove(fieldFilter.get(fieldFilter.size() - 1));
+					fieldFilter.remove(fieldFilter.size() - 1);
+					
+					searchPanel.remove(valueFilter.get(valueFilter.size() - 1));
+					valueFilter.remove(valueFilter.size() - 1);
+					
+					searchPanel.remove(comparisonTypes.get(comparisonTypes.size() - 1));
+					comparisonTypes.remove(comparisonTypes.size() - 1);
+					
+					// Repaint
+					searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 60));
+					searchPanel.revalidate();
+					searchPanel.repaint();
+				}
+			}
+		});
+		filterButtonPanel.add(btnRemoveFilter);
+		
+		JButton btnApplyFilter = new JButton("Apply");
+		btnApplyFilter.setBounds(237, 350, 89, 23);
 		btnApplyFilter.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e)
@@ -381,29 +394,17 @@ public class ClientGUI extends JFrame
 				}
 			}
 		});
-		btnRemoveFilter.addActionListener(new ActionListener() {
+		filterButtonPanel.add(btnApplyFilter);
+		
+		JButton resetFilterButton = new JButton("Reset");
+		resetFilterButton.setBounds(339, 350, 89, 23);
+		resetFilterButton.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				if (valueFilter.size() > 0)
-				{
-					// Remove row
-					searchPanel.remove(fieldFilter.get(fieldFilter.size() - 1));
-					fieldFilter.remove(fieldFilter.size() - 1);
-					
-					searchPanel.remove(valueFilter.get(valueFilter.size() - 1));
-					valueFilter.remove(valueFilter.size() - 1);
-					
-					searchPanel.remove(comparisonTypes.get(comparisonTypes.size() - 1));
-					comparisonTypes.remove(comparisonTypes.size() - 1);
-					
-					// Repaint
-					searchPanel.setPreferredSize(new Dimension(0, valueFilter.size() * 27 + 60));
-					searchPanel.revalidate();
-					searchPanel.repaint();
-				}
+			public void actionPerformed(ActionEvent e) {
+				resetFilters();
 			}
 		});
+		filterButtonPanel.add(resetFilterButton);
 	}
 	
 	//Filter End--------------------------------------------------------------------------------
@@ -455,7 +456,6 @@ public class ClientGUI extends JFrame
 			mnTables.add(newTable);	
 	}
 	
-	
 	public void setFieldList(String[] fields)
 	{
 		fieldsCB.removeAllItems();
@@ -484,5 +484,15 @@ public class ClientGUI extends JFrame
 			data[i] = (Comparable)table.getModel().getValueAt(row, i); // TODO Will this keep numbers as numbers?
 		}
 		return new Entry(tableKeys[row], data);
+	}
+	
+	public void resetFilters()
+	{
+		for (int i = 0; i < valueFilter.size(); i++)
+			btnRemoveFilter.doClick();
+		
+		btnAddFilter.doClick(); // This function is great
+		// Reset table
+		parent.applySearch(new String[0], new String[0], new int[0]); // Cheat the system
 	}
 }
