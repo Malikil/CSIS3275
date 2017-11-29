@@ -2,6 +2,7 @@ package Server;
 
 public interface Server
 {
+	public String[] getAllDatabases();
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
 	public void saveTable(String dbName, String tableName, Table table);
