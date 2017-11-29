@@ -1,72 +1,83 @@
 1.	Application summery
-  a.	 We have: Server client, Admin/User Client. 
-  b.	Admins and Users connect to Server through sockets
-  c.	Clients and Server can connect as long as on the same network
-  d.	All data is saved on the Server computer
-  e.	Able to: CREATE/UPDATE_USER, CREATE_DATABASE
-  f.	ADD/DELETE_TABLE, ADD/DELETE_FIELDS, ADD/EDIT/DELETE_ENTRIES
-  g.	SORT BY FIELD, FILTER WITH ONE OR MULTIPLE FIELDS
+    a.	 We have: Server client, Admin/User Client. 
+    b.	Admins and Users connect to Server through sockets
+    c.	Clients and Server can connect as long as on the same network
+    d.	All data is saved on the Server computer
+    e.	Able to: CREATE/UPDATE_USER, CREATE_DATABASE
+    f.	ADD/DELETE_TABLE, ADD/DELETE_FIELDS, ADD/EDIT/DELETE_ENTRIES
+    g.	SORT BY FIELD, FILTER WITH ONE OR MULTIPLE FIELDS
+    
 2.	Logging In
-  a.	Default username: admin, password: NewAdmin(case sensitive) 
-  b.	Usernames are all unique, cannot have two users with the same username.
-  c.	Bad IP (ipconfig)
-  d.	wrong username
-  e.	wrong password
-  f.	Default login 
+    a.	Default username: admin, password: NewAdmin(case sensitive) 
+    b.	Usernames are all unique, cannot have two users with the same username.
+    c.	Bad IP (ipconfig)
+    d.	wrong username
+    e.	wrong password
+    f.	Default login 
+    
 3.	Create New Databases
-  a.	Connect to new databases from File->Database(db1, db2)
+    a.	Connect to new databases from File->Database(db1, db2)
+    
 4.	Create New Users
-  a.	2 admins – check admin box (admin 1, admin2) – passwords are all “a”
-  b.	2 normal users(user1(db1), user2(db2))
+    a.	2 admins – check admin box (admin 1, admin2) – passwords are all “a”
+    b.	2 normal users(user1(db1), user2(db2))
+    
 5.	Create Table from admin
   a.	Select db1
   b.	With one column – automatically switches to new table
+  
 6.	Login with admin2
   a.	Show admin tab
   b.	Add database(db3)
   c.	Add user(user3, db1,db3)
+  
 7.	Login with user2
-  a.	Show no admin menu
-  b.	Connect to db2
-  c.	Create table(table1)    //got up to here 11:21pm 11/28
-  d.	Add fields (3) (field1 - string, field2 - number, field3 - string) 
-  e.	Add entries(10) 
-  f.	Add more fields (2)(f4 - number , f5 - string)
-  g.	Add more entries (10)
-  h.	Edit entry (optional, +1)
-  i.	Delete fields (field, f4)
-  j.	Delete entries (3) (optional, +1)
-  k.	Create table2, empty
-  l.	Switch back to table 1, shows data
+    a.	Show no admin menu
+    b.	Connect to db2
+    c.	Create table(table1)    //got up to here 11:21pm 11/28
+    d.	Add fields (3) (field1 - string, field2 - number, field3 - string) 
+    e.	Add entries(10) 
+    f.	Add more fields (2)(f4 - number , f5 - string)
+    g.	Add more entries (10)
+    h.	Edit entry (optional, +1)
+    i.	Delete fields (field, f4)
+    j.	Delete entries (3) (optional, +1)
+    k.	Create table2, empty
+    l.	Switch back to table 1, shows data
+    
 8.	admin2
-  a.	put side by side with user2
-  b.	select db2
-    i.	show table1 
-    ii.	add table3, show table3 exists in user2
-  c.	user2 log off
-  d.	update user2 – with db1, db2
-  e.	login with user 2 – 
-    i.	show db1 no table, 
-    ii.	show db2 has 
-      1.	table1 has data
-      2.	table2 empty
+    a.	put side by side with user2
+    b.	select db2
+        i.	show table1 
+        ii.	add table3, show table3 exists in user2
+    c.	user2 log off
+    d.	update user2 – with db1, db2
+    e.	login with user 2 – 
+        i.	show db1 no table, 
+        ii.	show db2 has 
+            1.	table1 has data
+            2.	table2 empty
+            
 9.	Logout default admin, user2 – only admin2 left
-  a.	Admin2 access table1
+    a.	Admin2 access table1
+    
 10.	Sorting/Searching
-a.	Sort table by different columns
-i.	Showcase different filters (Important conditions: = , > , < , <= , >= , !=
-b.	
-c.	Showcase multi filters
-d.	Sort table with filters
+  a.	Sort table by different columns
+    i.	Showcase different filters (Important conditions: = , > , < , <= , >= , !=
+  b.	
+  c.	Showcase multi filters
+  d.	Sort table with filters
+  
 11.	Select table2
-a.	Add 1 field
-b.	Add 1 entry
-c.	delete Table2
-d.	Screen clear
-e.	Show table is deleted in tab
-f.	Select table 1
-i.	Show table contents is on screen
-12.	FINAL – Login with admin 1
-a.	Select db2
-b.	Select table 2
-c.	DONE.
+  a.	Add 1 field
+  b.	Add 1 entry
+  c.	delete Table2
+  d.	Screen clear
+  e.	Show table is deleted in tab
+  f.	Select table 1
+    i.	Show table contents is on screen
+    
+ 12.	FINAL – Login with admin 1
+  a.	Select db2
+  b.	Select table 2
+  c.	DONE.
