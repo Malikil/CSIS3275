@@ -89,7 +89,7 @@ public class ServerMain implements Server
 		if(!file.exists())
 		{
 			userList = new DefinitelyNotArrayList<User>();
-			userList.add(new User("admin", "NewAdmin", new String[] {"Admin"}, true));
+			userList.add(new User("admin", "NewAdmin", new String[0], true));
 			entryKey = 0;
 			saveConfig();
 		}
@@ -116,10 +116,7 @@ public class ServerMain implements Server
 		file =  new File("databases");
 		if(!file.exists())
 			file.mkdir();
-		
-		file =  new File("databases\\admin");
-		if(!file.exists())
-			file.mkdir();
+
 	}
 	
 	public void saveConfig()
@@ -139,23 +136,22 @@ public class ServerMain implements Server
 		catch (IOException e) 
 		{	}
 	}
+	@Override
 	public void sendObjectToAll(Message message, String database, String table)
 	{
+
 		for (ClientHandler client : clientList)
 		{
 			if(!client.isConnected())
 			{
+				
 				clientList.remove(client);
 			}
 			else {
-				if((message.getCommandType() == Command.DELETE_USER ||
-						message.getCommandType() == Command.ADD_USER ||
-						message.getCommandType() == Command.EDIT_USER ||
-						message.getCommandType() == Command.ADD_DATABASE ||
-						message.getCommandType() == Command.USER_LIST ||
-						message.getCommandType() == Command.DELETE_DATABASE) &&
-						client.getCurrentUser().isAdmin())
+				if(message.getCommandType() == Command.DATABASE_LIST &&
+					client.getCurrentUser().isAdmin())
 				{
+					
 					client.sendObject(message);
 				}
 				else if(client.getCurrentDatabaseName()!= null &&client.getCurrentDatabaseName().equals(database))
@@ -347,25 +343,22 @@ public class ServerMain implements Server
 			for (User u : users)
 			{
 				if(u.isAdmin())
+				{
 					u.addNewDatabase(databaseName);
+				}
 			}
-			this.sendObjectToAll(new Message(Command.ADD_DATABASE, databaseName),
-					databaseName, null);
-		}
-		else
-		{
-			// TODO Message if fail
+			
+			sendObjectToAll(new Message(Command.DATABASE_LIST, getAllDatabases()),
+					null, null);
 		}
 	}
   
-	/*
-	@Override
+
 	public String[] getAllDatabases()
 	{
 		return new File("databases").list();
 	}
-	*/
-	@Override
+	
 	public boolean deleteDatabase(String databaseName)
 	{
 		File dir = new File("databases\\" + databaseName);
@@ -388,39 +381,6 @@ public class ServerMain implements Server
 	{
 		userList.add(user);
 		saveConfig();
-		sendObjectToAll(new Message(Command.USER_LIST, getUserList()), null, null);
-	}
-
-	@Override
-	public void editUser(User user) {
-		if(userList.delete(user))
-			userList.add(user);
-		sendObjectToAll(new Message(Command.EDIT_USER, user), null, null);
-	}
-	
-	@Override
-	public void deleteUser(String username)
-	{
-		userList.delete(new User(username));
-		for (ClientHandler c : clientList)
-			if (c.getCurrentUser().getUsername().equals(username))
-				c.sendObject(new Message(Command.LOGOFF, null));
-		saveConfig();
-		sendObjectToAll(new Message(Command.USER_LIST, username), null, null);
-	}
-	
-	public void changeUserDatabases(String username, String[] databases) //overwrites old databases with new databases array
-	{
-		User newUser = (User) userList.get(new User(username));
-		newUser.changeDatabase(databases);
-		saveConfig();
-	}
-	
-	public void changePassword(String username, String newPass)
-	{
-		User newUser = (User) userList.get(new User(username));
-		newUser.setPassword(newPass);
-		saveConfig();
 	}
 
 	@Override
@@ -429,15 +389,4 @@ public class ServerMain implements Server
 		
 	}
 
-	@Override
-	public void sendUserList() {
-		this.sendObjectToAll(new Message(Command.USER_LIST,getUserList()), null, null);
-		
-	}
-
-	@Override
-	public String[] getAllDataBases() {
-		File file = new File("databases");
-		return file.list();
-	}
 }

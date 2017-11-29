@@ -74,20 +74,7 @@ public class AddUserGUI extends JDialog {
 			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			getContentPane().setLayout(null);
 			
-			JButton addDBBttn = new JButton("Add User");
-			addDBBttn.setBounds(135, 253, 117, 29);
-			addDBBttn.addActionListener(new ActionListener() 
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					thisD.dispose();
-				}
-			});
-			getContentPane().add(addDBBttn);
-			setTitle("Add User");
-			setBounds(35, 10, 405, 371);
-			getContentPane().add(addDBBttn);
+
 			
 			JLabel addUserLbl = new JLabel("Enter Username");
 			addUserLbl.setBounds(73, 16, 104, 16);
@@ -138,81 +125,33 @@ public class AddUserGUI extends JDialog {
 			isAdmin = new JCheckBox("Check If Admin");
 			isAdmin.setBounds(145, 289, 97, 23);
 			getContentPane().add(isAdmin);
-		}
-		else //Edit---------------------------------------------------------------------------------
-		{
-			getContentPane().setBackground(UIManager.getColor("Tree.selectionBackground"));
-			setTitle("Edit User");
-			setBounds(100, 100, 300, 344);
-			setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			getContentPane().setLayout(null);
 			
-			JButton addDBBttn = new JButton("Edit User");
+			JButton addDBBttn = new JButton("Add User");
 			addDBBttn.setBounds(135, 253, 117, 29);
 			addDBBttn.addActionListener(new ActionListener() 
 			{
 				@Override
 				public void actionPerformed(ActionEvent e)
 				{
-					thisD.dispose();
+					if(databaseList.getSelectedIndex() == -1 && !isAdmin.isSelected())
+					{
+						JOptionPane noSel = new JOptionPane("Need to select a Database");
+						
+						noSel.setVisible(true);
+					}
+					else{
+						
+						thisD.dispose();
+					}
+					
 				}
 			});
 			getContentPane().add(addDBBttn);
-			setTitle("Edit User");
+			setTitle("Add User");
 			setBounds(35, 10, 405, 371);
 			getContentPane().add(addDBBttn);
-			
-			JLabel addUserLbl = new JLabel("Username:");
-			addUserLbl.setBounds(73, 16, 104, 16);
-			getContentPane().add(addUserLbl);
-			
-			addUserField = new JTextField();
-			addUserField.setColumns(10);
-			addUserField.setBounds(183, 11, 130, 26);
-			getContentPane().add(addUserField);
-			addUserField.setText(username);
-			addUserField.setEditable(false);
-			
-
-			databaseList.setBounds(114, 88, 154, 141);
-			JScrollPane sp = new JScrollPane(databaseList);
-			sp.setBounds(114, 100, 154, 141);
-			getContentPane().add(sp);
-			
-			JButton helpBttn = new JButton("?");
-			helpBttn.setFont(new Font("Tahoma", Font.BOLD, 9));
-			helpBttn.setBounds(359, 303, 40, 40);
-			helpBttn.addActionListener(new ActionListener() 
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					JOptionPane.showMessageDialog(helpBttn,
-						"Username Field:  \n   Enter a desired Username\n" + 
-						"Database List: \n  Select certain databases you wish to \n assign to the new user\n\n" +
-						"	Press 'Add User' to add new User");
-				}
-			});
-			getContentPane().add(helpBttn);
-			
-			JLabel DatabaseListLbl = new JLabel("Database List");
-			DatabaseListLbl.setHorizontalAlignment(SwingConstants.CENTER);
-			DatabaseListLbl.setBounds(135, 72, 104, 16);
-			getContentPane().add(DatabaseListLbl);
-			
-			JLabel PassLB = new JLabel("Enter Password");
-			PassLB.setBounds(73, 48, 104, 16);
-			getContentPane().add(PassLB);
-			
-			addPasswordField = new JTextField();
-			addPasswordField.setColumns(10);
-			addPasswordField.setBounds(183, 43, 130, 26);
-			getContentPane().add(addPasswordField);
-			
-			isAdmin = new JCheckBox("Check If Admin");
-			isAdmin.setBounds(145, 289, 97, 23);
-			getContentPane().add(isAdmin);
 		}
+		
 	}
 	
 	public User getUser()

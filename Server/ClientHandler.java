@@ -43,105 +43,98 @@ public class ClientHandler implements Runnable
 	public void run()
 	{
 
-			try 
-			{
-				String[] userPass = ((Message)objIn.readObject()).getLogin();
-				User parentUser = parent.getUser(userPass[0]);
-				if(parentUser != null)
-				{
-					if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
-					{
-						
-						
-						objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
-						currentUser = parentUser;
-						if(parentUser.isAdmin())
-						{
-							objOut.writeObject(new Message(Command.DATABASE_LIST, parent.getAllDataBases()));
-							
-						}
-						
-					}
-					else
-					{
-						objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
-						parent.removeClient(this);
-					}
-				}
-				if (currentUser == null)
-					objOut.writeObject(new Message(Command.INCORRECT_USER, null));
-						parent.removeClient(this);
-			} 
-			catch (ClassNotFoundException e) 
-			{	parent.removeClient(this); } // TODO
-			catch (IOException e) 
-			{	parent.removeClient(this); } 
-		
-		// Client is logged in, now wait for commands
-		while (true)
+		try 
 		{
-			try
+			String[] userPass = ((Message)objIn.readObject()).getLogin();
+			User parentUser = parent.getUser(userPass[0]);
+			if(parentUser != null)
 			{
-				Message received = (Message) objIn.readObject();
-				switch (received.getCommandType())
+				if(parentUser.equals(new User(userPass[0], userPass[1], new String[0])))
 				{
-				case ADD_COLUMNS:
-					parent.addColumns(currentDatabaseName, currentTableName, received.getColumns());
-					break;
-				case ADD_ENTRY:
-					parent.addEntry(currentDatabaseName, currentTableName, received.getNewEntry());
-					break;
-				case ADD_TABLE:
-					currentTableName = received.getTableName();
-					parent.addTable(currentDatabaseName,currentTableName);
-					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE,parent.getTable(currentDatabaseName, currentTableName)));
-					break;
-				case DELETE_COLUMN:
-					parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());
-					break;
-				case DELETE_ENTRY:
-					parent.deleteEntry(currentDatabaseName, currentTableName, received.getKey());
-					break;
-				case DELETE_TABLE:
-					parent.deleteTable(currentDatabaseName, currentTableName);
-					currentTableName = null;
-					break;
-				case EDIT_ENTRY:
-					parent.editEntry(currentDatabaseName, currentTableName,received.getEntry());
-					break;
-				case GET_ACTUAL_TABLE:
-					currentTableName = received.getTableName();
-					objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, parent.getTable(currentDatabaseName, currentTableName)));
-					break;
-				case GET_TABLE_NAMES:
-					currentDatabaseName  = received.getDatabase();
-					objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); 
-					break;
-				case DELETE_DATABASE:
-					parent.deleteDatabase(received.getDatabase());
-					break;
-				case ADD_DATABASE:
-					parent.createDatabase(received.getDatabase());
-					break;
-				case ADD_USER:
-					parent.createUser(received.getUser());
-					break;
-				case EDIT_USER:
-					parent.editUser(received.getUser());
-					break;
-				case DELETE_USER:
-					parent.deleteUser(received.getUsername());
-					break;
-				case USER_LIST:
-					parent.sendUserList();
-				default:
-					break;
+					
+					
+					objOut.writeObject(new Message(Command.CONNECTION_SUCCESS, parentUser));
+					currentUser = parentUser;
+					if(parentUser.isAdmin())
+					{
+						objOut.writeObject(new Message(Command.DATABASE_LIST, parent.getAllDatabases()));
+						
+					}
+					
+				}
+				else
+				{
+					objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+					parent.removeClient(this);
 				}
 			}
-			catch (ClassNotFoundException | IOException ex)
+			if (currentUser == null)
 			{
+				objOut.writeObject(new Message(Command.INCORRECT_USER, null));
+				parent.removeClient(this);
 			}
-		}
+
+		} 
+		catch (ClassNotFoundException e) 
+		{	parent.removeClient(this); } // TODO
+		catch (IOException e) 
+		{	parent.removeClient(this); } 
+	
+
+		if(currentUser != null)
+			while (true)
+			{
+				try
+				{
+					Message received = (Message) objIn.readObject();
+					switch (received.getCommandType())
+					{
+					case ADD_COLUMNS:
+						parent.addColumns(currentDatabaseName, currentTableName, received.getColumns());
+						break;
+					case ADD_ENTRY:
+						parent.addEntry(currentDatabaseName, currentTableName, received.getNewEntry());
+						break;
+					case ADD_TABLE:
+						currentTableName = received.getTableName();
+						parent.addTable(currentDatabaseName,currentTableName);
+						objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE,parent.getTable(currentDatabaseName, currentTableName)));
+						break;
+					case DELETE_COLUMN:
+						parent.deleteColumn(currentDatabaseName, currentTableName, received.getColumnIndex());
+						break;
+					case DELETE_ENTRY:
+						parent.deleteEntry(currentDatabaseName, currentTableName, received.getKey());
+						break;
+					case DELETE_TABLE:
+						parent.deleteTable(currentDatabaseName, currentTableName);
+						currentTableName = null;
+						break;
+					case EDIT_ENTRY:
+						parent.editEntry(currentDatabaseName, currentTableName,received.getEntry());
+						break;
+					case GET_ACTUAL_TABLE:
+						currentTableName = received.getTableName();
+						objOut.writeObject(new Message(Command.GET_ACTUAL_TABLE, parent.getTable(currentDatabaseName, currentTableName)));
+						break;
+					case GET_TABLE_NAMES:
+						currentDatabaseName  = received.getDatabase();
+						objOut.writeObject(new Message(Command.GET_TABLE_NAMES, parent.getTableList(currentDatabaseName))); 
+						break;
+					case ADD_DATABASE:
+						parent.createDatabase(received.getDatabase());
+						break;
+					case ADD_USER:
+						parent.createUser(received.getUser());
+						break;
+					default:
+						break;
+					}
+				}
+				catch (ClassNotFoundException | IOException ex)
+				{
+				}
+			}
 	}
 	
 	public void sendObject(Message message)

@@ -16,12 +16,10 @@ public interface Server
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase(String databaseName);
 	public boolean deleteDatabase(String database);
-	public User[] getUserList();
 	public void createUser(User user);
-	public void editUser(User user);
-	public void deleteUser(String username);
 	public User getUser(String username);
 	public void removeClient(ClientHandler clientHandler);
-	public void sendUserList();
-	public String[] getAllDataBases();
+	public Object getAllDatabases();
+	void sendObjectToAll(Message message, String database, String table);
+
 }

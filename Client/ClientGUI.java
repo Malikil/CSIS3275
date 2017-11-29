@@ -61,7 +61,6 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
 	private int[] tableKeys;
-	private JComboBox<String> selectUserDropdown;
 
 	/**
 	 * Create the application.
@@ -173,20 +172,8 @@ public class ClientGUI extends JFrame
 			searchTab.addTab("Admin", null, adminPanel, null);
 			adminPanel.setLayout(null);
 			
-			JLabel userlistLabel = new JLabel("Userlist");
-			userlistLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			userlistLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-			userlistLabel.setBounds(190, 10, 80, 25);
-			adminPanel.add(userlistLabel);
-			
-			selectUserDropdown = new JComboBox<String>();
-			selectUserDropdown.setBounds(60, 40, 350, 25);
-			adminPanel.add(selectUserDropdown);
-			parent.requestUserList();
-				
-			
 			JButton addUserButton = new JButton("Add User");
-			addUserButton.setBounds(180, 90, 110, 25);
+			addUserButton.setBounds(180, 50, 110, 25);
 			addUserButton.addActionListener(new ActionListener()
 			{
 				@Override
@@ -550,14 +537,6 @@ public class ClientGUI extends JFrame
 		return new Entry(tableKeys[row], data);
 	}
 
-	public void refreshUsers(String[] userlist)
-	{
-		selectUserDropdown.removeAllItems();
-		for(String username: userlist)
-		{
-			selectUserDropdown.addItem(username);
-		}
-		
-	}
+
 	
 }

@@ -131,29 +131,6 @@ public class ClientMain implements Client
 					case DATABASE_LIST:
 						setDatabaseList(received.getDatabaseList());
 						break;
-					case ADD_USER:
-						break;
-					case EDIT_USER:
-						break;
-					case DELETE_USER:
-						break;
-					case ADD_DATABASE:
-						String[] newDatabaseList = new String[databaseList.length +1];
-						int i = 0;
-						for(;i < databaseList.length; i++)
-							newDatabaseList[i] = databaseList[i];
-						newDatabaseList[i] = received.getDatabase();
-						setDatabaseList(newDatabaseList);
-						break;
-					case USER_LIST:
-						User[] userlist = received.getUserList();
-						String[] users = new String[userlist.length];
-						for(int v = 0; v<userlist.length;v++)
-						{
-							users[v] = userlist[v].getUsername();
-						}
-						this.refreshUserList(users);
-						break;
 					default:
 						throw new IOException("Unexpected server command");
 					}
@@ -174,10 +151,6 @@ public class ClientMain implements Client
 			}
 			catch (IOException ex) { /* Couldn't close streams */ }
 		}
-	}
-	
-	private void refreshUserList(String[] userlist) {
-		gui.refreshUsers(userlist);
 	}
 
 	@Override
@@ -407,28 +380,6 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void deleteDatabase() {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.DELETE_DATABASE, JOptionPane.showInputDialog("Delete Database"))); //sending String 
-		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
-	public void editUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.EDIT_USER, new AddUserGUI(databaseList, username,false).getUser())); //TODO User Object
-		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
 	public void addUser() {
 		// TODO Auto-generated method stub
 		try
@@ -444,32 +395,11 @@ public class ClientMain implements Client
 		{	e.printStackTrace();}
 	}
 
-	@Override
-	public void deleteUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
-		}
-		catch (HeadlessException | IOException e)
-		{ 	}
-	}
-	
 	public void sort(int field)
  	{
  		Entry.setComparer(field);
  		newTree = newTree.reconstructTree();
  		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());
 	}
-
-	@Override
-	public void requestUserList() {
-		try
-		{
-			objOut.writeObject(new Message(Command.	USER_LIST, null)); 
-		}
-		catch (HeadlessException | IOException e)
-		{ 	
-		}
-	}
 }
+
