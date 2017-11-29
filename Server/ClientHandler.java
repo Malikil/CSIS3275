@@ -65,13 +65,15 @@ public class ClientHandler implements Runnable
 					else
 					{
 						objOut.writeObject(new Message(Command.INCORRECT_PASSWORD, null));
+						parent.removeClient(this);
 					}
 				}
 				if (currentUser == null)
 					objOut.writeObject(new Message(Command.INCORRECT_USER, null));
+						parent.removeClient(this);
 			} 
 			catch (ClassNotFoundException e) 
-			{	} // TODO
+			{	parent.removeClient(this); } // TODO
 			catch (IOException e) 
 			{	parent.removeClient(this); } 
 		

@@ -50,7 +50,10 @@ public class EditEntryGUI extends JDialog
 			label.setBounds(10, i * 25 + 11, 90, 14);
 			panel.add(label);
 			JTextField newField = new JTextField();
-			newField.setText(edit.getField(i).toString());
+			if(edit.getField(i) == null)
+				newField.setText("");
+			else
+				newField.setText(edit.getField(i).toString());
 			newData[i] = newField;
 			newData[i].setBounds(110, i * 25 + 8, 120, 20);
 			panel.add(newData[i]);
