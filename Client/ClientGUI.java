@@ -50,6 +50,7 @@ public class ClientGUI extends JFrame
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
 	private int[] tableKeys;
+	private JComboBox<String> selectUserDropdown;
 
 	/**
 	 * Create the application.
@@ -97,11 +98,9 @@ public class ClientGUI extends JFrame
 		
 		JMenuItem mntmAddTable = new JMenuItem("Add Table");
 		fileMenu.add(mntmAddTable);
-		mntmAddTable.addActionListener(new ActionListener()
-		{
+		mntmAddTable.addActionListener(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
+			public void actionPerformed(ActionEvent e) {
 				parent.createTable();
 			}	
 		});
@@ -167,7 +166,7 @@ public class ClientGUI extends JFrame
 			userlistLabel.setBounds(190, 10, 80, 25);
 			adminPanel.add(userlistLabel);
 			
-			JComboBox<String> selectUserDropdown = new JComboBox<String>();
+			selectUserDropdown = new JComboBox<String>();
 			selectUserDropdown.setBounds(60, 40, 350, 25);
 			adminPanel.add(selectUserDropdown);
 			
@@ -537,5 +536,10 @@ public class ClientGUI extends JFrame
 		return new Entry(tableKeys[row], data);
 	}
 
-	
+	public void setUserList(String[] userlist)
+	{
+		selectUserDropdown.removeAllItems();
+		for (String user : userlist)
+			selectUserDropdown.addItem(user);
+	}
 }

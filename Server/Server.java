@@ -2,8 +2,6 @@ package Server;
 
 public interface Server
 {
-	//public String[] getAllDatabases();
-	public String[] getUserDatabases(String user);
 	public String[] getTableList(String database);
 	public Table getTable(String dbname, String tableName);
 	public void saveTable(String dbName, String tableName, Table table);
@@ -15,10 +13,6 @@ public interface Server
 	public void deleteTable(String databaseName, String tableName);
 	public void editEntry(String databaseName, String tableName, Entry newEntry);
 	public void createDatabase(String databaseName);
-	public boolean deleteDatabase(String database);
-	public User[] getUserList();
 	public void createUser(User user);
-	public void editUser(User user);
-	public void deleteUser(String username);
 	public User getUser(String username);
 }

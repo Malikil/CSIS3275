@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Config implements Serializable
 {
+	private static final long serialVersionUID = 3328242183071844504L;
 	private AVLTree<User> userList;
 	private int entryKey;
 	
