@@ -64,6 +64,7 @@ public class ClientMain implements Client
 					client.setDatabaseList(user.getDatabases());
 					System.out.println("Databases set");
 					client.start();
+					login.setMessage(Command.LOGIN);
 				}
 				else
 					login.setMessage(conf);
@@ -95,56 +96,59 @@ public class ClientMain implements Client
 		gui.setVisible(true);
 		try
 		{
-				while (true)
+			while (true)
+			{
+				Message received = (Message)objIn.readObject();
+				switch (received.getCommandType())
 				{
-					Message received = (Message)objIn.readObject();
-					switch (received.getCommandType())
-					{
-					case ADD_COLUMNS:
-						Column[] columnList = received.getColumns();
-						for(int i = 0 ; i < columnList.length ; i++)
-							currentTable.addColumn(columnList[i]);
-						setTable(currentTable);
-						break;
-					case ADD_ENTRY:
-						currentTable.addEntry(received.getEntry());
-						setTable(currentTable);
-						break;
-					case ADD_TABLE:
-						gui.addTableName(received.getTableName());
-						break;
-					case DELETE_COLUMN:
-						currentTable.removeColumn(received.getColumnIndex());
-						setTable(currentTable);
-						break;
-					case DELETE_ENTRY:
-						currentTable.removeEntry(received.getKey());
-						setTable(currentTable);
-						break;
-					case EDIT_ENTRY:
-						currentTable.editEntry(received.getEntry());
-						setTable(currentTable);
-						break;
-					case GET_ACTUAL_TABLE:
-						setTable(received.getTable());
-						break;
-					case GET_TABLE_NAMES:
-						gui.setTableList(received.getTableNames());
-						break;
-					case DATABASE_LIST:
-						setDatabaseList(received.getDatabaseList());
-						break;
-					default:
-						throw new IOException("Unexpected server command");
-					}
+				case ADD_COLUMNS:
+					Column[] columnList = received.getColumns();
+					for(int i = 0 ; i < columnList.length ; i++)
+						currentTable.addColumn(columnList[i]);
+					setTable(currentTable);
+					break;
+				case ADD_ENTRY:
+					currentTable.addEntry(received.getEntry());
+					setTable(currentTable);
+					break;
+				case ADD_TABLE:
+					gui.addTableName(received.getTableName());
+					break;
+				case DELETE_COLUMN:
+					currentTable.removeColumn(received.getColumnIndex());
+					setTable(currentTable);
+					break;
+				case DELETE_ENTRY:
+					currentTable.removeEntry(received.getKey());
+					setTable(currentTable);
+					break;
+				case EDIT_ENTRY:
+					currentTable.editEntry(received.getEntry());
+					setTable(currentTable);
+					break;
+				case GET_ACTUAL_TABLE:
+					setTable(received.getTable());
+					break;
+				case GET_TABLE_NAMES:
+					gui.setTableList(received.getTableNames());
+					break;
+				case DATABASE_LIST:
+					setDatabaseList(received.getDatabaseList());
+					break;
+				default:
+					throw new IOException("Unexpected server command");
 				}
-			
+			}			
 		}
 		catch (ClassNotFoundException ex)
 		{
 			ex.printStackTrace();
 		}
-		catch (IOException ex) { /* Skip to finally */ }
+		catch (IOException ex)
+		{
+			JOptionPane.showMessageDialog(gui, "Error communicating with server. Server either shutdown or sent a bad response.");
+			System.out.println(ex.getMessage());
+		}
 		finally
 		{
 			try
