@@ -410,48 +410,11 @@ public class ClientMain implements Client
 	}
 
 	@Override
-	public void deleteDatabase()
-	{
-		try
-		{
-			String database = JOptionPane.showInputDialog("Create Database");
-			if (database != null && !database.equals(""))
-				objOut.writeObject(new Message(Command.DELETE_DATABASE, database)); //sending String 
-		}
-		catch (HeadlessException | IOException e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void editUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.EDIT_USER, new AddUserGUI(databaseList, username,false).getUser())); //TODO User Object
-		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
 	public void addUser() {
 		// TODO Auto-generated method stub
 		try
 		{
 			objOut.writeObject(new Message(Command.ADD_USER, new AddUserGUI(databaseList).getUser()));
-		}
-		catch (HeadlessException | IOException e)
-		{	}
-	}
-
-	@Override
-	public void deleteUser(String username) {
-		// TODO Auto-generated method stub
-		try
-		{
-			objOut.writeObject(new Message(Command.DELETE_USER, username)); //TODO sending String username
 		}
 		catch (HeadlessException | IOException e)
 		{	}
