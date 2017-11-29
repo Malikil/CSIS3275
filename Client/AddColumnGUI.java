@@ -57,11 +57,11 @@ public class AddColumnGUI extends JDialog
 			tableName = new JTextField();
 			tableName.setBounds(142, 17, 130, 26);
 			tableName.setColumns(10);
-			getContentPane().add(tableLabel);
+			getContentPane().add(tableName);
 			
 			tableLabel = new JLabel("Table Name");
 			tableLabel.setBounds(51, 22, 83, 16);
-			getContentPane().add(tableName);
+			getContentPane().add(tableLabel);
 		}
 		else
 			setTitle("Add Column");
