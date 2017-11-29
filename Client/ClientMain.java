@@ -45,6 +45,9 @@ public class ClientMain implements Client
 			if (login.isCancelled()) return;
 			try
 			{
+				login.showPopup("Attempting to Connect to Server at specified IP. Press OK to continue.\n"
+						+ "If Client does not immediately open after pressing OK, "
+						+ "server is not responding at specified IP");
 				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
 				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
 				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
@@ -70,14 +73,15 @@ public class ClientMain implements Client
 			catch (IOException ex)
 			{
 				System.out.println("Error communicating with server:\t" + ex.getMessage());
+				login.showPopup("Could not connect to Server at specified IP. Please try again with the correct server IP.");
 				try
 				{
-					sock.close();
+					if(sock!=null)
+						sock.close();
 				}
 				catch (IOException io)
 				{
 					io.printStackTrace();
-					// Couldn't close socket
 				}
 			}
 			catch (ClassNotFoundException ex)
@@ -188,7 +192,6 @@ public class ClientMain implements Client
 		catch (IOException ex)
 		{
 			ex.printStackTrace();
-			// TODO Catch block
 		}
 	}
 
@@ -216,7 +219,7 @@ public class ClientMain implements Client
 		}
 		catch (IOException ex)
 		{
-			System.out.println("Error asking for table from server"); // TODO System.out
+			System.out.println("Error asking for table from server");
 		}
 	}
 	
@@ -242,19 +245,29 @@ public class ClientMain implements Client
 	@Override
 	public void deleteColumn(int selectedIndex)
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		try
 		{
 			objOut.writeObject(new Message(Command.DELETE_COLUMN, selectedIndex));
 		}
 		catch (IOException e)
 		{
-			// TODO Catch block
+			e.printStackTrace();
 		} 
 	}
 	
 	@Override
 	public void createEntry()
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		EditEntryGUI addEnt = new EditEntryGUI(currentTable.getColumnNames());
 		addEnt.setVisible(true);
 		
@@ -287,6 +300,11 @@ public class ClientMain implements Client
 	@Override
 	public void deleteEntry(int key)
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		try
 		{
 			objOut.writeObject(new Message(Command.DELETE_ENTRY, key));
@@ -300,6 +318,11 @@ public class ClientMain implements Client
 	@Override
 	public void addColumn() 
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		AddColumnGUI newCols = new AddColumnGUI(false);
 		newCols.setVisible(true);
 		Column[] addedColumns = newCols.getColumns();
@@ -316,6 +339,11 @@ public class ClientMain implements Client
 	@Override
 	public void editEntry()
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		Entry editEntry = gui.getSelectedEntry();
 		EditEntryGUI editGUI = new EditEntryGUI(currentTable.getColumnNames(), editEntry);
 		editGUI.setVisible(true);
@@ -359,8 +387,11 @@ public class ClientMain implements Client
 	@Override
 	public void applySearch(String[] values, String[] comparisons, int[] fields)
 	{
-		if (currentTable == null)
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
 			return;
+		}
 		Comparable[] filterValues = new Comparable[values.length];
 		Column[] cols = currentTable.getColumns();
 		for (int i = 0; i < values.length; i++)
@@ -397,6 +428,8 @@ public class ClientMain implements Client
 			String database = JOptionPane.showInputDialog("Create Database");
 			if (database != null && !database.equals(""))
 				objOut.writeObject(new Message(Command.ADD_DATABASE, database)); //sending String
+			else if(database == null)
+				return;
 			else
 				JOptionPane.showMessageDialog(gui, "Databases must have names");
 		}
@@ -409,14 +442,17 @@ public class ClientMain implements Client
 	@Override
 	public void addUser()
 	{
-		// TODO Auto-generated method stub
 		try
 		{
 			AddUserGUI userGUI = new AddUserGUI(databaseList);
 			userGUI.setVisible(true);
 			User newUser = userGUI.getUser();
 			if (newUser != null)
+			{
 				objOut.writeObject(new Message(Command.ADD_USER, newUser));
+				if(newUser.isAdmin())
+					gui.showPopup("Admin clients will be able to access all DBs. Click OK to continue.");
+			}
 		}
 		catch (HeadlessException | IOException e)
 		{
@@ -427,6 +463,11 @@ public class ClientMain implements Client
 	@Override
 	public void sort(int field)
 	{
+		if(currentTable == null)
+		{
+			gui.showPopup("Please select a table first.");
+			return;
+		}
 		Entry.setComparer(field);
 		newTree = newTree.reconstructTree();
 		gui.setTable(newTree.toArray(new Entry[newTree.size()]), currentTable.getColumnNames());

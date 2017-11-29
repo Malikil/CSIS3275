@@ -144,11 +144,11 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisFrame,
-						 "Database Dropdown Menu: \n" +
-							    "Choose A Database to modify and press go to recieve data \n\n\n" +
+						 "From the File Dropdown menu: \n" +
+							    "Select a Database to receive your accessable Tables \n\n\n" +
 							  "Table Dropdown Menu: \n" +
-							    "Choose a Table to Modify and press select to recieve data \n\n\n" +
-							  "Add: \n" +
+							    "Select a Table to begin manipulating the Table \n\n\n" +
+							  "Add Fields: \n" +
 							    "Shows GUI for adding new Entry \n\n\n" +
 							  "Edit: \n" +
 							    "Shows GUI for editing selected Entry \n\n\n" +
@@ -256,7 +256,10 @@ public class ClientGUI extends JFrame
 			public void actionPerformed(ActionEvent e)
 			{
 				int entryRow = table.getSelectedRow();
-				parent.editEntry();
+				if (entryRow == -1)
+					JOptionPane.showMessageDialog(thisFrame, "Please select an entry to delete");
+				else
+					parent.editEntry();
 			}
 		});
 		tablesPanel.add(editBttn);
@@ -501,5 +504,10 @@ public class ClientGUI extends JFrame
 		btnAddFilter.doClick(); // This function is great
 		// Reset table
 		parent.applySearch(new String[0], new String[0], new int[0]); // Cheat the system
+	}
+	
+	public void showPopup(String msg)
+	{
+		JOptionPane.showMessageDialog(this, msg);
 	}
 }

@@ -46,7 +46,7 @@ public class LoginGUI extends JDialog
 		JDialog thisDialog = this;
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 323, 228);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 		getContentPane().setLayout(null);
 		
 		JLabel lblIp = new JLabel("IP: ");
@@ -148,14 +148,15 @@ public class LoginGUI extends JDialog
 			public void actionPerformed(ActionEvent e)
 			{
 				JOptionPane.showMessageDialog(thisDialog,
-					"IP Address Field:  \n   Enter Server IP Address\n" + 
+					"IP Address Field:  \n   Enter Server IP Address: \n" + 
 					"UserName TextField: \n  Enter Username with corresponding Password \n\n" +
-					"	Press 'Login' to continue");
+					"	Press 'Login' to continue \n" +
+					"   Press 'Exit' to exit");
 			}
 		});
 		getContentPane().add(button);
 		
-		JButton cancelBttn = new JButton("Cancel");
+		JButton cancelBttn = new JButton("Exit");
 		cancelBttn.setBounds(139, 142, 89, 23);
 		cancelBttn.addActionListener(new ActionListener() 
 		{
@@ -188,11 +189,18 @@ public class LoginGUI extends JDialog
 			case MESSAGE:
 				JOptionPane.showMessageDialog(this, "Server not initialized properly. Users file could not be found.");
 				break;
-			default: break;
+			default: 
+				System.out.println("Did not receive a message from Server that LoginGUI can read.");
+				break;
 			}
 			cancelled = true;
 		}
 		super.setVisible(b);
+	}
+	
+	public void showPopup(String msg)
+	{
+		JOptionPane.showMessageDialog(this, msg);
 	}
 	
 	public void setMessage(Command message) { this.message = message; }

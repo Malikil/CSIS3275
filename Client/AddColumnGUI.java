@@ -64,7 +64,7 @@ public class AddColumnGUI extends JDialog
 			getContentPane().add(tableLabel);
 		}
 		else
-			setTitle("Add Column");
+			setTitle("Add Field");
 	}
 
 	/**
