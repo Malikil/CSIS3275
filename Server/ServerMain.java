@@ -125,9 +125,7 @@ public class ServerMain implements Server
 	{
 		for (ClientHandler client : clientList)
 		{
-			if((message.getCommandType() == Command.ADD_USER ||
-					message.getCommandType() == Command.DATABASE_LIST) &&
-					client.getCurrentUser().isAdmin())
+			if(message.getCommandType() == Command.DATABASE_LIST && client.getCurrentUser().isAdmin())
 			{
 				client.sendObject(message);
 			}
