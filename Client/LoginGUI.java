@@ -202,18 +202,10 @@ public class LoginGUI extends JDialog
 			case MESSAGE:
 				JOptionPane.showMessageDialog(this, "Server not initialized properly. Users file could not be found.");
 				break;
-			default: 
-				System.out.println("Did not receive a message from Server that LoginGUI can read.");
-				break;
 			}
 			cancelled = true;
 		}
 		super.setVisible(b);
-	}
-	
-	public void showPopup(String msg)
-	{
-		JOptionPane.showMessageDialog(this, msg);
 	}
 	
 	public void setMessage(Command message) { this.message = message; }

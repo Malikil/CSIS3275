@@ -4,8 +4,8 @@ import java.awt.HeadlessException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
-
 import javax.swing.JOptionPane;
 
 import Server.AVLTree;
@@ -45,10 +45,9 @@ public class ClientMain implements Client
 			if (login.isCancelled()) return;
 			try
 			{
-				login.showPopup("Attempting to Connect to Server at specified IP. Press OK to continue.\n"
-						+ "If Client does not immediately open after pressing OK, "
-						+ "server is not responding at specified IP");
-				sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
+				sock = new Socket();
+				sock.connect(new InetSocketAddress(login.getEnteredIP(), 8001), 2000);
+				//sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
 				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
 				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
 				Message loginAttempt = new Message(Command.LOGIN,
@@ -72,8 +71,8 @@ public class ClientMain implements Client
 			}
 			catch (IOException ex)
 			{
-				System.out.println("Error communicating with server:\t" + ex.getMessage());
-				login.showPopup("Could not connect to Server at specified IP. Please try again with the correct server IP.");
+				System.out.println("Error communicating with server:  " + ex.getMessage());
+				JOptionPane.showMessageDialog(login, "Error communicating with server. Connection timed out.\nDid you enter the right IP?");
 				try
 				{
 					if(sock!=null)
