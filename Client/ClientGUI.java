@@ -30,11 +30,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.JList;
 
 public class ClientGUI extends JFrame
 {
@@ -49,7 +47,8 @@ public class ClientGUI extends JFrame
 	private JComboBox<String> fieldsCB;
 	private JPanel tablesPanel;
 	private JScrollPane scroller;
-	JButton btnAddFilter, btnRemoveFilter;
+	private JButton btnAddFilter, btnRemoveFilter;
+	private JLabel tableNameLabel;
 	private DefinitelyNotArrayList<JComboBox<String>> fieldFilter;
 	private DefinitelyNotArrayList<JComboBox<String>> comparisonTypes;
 	private DefinitelyNotArrayList<JTextField> valueFilter;
@@ -177,10 +176,15 @@ public class ClientGUI extends JFrame
 		searchTab.addTab("Tables", null, tablesPanel, null);
 		tablesPanel.setLayout(null);
 		
+		tableNameLabel = new JLabel("");
+		tableNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		tableNameLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		tableNameLabel.setBounds(178, 13, 109, 19);
+		tablesPanel.add(tableNameLabel);
+		
 		JLabel fieldLabel = new JLabel("Fields");
-		fieldLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		fieldLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-		fieldLabel.setBounds(178, 13, 109, 19);
+		//fieldLabel.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		fieldLabel.setBounds(37, 42, 50, 20);
 		tablesPanel.add(fieldLabel);
 		
 		fieldsCB = new JComboBox<String>();
@@ -409,6 +413,7 @@ public class ClientGUI extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					parent.getTableNames(dbname);
+					tableNameLabel.setText(dbname);
 				}
 			});
 			menuItem_DB.add(newDB);
@@ -448,6 +453,7 @@ public class ClientGUI extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					parent.getTable(table);
+					tableNameLabel.setText(tableNameLabel.getText() + " - " + table);
 				}
 			});
 			mnTables.add(newTable);
