@@ -373,9 +373,18 @@ public class ClientGUI extends JFrame
 				
 				for (int i = 0; i < values.length; i++)
 				{
-					values[i] = valueFilter.get(i).getText();
-					comps[i] = (String)comparisonTypes.get(i).getSelectedItem(); //
-					fields[i] = fieldFilter.get(i).getSelectedIndex();
+					String cValue = valueFilter.get(i).getText();
+					if (!cValue.equals(""))
+					{
+						values[i] = cValue;
+						comps[i] = (String)comparisonTypes.get(i).getSelectedItem();
+						fields[i] = fieldFilter.get(i).getSelectedIndex();
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(thisFrame, "Search value cannot be empty");
+						return;
+					}
 				}
 				try
 				{
