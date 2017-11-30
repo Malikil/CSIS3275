@@ -46,7 +46,7 @@ public class ClientMain implements Client
 			try
 			{
 				sock = new Socket();
-				sock.connect(new InetSocketAddress(login.getEnteredIP(), 8001), 2000);
+				sock.connect(new InetSocketAddress(login.getEnteredIP(), 8001), 5000);
 				//sock = new Socket(login.getEnteredIP(), 8001); System.out.println("Opened socket");
 				out = new ObjectOutputStream(sock.getOutputStream()); System.out.println("Got output stream");
 				in = new ObjectInputStream(sock.getInputStream()); System.out.println("Got input stream");
@@ -74,15 +74,15 @@ public class ClientMain implements Client
 			{
 				System.out.println("Error communicating with server:  " + ex.getMessage());
 				JOptionPane.showMessageDialog(login, "Error communicating with server. Connection timed out.\nDid you enter the right IP?");
-				try
-				{
-					if(sock!=null)
+				if(sock!=null)
+					try
+					{
 						sock.close();
-				}
-				catch (IOException io)
-				{
-					io.printStackTrace();
-				}
+					}
+					catch (IOException io)
+					{
+						io.printStackTrace();
+					}
 			}
 			catch (ClassNotFoundException ex)
 			{
@@ -147,6 +147,7 @@ public class ClientMain implements Client
 		catch (IOException ex)
 		{
 			JOptionPane.showMessageDialog(gui, "Error communicating with server. Server either shutdown or sent a bad response.");
+			gui.dispose();
 			System.out.println(ex.getMessage());
 		}
 		finally
