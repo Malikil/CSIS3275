@@ -32,7 +32,10 @@ public class Table implements Serializable
 		{
 			Entry[] allEntries = tree.toArray(new Entry[tree.size()]);
 			for (Entry e : allEntries)
-				e.addField(null);
+				if (col.getType() == Column.NUMBER)
+					e.addField(new Double(0));
+				else
+					e.addField("");
 		}
 	}
 	
