@@ -1,6 +1,10 @@
 package Client;
 
 import java.awt.HeadlessException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,6 +15,7 @@ import javax.swing.JOptionPane;
 import Server.AVLTree;
 import Server.Column;
 import Server.Command;
+import Server.DefinitelyNotArrayList;
 import Server.Entry;
 import Server.Message;
 import Server.Table;
@@ -505,6 +510,95 @@ public class ClientMain implements Client
 			finally
 			{
 				System.exit(0);
+			}
+		}
+	}
+	
+	// TODO remove if unfinished
+	public void importFile(File file)
+	{
+		BufferedReader reader = null;
+		try
+		{
+			reader = new BufferedReader(new FileReader(file));
+			// Get headers
+			String[] headers = reader.readLine().split(",");
+			String[] row = reader.readLine().split(",");
+			if (headers.length == row.length)
+			{
+				Comparable[] entryData = new Comparable[row.length];
+				// Initialize columns and get first row
+				Column[] cols = new Column[row.length];
+				for (int i = 0; i < cols.length; i++)
+				{
+					try
+					{
+						entryData[i] = Double.parseDouble(row[i]);
+						cols[i] = new Column(headers[i], Column.NUMBER);
+					}
+					catch (NumberFormatException ex)
+					{
+						entryData[i] = row[i];
+						cols[i] = new Column(headers[i], Column.STRING);
+					}
+				}
+				DefinitelyNotArrayList<Comparable[]> entries = new DefinitelyNotArrayList<>();
+				entries.add(entryData);
+				
+				// Get remaining entries
+				String nextLine;
+				while ((nextLine = reader.readLine()) != null)
+				{
+					int i;
+					entryData = new Comparable[cols.length];
+					row = nextLine.split(",");
+					// Copy row data
+					for (i = 0; i < row.length; i++)
+						if (cols[i].getType() == Column.NUMBER)
+							entryData[i] = Double.parseDouble(row[i]);
+						else
+							entryData[i] = row[i];
+					
+					// Fill in default values
+					for (;i < cols.length; i++)
+						if (cols[i].getType() == Column.NUMBER)
+							entryData[i] = new Double(0);
+						else
+							entryData[i] = "";
+					
+					// Add entry
+					entries.add(entryData);
+				}
+				
+				objOut.writeObject(new Message(Command.ADD_TABLE, file.getName()));
+				objOut.writeObject(new Message(Command.ADD_COLUMNS, cols));
+				for (Comparable[] e : entries)
+					objOut.writeObject(new Message(Command.ADD_ENTRY, e));
+			}
+		}
+		catch (IOException ex)
+		{
+			System.out.println("Error while importing data - " + ex.getMessage());
+			ex.printStackTrace();
+		}
+		catch (NumberFormatException ex)
+		{
+			JOptionPane.showMessageDialog(gui, "Couldn't read file properly.\n" +
+					"Please make sure the first line contains column names and the first row of data has only " +
+					"strings in columns that should be a string type.\n" +
+					"If a row has less fields than the number of columns, default values can only be added to " +
+					"the entry starting from the last field.");
+		}
+		finally
+		{
+			try
+			{
+				if (reader != null)
+					reader.close();
+			}
+			catch (IOException e)
+			{
+				// File is already closed
 			}
 		}
 	}

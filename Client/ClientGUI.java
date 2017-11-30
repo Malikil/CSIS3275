@@ -14,6 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -432,6 +433,20 @@ public class ClientGUI extends JFrame
 	public void setTableList(String[] list)
 	{
 		mnTables.removeAll();
+		JFrame thisFrame = this;
+		
+		JMenuItem importTable = new JMenuItem("Import from file...");
+		importTable.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				JFileChooser chooser = new JFileChooser();
+				if (chooser.showOpenDialog(thisFrame) == JFileChooser.APPROVE_OPTION)
+				{
+					parent.importFile(chooser.getSelectedFile());
+				}
+			}
+		});
 		
 		JMenuItem newTable = new JMenuItem("Add Table...");
 		newTable.addActionListener(new ActionListener() {

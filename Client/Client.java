@@ -1,5 +1,7 @@
 package Client;
 
+import java.io.File;
+
 import Server.Table;
 
 public interface Client
@@ -21,4 +23,5 @@ public interface Client
 	public void addUser();
 	public void sort(int field);
 	public void quit();
+	public void importFile(File file);
 }
