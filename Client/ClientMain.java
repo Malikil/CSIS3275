@@ -584,8 +584,9 @@ public class ClientMain implements Client
 		catch (NumberFormatException ex)
 		{
 			JOptionPane.showMessageDialog(gui, "Couldn't read file properly.\n" +
-					"Please make sure the first line contains column names and the first row of data has only " +
-					"strings in columns that should be a string type.\n" +
+					"Please make sure all values are seperated with commas. The first line should contain column names, " +
+					"and the first row of data should only contain strings in columns that should be a string type, " +
+					"and numbers in columns that should be a number type.\n" +
 					"If a row has less fields than the number of columns, default values can only be added to " +
 					"the entry starting from the last field.");
 		}
